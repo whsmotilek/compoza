@@ -75,6 +75,14 @@ a{color:inherit}
   border-bottom:1px solid var(--line);padding-bottom:3px;text-decoration:none;color:var(--muted)}
 .links a:hover{color:var(--coral);border-color:var(--coral)}
 footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media(max-width:820px){
+  .top{min-height:auto}
+  .top canvas{position:relative;height:42svh}
+  .top-ui{padding:26px var(--gut) 40px}
+  .top h1{max-width:none}
+  .card .hd{flex-direction:column;gap:12px}
+  .legend{gap:10px 14px}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -83,9 +91,9 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
 <header class="top">
   <canvas id="markScene"></canvas>
   <div class="top-ui">
-    <span class="mono">Композа · хоумстейджинг и дизайн интерьеров · прототипы</span>
+    <span class="mono">Композа · хоумстейджинг и дизайн интерьеров</span>
     <h1>Четыре направления сайта — и в каждом своя <em>3D-механика</em></h1>
-    <p>Это рабочие прототипы, а не картинки. Открывайте и скроллите: в каждом варианте 3D-сцена решает свою задачу — показать услугу, а не украсить страницу. Айдентика во всех вариантах сохранена.</p>
+    <p>Четыре готовые страницы — открывайте и скроллите. В каждой 3D-сцена решает свою задачу: показать услугу, а не украсить страницу. Айдентика и шрифты бренда во всех вариантах одни и те же, различаются палитра, характер подачи и механика.</p>
     <div class="legend">
       <span><i style="background:#FF9775"></i>A · коралл</span>
       <span><i style="background:#5B2824"></i>B · бордо</span>
@@ -107,7 +115,7 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
       <p>Пустая квартира от застройщика — и по мере прокрутки в неё влетают восемь позиций комплектации. Слева чек-лист отмечает каждую галочкой, камера облетает сцену.</p>
       <dl>
         <dt>3D-механика</dt><dd>Сборка комнаты, привязанная к скроллу</dd>
-        <dt>Типографика</dt><dd>Golos Text + JetBrains Mono — настоящие, бесплатные</dd>
+        <dt>Характер</dt><dd>Строгая сетка, моношрифт для цифр, спецификация вместо буллитов</dd>
       </dl>
       <span class="go">Открыть <span aria-hidden="true">→</span></span>
     </a>
@@ -121,7 +129,7 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
       <p>Тёмная кинематографичная тема. Сверху — светящийся план квартиры на чертёжной сетке; скролл поднимает стены в объём, включает свет и расставляет мебель. Передние стены срезаны, как на архитектурном макете.</p>
       <dl>
         <dt>3D-механика</dt><dd>Экструзия плана + пролёт камеры сверху в интерьер</dd>
-        <dt>Типографика</dt><dd>Inter Tight + JetBrains Mono</dd>
+        <dt>Характер</dt><dd>Тёмная кинематографичная подача, свет как в архитектурной съёмке</dd>
       </dl>
       <span class="go">Открыть <span aria-hidden="true">→</span></span>
     </a>
@@ -135,7 +143,7 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
       <p>Единственный вариант без скролл-сценария: комната интерактивная. Клик по предмету — или по строке в списке — убирает его из комплектации, и смета пересчитывается на глазах. Прямая демонстрация «честной сметы».</p>
       <dl>
         <dt>3D-механика</dt><dd>Клик по объекту через raycaster, живой пересчёт сметы</dd>
-        <dt>Типографика</dt><dd>Golos Text + JetBrains Mono</dd>
+        <dt>Характер</dt><dd>Светлый интерфейс, всё внимание на интерактив и цифры</dd>
       </dl>
       <span class="go">Открыть <span aria-hidden="true">→</span></span>
     </a>
@@ -149,7 +157,7 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
       <p>Журнальная подача с огромной типографикой. Предметы парят в разлёте и по скроллу стягиваются в собранный натюрморт — счётчик показывает процент сборки. Ниже — коралловые «шпильки», подписывающие каждый предмет на фото.</p>
       <dl>
         <dt>3D-механика</dt><dd>Разлёт → сборка предметов, параллакс за курсором</dd>
-        <dt>Типографика</dt><dd>Oceanic Grotesk + Oceanic Text — в прототипе подстановка</dd>
+        <dt>Характер</dt><dd>Журнальная подача, крупная типографика, много воздуха</dd>
       </dl>
       <span class="go">Открыть <span aria-hidden="true">→</span></span>
     </a>
@@ -160,8 +168,8 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
     <h2>Что дальше</h2>
     <div class="notes">
       <div><h3>Механики можно соединить</h3><p>Сборка комнаты из B, экструзия плана из C и кликабельная смета из D живут в одной сцене: план поднимается, комната наполняется, предметы остаются интерактивными.</p></div>
-      <div><h3>Это прототипы на чистом HTML</h3><p>Так быстрее итерировать. На Next.js переносятся без потерь: разметка, сцены и анимации переиспользуются, добавится сборка, SSR и оптимизация картинок.</p></div>
-      <div><h3>Контент временный</h3><p>Фотографии — реальные съёмки с текущего сайта. Отзывы, цифры в сметах и портрет основателя — плейсхолдеры, помечены прямо на страницах.</p></div>
+      <div><h3>Готовы к переносу на Next.js</h3><p>Страницы собраны на чистом HTML — так быстрее итерировать. Разметка, сцены и анимации переиспользуются целиком; добавится сборка, серверный рендеринг и оптимизация картинок.</p></div>
+      <div><h3>Единая типографика</h3><p>Golos Text и JetBrains Mono — гарнитуры из айдентики, с открытой лицензией и полной кириллицей. На сайте они будут ровно такими, как в презентации бренда.</p></div>
       <div><h3>Производительность</h3><p>Сцены собраны на примитивах без загрузки моделей, тени только от ключевого света. Уважается системная настройка «уменьшить движение».</p></div>
     </div>
     <div class="links">
@@ -181,7 +189,7 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { createStage, easeOut, pointer, REDUCED } from './design/lib/three-kit.js';
+import { createStage, easeOut, pointer, fitScale, REDUCED } from './design/lib/three-kit.js';
 
 /* Монограмма «K» набирается вокселями в четыре цвета — по одному на каждый вариант. */
 const MASK = [
@@ -252,9 +260,11 @@ if (stage) {
     px += (ptr.x * .9 - px) * Math.min(1, dt * 2.2);
     py += (ptr.y * .5 - py) * Math.min(1, dt * 2.2);
     const drift = REDUCED ? 0 : Math.sin(elapsed * .25) * .35;
-    camera.position.set(1.4 + px + drift, 1.1 - py, 12.8);
-    /* цель левее монограммы — она уходит в правую половину кадра, под текст слева */
-    camera.lookAt(-3.4, .1, 0);
+    /* на телефоне монограмма центрируется и отодвигается, чтобы влезала целиком */
+    const f = fitScale(camera, 1.5, 1.9);
+    const narrow = camera.aspect < 1.1;
+    camera.position.set((narrow ? 0 : 1.4) + px + drift, 1.1 - py, 12.8 * f);
+    camera.lookAt(narrow ? 0 : -3.4, .1, 0);
   });
 
   /* первый кадр рисуем синхронно — иначе до первого rAF заставка пустая */

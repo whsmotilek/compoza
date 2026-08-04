@@ -98,6 +98,20 @@ export function damp(current, target, lambda, dt) {
   return current + (target - current) * (1 - Math.exp(-lambda * dt));
 }
 
+/**
+ * Множитель дистанции камеры для узких экранов.
+ * Кадры подобраны под горизонтальный монитор; на телефоне тот же радиус обрезает сцену
+ * по бокам, потому что горизонтальный угол обзора зависит от соотношения сторон.
+ * Отодвигаем камеру ровно настолько, чтобы сохранить прежний горизонтальный охват.
+ */
+export function fitScale(camera, baseAspect = 1.6, max = 2.4) {
+  const a = camera.aspect || 1;
+  return a >= baseAspect ? 1 : Math.min(max, baseAspect / a);
+}
+
+/** true, если экран узкий — для смены композиции, а не только дистанции. */
+export const isNarrow = () => matchMedia('(max-width: 860px)').matches;
+
 /** Нормализованное положение курсора в диапазоне -1..1. Возвращает объект, который сам обновляется. */
 export function pointer(el = window) {
   const p = { x: 0, y: 0 };

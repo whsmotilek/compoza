@@ -7,7 +7,7 @@
 <meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Готовим квартиру к аренде и продаже под ключ: концепция, смета со ссылками, закупка, сборка, фотосессия.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#FFFFFF;
@@ -16,8 +16,8 @@
   --coral:#FF9775;
   --muted:#8A8078;
   --line:rgba(0,0,0,.13);
-  --sans:'Inter Tight', system-ui, sans-serif;
-  --serif:'PT Serif', Georgia, serif;
+  --sans:'Golos Text', system-ui, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
   --gut:clamp(20px, 4.2vw, 76px);
   --e:cubic-bezier(.22,1,.36,1);
 }
@@ -68,7 +68,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
   background:rgba(255,255,255,.78);padding:5px 10px}
 .hero-cap b{font-weight:600;color:var(--coral);font-variant-numeric:tabular-nums}
 @media(max-width:959px){.hero-3d{order:-1}}
-.hero h1 .ser{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.02em}
+.hero h1 .ser{color:var(--coral)}
 .hero-meta{display:flex;gap:clamp(20px,4vw,60px);flex-wrap:wrap;align-items:flex-start;
   border-top:1px solid var(--line);padding-top:20px}
 .hero-meta p{max-width:38ch;color:var(--muted);font-size:15px}
@@ -93,7 +93,8 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
 }
 .manifest w{color:rgba(0,0,0,.14);transition:color .5s var(--e)}
 .manifest w.on{color:var(--ink)}
-.manifest .em{font-family:var(--serif);font-style:italic;font-weight:400}
+.manifest .em{color:var(--coral)}
+.manifest w.on .em,.manifest .em{transition:color .5s var(--e)}
 
 /* ---------- услуги ---------- */
 .svc{display:grid;gap:2px;grid-template-columns:1fr}
@@ -131,7 +132,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
 .step{padding:clamp(26px,4vh,48px) 0;border-top:1px solid var(--line);display:grid;grid-template-columns:56px 1fr;gap:18px;
   opacity:.32;transition:opacity .5s var(--e)}
 .step.on{opacity:1}
-.step .n{font-family:var(--serif);font-size:15px;color:var(--coral)}
+.step .n{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--coral)}
 .step h4{font-size:clamp(19px,2.1vw,28px);letter-spacing:-.02em;font-weight:600;margin-bottom:6px}
 .step p{color:var(--muted);font-size:14.5px;max-width:44ch}
 
@@ -140,7 +141,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
   background:var(--greige);padding:clamp(32px,5vw,80px)}
 @media(min-width:900px){.founder{grid-template-columns:.72fr 1.28fr}}
 .founder .shot{aspect-ratio:3/4}
-.founder blockquote{margin:0;font-family:var(--serif);font-size:clamp(20px,2.7vw,38px);line-height:1.28;letter-spacing:-.015em}
+.founder blockquote{margin:0;font-size:clamp(20px,2.7vw,36px);line-height:1.25;letter-spacing:-.025em;font-weight:500}
 .founder cite{display:block;margin-top:22px;font-family:var(--sans);font-style:normal;font-size:13px;color:var(--muted)}
 
 /* ---------- цифры ---------- */
@@ -152,7 +153,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
 /* ---------- отзывы ---------- */
 .revs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--line)}
 .revs article{background:var(--bg);padding:clamp(24px,2.8vw,44px);display:grid;gap:18px;align-content:space-between}
-.revs p{font-family:var(--serif);font-size:clamp(16px,1.5vw,21px);line-height:1.42}
+.revs p{font-size:clamp(15.5px,1.4vw,19px);line-height:1.5}
 .revs footer{font-size:12.5px;color:var(--muted)}
 .revs footer b{display:block;color:var(--ink);font-weight:600;font-family:var(--sans)}
 
@@ -168,7 +169,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
 /* ---------- CTA / футер ---------- */
 .cta-band{background:var(--coral);padding:clamp(56px,10vh,130px) var(--gut);display:grid;gap:26px;justify-items:start}
 .cta-band h2{font-size:clamp(30px,5.6vw,84px);letter-spacing:-.05em;line-height:.96;font-weight:800;max-width:14ch}
-.cta-band .ser{font-family:var(--serif);font-style:italic;font-weight:400}
+.cta-band .ser{color:var(--bg)}
 .btn{display:inline-flex;align-items:center;gap:12px;background:var(--coral);color:var(--ink);text-decoration:none;
   padding:17px 30px;font-weight:600;font-size:15px;transition:transform .35s var(--e),gap .35s var(--e)}
 .btn:hover{transform:translateY(-3px);gap:20px}
@@ -191,8 +192,9 @@ footer.site a:hover{color:var(--ink)}
   .pin{opacity:1!important}
 }
 /* бейдж варианта */
-.vbadge{position:fixed;z-index:200;left:var(--gut);bottom:18px;background:var(--ink);color:#fff;
-  font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px;text-decoration:none}
+.verline{padding:16px var(--gut) 34px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.verline a{color:var(--muted);text-decoration:none}
+.verline a:hover{color:var(--coral)}
 </style>
 </head>
 <body>
@@ -335,7 +337,6 @@ footer.site a:hover{color:var(--ink)}
       <article><p>«Заехали в полностью готовую квартиру: от штор до посуды. Больше всего ценю честную смету — ни одной неожиданной траты за весь проект.»</p><footer><b>Анна</b>Мосфильмовская, для жизни</footer></article>
       <article><p>«Работали онлайн из другого города. Согласовывали всё по коллажам, приехали уже в собранное пространство.»</p><footer><b>Ольга</b>Удалённый проект</footer></article>
     </div>
-    <p class="tag" style="margin-top:14px">Отзывы — плейсхолдеры, заменим на настоящие</p>
   </section>
 
   <section class="wrap faq" style="padding-bottom:clamp(70px,12vh,150px)">
@@ -361,8 +362,6 @@ footer.site a:hover{color:var(--ink)}
   <div><div class="sec-lbl">Разделы</div><a href="#projects">Проекты</a><a href="#services">Услуги</a><a href="#process">Как работаем</a><a href="#founder">О студии</a></div>
   <div><div class="sec-lbl">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a><a href="#">Instagram</a></div>
 </footer>
-
-<a class="vbadge" href="../index.html">← Вариант A · коралл</a>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -476,7 +475,7 @@ rail.addEventListener('wheel', e=>{
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { createStage, addLights, BRAND, easeOut, stagger, pointer, REDUCED } from './lib/three-kit.js';
+import { createStage, addLights, BRAND, easeOut, stagger, pointer, fitScale, REDUCED } from './lib/three-kit.js';
 
 const canvas = document.getElementById('heroScene');
 const stage = createStage(canvas, { fov: 32 });
@@ -579,8 +578,10 @@ if (!stage) {
     /* камера подъезжает по мере сборки + мягкий параллакс за курсором */
     camX += (ptr.x * .5 - camX) * Math.min(1, dt * 3);
     camY += (ptr.y * .3 - camY) * Math.min(1, dt * 3);
-    const z = 8.6 - progress * 1.6;
-    camera.position.set(3.9 - progress * .7 + camX, 3.5 - progress * .9 - camY, z);
+    /* на узком кадре отодвигаем камеру, иначе композиция срезается по бокам */
+    const f = fitScale(camera, 1.15, 1.7);
+    const z = (8.6 - progress * 1.6) * f;
+    camera.position.set((3.9 - progress * .7) * f + camX, (3.5 - progress * .9) * Math.min(f, 1.3) - camY, z);
     camera.lookAt(0, .85 - progress * .3, 0);
   });
 
@@ -601,5 +602,7 @@ if (!stage) {
   }
 }
 </script>
+<div class="verline"><a href="../index.html">← Все версии сайта</a></div>
+
 </body>
 </html>

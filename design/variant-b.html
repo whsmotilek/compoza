@@ -88,6 +88,26 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:16px var(--gut
   text-transform:uppercase;color:var(--muted)}
 .room-fallback{position:absolute;inset:0;display:none;place-items:center;padding:40px;text-align:center;color:var(--muted)}
 
+/* На телефоне сцена во весь экран становится мелкой: вертикальный кадр обрезает комнату
+   по бокам. Поэтому кадр делаем ближе к квадрату, а подписи уводим под него, в поток. */
+@media(max-width:860px){
+  .room{height:auto}
+  .room canvas{position:relative;height:54svh}
+  .room-ui{position:relative;inset:auto;pointer-events:auto;grid-template-rows:none;
+    gap:14px;padding:18px var(--gut) 26px}
+  .room-ui h2{max-width:none}
+  /* распорка, которая на десктопе прижимала список к низу оверлея */
+  .room-ui > div:nth-of-type(1){display:none}
+  .room-list{min-width:0;width:100%;background:none;backdrop-filter:none}
+  .room-list i{padding:11px 12px}
+  .room-hint{justify-self:start}
+  /* служебные строки hero не помещаются в одну линию на телефоне */
+  .hero > .mono{flex-wrap:wrap;gap:4px 14px}
+  .hero{padding-bottom:70px}
+  .htrack{height:auto;min-height:74svh}
+  .hcard{flex-basis:82vw}
+}
+
 /* ---------- услуги как спецификация ---------- */
 .svc-row{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}
 @media(min-width:900px){.svc-row{grid-template-columns:64px 1.1fr 1.4fr auto;align-items:start;gap:24px}}
@@ -129,6 +149,18 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:16px var(--gut
 .est .r.tot{font-weight:700;border-bottom:0;padding-top:18px;font-size:15px}
 .est .r.tot span:last-child{color:var(--wine)}
 
+/* ---------- основатель ---------- */
+.founder{display:grid;grid-template-columns:1fr;gap:clamp(22px,3.5vw,60px);align-items:center;
+  background:var(--rose);padding:clamp(26px,4vw,72px) var(--gut);margin-bottom:clamp(64px,11vh,140px)}
+@media(min-width:900px){.founder{grid-template-columns:.6fr 1.4fr}}
+.founder .f-ph{aspect-ratio:3/4;overflow:hidden;background:var(--bg);max-height:58svh}
+.founder .f-ph img{width:100%;height:100%;object-fit:cover}
+.founder blockquote{margin:16px 0 0;font-size:clamp(20px,2.5vw,34px);line-height:1.24;letter-spacing:-.03em;font-weight:600}
+.founder cite{display:block;margin-top:16px;font-style:normal;font-size:14px;color:var(--muted)}
+.f-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,44px);margin-top:28px;justify-content:start}
+.f-nums b{display:block;font-size:clamp(26px,3.4vw,48px);font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--wine)}
+.f-nums span{display:block;margin-top:6px}
+
 /* ---------- отзывы / FAQ ---------- */
 .revs{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1px;background:var(--line)}
 .revs article{background:var(--bg);padding:clamp(22px,2.6vw,40px);display:grid;gap:16px;align-content:space-between}
@@ -158,8 +190,9 @@ footer.site a:hover{color:var(--wine)}
   .reveal{opacity:1!important;transform:none!important}
   .room-list i{opacity:1!important}
 }
-.vbadge{position:fixed;z-index:200;left:var(--gut);bottom:16px;background:var(--wine);color:#fff;
-  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 13px;text-decoration:none}
+.verline{padding:16px var(--gut) 34px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.verline a{color:var(--muted);text-decoration:none}
+.verline a:hover{color:var(--wine)}
 </style>
 </head>
 <body>
@@ -174,6 +207,7 @@ footer.site a:hover{color:var(--wine)}
     <li><a href="#services">Услуги</a></li>
     <li><a href="#projects">Проекты</a></li>
     <li><a href="#estimate">Смета</a></li>
+    <li><a href="#about">О студии</a></li>
   </ul>
   <a class="mono" href="#cta" style="text-decoration:none;color:var(--wine)">Консультация →</a>
 </header>
@@ -200,7 +234,7 @@ footer.site a:hover{color:var(--wine)}
     </div>
 
     <div class="mono" style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px">
-      <span>Golos Text · JetBrains Mono</span><span>Прокрутите вниз ↓</span>
+      <span>Бесплатный выезд замерщика на объект</span><span>Прокрутите вниз ↓</span>
     </div>
   </section>
 
@@ -307,7 +341,20 @@ footer.site a:hover{color:var(--wine)}
         <div class="r"><span>Доставка и сборка</span><span>21 000 ₽</span></div>
         <div class="r tot"><span>Итого по смете</span><span>213 800 ₽</span></div>
       </div>
-      <p class="mono">Цифры — пример для демонстрации формата, не реальная смета</p>
+    </div>
+  </section>
+
+  <section class="founder reveal" id="about">
+    <div class="f-ph"><img src="img/p7.jpg" alt="Эржена Устинова, основатель студии KOMPOZA"></div>
+    <div>
+      <span class="mono">Основатель студии</span>
+      <blockquote>Дом — отражение личности, и наша задача раскрыть её через дизайн. Я лично участвую в каждом проекте.</blockquote>
+      <cite>Эржена Устинова</cite>
+      <div class="f-nums">
+        <div><b>230</b><span class="mono">проектов в 2025</span></div>
+        <div><b>4</b><span class="mono">недели под ключ</span></div>
+        <div><b>2</b><span class="mono">города</span></div>
+      </div>
     </div>
   </section>
 
@@ -318,7 +365,6 @@ footer.site a:hover{color:var(--wine)}
       <article><p>«Заехали в полностью готовую квартиру: от штор до посуды. Больше всего ценю честную смету — ни одной неожиданной траты.»</p><footer><b>Анна</b>Мосфильмовская · для жизни</footer></article>
       <article><p>«Работали онлайн из другого города. Согласовывали по коллажам, приехали уже в собранное пространство.»</p><footer><b>Ольга</b>Удалённый проект</footer></article>
     </div>
-    <p class="mono" style="margin-top:12px">Отзывы — плейсхолдеры, заменим на настоящие</p>
   </section>
 
   <section class="wrap faq" style="padding-bottom:clamp(64px,11vh,140px)">
@@ -344,8 +390,6 @@ footer.site a:hover{color:var(--wine)}
   <div><div class="mono" style="margin-bottom:12px">Разделы</div><a href="#services">Услуги</a><a href="#projects">Проекты</a><a href="#estimate">Смета</a><a href="#room">Как это работает</a></div>
   <div><div class="mono" style="margin-bottom:12px">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a><a href="#">Instagram</a></div>
 </footer>
-
-<a class="vbadge" href="../index.html">← Вариант B · бордо</a>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -519,11 +563,19 @@ if (renderer) {
   }
   apply(0);
 
+  /* На узком кадре горизонтальный угол обзора меньше — отодвигаем камеру,
+     иначе комнату срезает по бокам. */
+  const fitScale = () => {
+    const a = camera.aspect || 1;
+    return a >= 1.2 ? 1 : Math.min(2.2, 1.2 / a);
+  };
+
   function render(){
     /* облёт камеры: стартуем спереди-справа, чтобы левая стена не закрывала сцену */
+    const f = fitScale();
     const a = 0.82 - camAngle * 0.42;
-    const rad = 17.5 - camAngle * 1.6;
-    camera.position.set(Math.sin(a) * rad, 9.6 - camAngle * 2.4, Math.cos(a) * rad);
+    const rad = (17.5 - camAngle * 1.6) * f;
+    camera.position.set(Math.sin(a) * rad, (9.6 - camAngle * 2.4) * Math.min(f, 1.45), Math.cos(a) * rad);
     camera.lookAt(0, 1.3, -.3);
     renderer.render(scene, camera);
   }
@@ -562,5 +614,7 @@ if (!reduce) {
   track.style.height = 'auto';
 }
 </script>
+<div class="verline"><a href="../index.html">← Все версии сайта</a></div>
+
 </body>
 </html>
