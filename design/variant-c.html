@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOMPOZA — из плана в пространство</title>
+<meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Превращаем планировку в готовое к сдаче пространство: концепция, смета, закупка, сборка, фотосессия.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0B0C; --panel:#141416; --ink:#F3EFEC; --muted:#8A8078;
+  --coral:#FF9775; --greige:#EDE6E2;
+  --line:rgba(243,239,236,.14);
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --gut:clamp(18px,3.8vw,68px);
+  --e:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit}
+.wrap{padding-inline:var(--gut)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- прелоадер: чертёжная рамка ---------- */
+#pre{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-items:center}
+#pre .fr{width:min(46vw,340px);aspect-ratio:5/4;border:1px solid var(--coral);position:relative}
+#pre .fr::before,#pre .fr::after{content:"";position:absolute;background:var(--coral)}
+#pre .fr::before{left:0;right:0;top:50%;height:1px;transform:scaleX(0);transform-origin:left}
+#pre .fr::after{top:0;bottom:0;left:38%;width:1px;transform:scaleY(0);transform-origin:top}
+#pre .lbl{position:absolute;bottom:8vh;left:0;right:0;text-align:center}
+
+/* ---------- шапка ---------- */
+header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:16px var(--gut);
+  display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);
+  background:rgba(11,11,12,.72);backdrop-filter:blur(14px)}
+.nav .logo{font-weight:800;letter-spacing:-.05em;font-size:20px}
+.nav ul{display:flex;gap:24px;list-style:none;margin:0;padding:0}
+.nav ul a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
+.nav ul a:hover{color:var(--ink)}
+@media(max-width:860px){.nav ul{display:none}}
+
+/* ---------- HERO со сценой на фоне ---------- */
+.hero{position:relative;min-height:100svh;overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .fb{position:absolute;inset:0;display:none;place-items:center;color:var(--muted);padding:32px;text-align:center}
+.hero-ui{position:relative;z-index:2;min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;
+  padding:104px var(--gut) 30px;gap:22px;pointer-events:none}
+.hero-ui a,.hero-ui button{pointer-events:auto}
+.hero h1{font-size:clamp(38px,7.4vw,116px);line-height:.92;letter-spacing:-.055em;font-weight:800;max-width:11ch;
+  text-shadow:0 2px 40px rgba(11,11,12,.8)}
+.hero h1 em{font-style:normal;color:var(--coral)}
+.hero .lede{color:var(--muted);max-width:40ch;font-size:15px;margin-top:20px}
+.hero-mid{align-content:center;display:grid}
+.hero-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;
+  border-top:1px solid var(--line);padding-top:16px}
+
+/* индикатор фаз */
+.phases{display:flex;gap:2px;min-width:min(420px,80vw)}
+.phases i{flex:1;font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:8px 6px;border-top:2px solid var(--line);color:var(--muted);transition:color .4s var(--e),border-color .4s var(--e)}
+.phases i.on{color:var(--ink);border-color:var(--coral)}
+
+.btn{display:inline-flex;align-items:center;gap:11px;background:var(--coral);color:#000;text-decoration:none;
+  padding:16px 28px;font-weight:600;font-size:15px;transition:transform .3s var(--e),gap .3s var(--e)}
+.btn:hover{transform:translateY(-3px);gap:19px}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+/* ---------- секции ---------- */
+.sec{padding-block:clamp(60px,11vh,140px)}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.sec-h h2{font-size:clamp(26px,3.6vw,54px);letter-spacing:-.045em;font-weight:700}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line)}
+.cards article{background:var(--panel);padding:clamp(22px,2.8vw,40px);display:grid;gap:16px;align-content:start;
+  transition:background .4s var(--e)}
+.cards article:hover{background:#1B1B1E}
+.cards .idx{font-family:var(--mono);font-size:11px;color:var(--coral);letter-spacing:.12em}
+.cards h3{font-size:clamp(19px,2.1vw,26px);font-weight:600;letter-spacing:-.025em;line-height:1.08}
+.cards p{color:var(--muted);font-size:14.5px}
+.cards .p{font-family:var(--mono);font-size:14px;color:var(--ink)}
+
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line)}
+.gal a{background:var(--bg);text-decoration:none;display:block}
+.gal .ph{aspect-ratio:3/4;overflow:hidden;position:relative;background:var(--panel)}
+.gal .ph img{width:100%;height:100%;object-fit:cover;filter:grayscale(.35) contrast(1.05);transition:filter .7s var(--e),transform .9s var(--e)}
+.gal a:hover .ph img{filter:none;transform:scale(1.05)}
+.gal .m{padding:14px 4px 22px;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.gal b{font-weight:600}
+
+.cta-band{background:var(--coral);color:#000;padding:clamp(50px,9vh,124px) var(--gut);display:grid;gap:24px;justify-items:start}
+.cta-band h2{font-size:clamp(28px,5.4vw,80px);letter-spacing:-.05em;line-height:.98;font-weight:800;max-width:14ch}
+.cta-band .btn{background:#000;color:var(--coral)}
+footer.site{padding:clamp(32px,5vh,70px) var(--gut) 40px;display:grid;gap:24px;grid-template-columns:1fr;border-top:1px solid var(--line)}
+@media(min-width:820px){footer.site{grid-template-columns:1.4fr 1fr 1fr}}
+footer.site a{text-decoration:none;color:var(--muted);font-size:14px;display:block;padding:3px 0}
+footer.site a:hover{color:var(--coral)}
+
+.reveal{opacity:0;transform:translateY(28px)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .phases i{color:var(--ink)!important}
+}
+.vbadge{position:fixed;z-index:200;left:var(--gut);bottom:16px;background:var(--coral);color:#000;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 13px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div id="pre"><div class="fr"></div><div class="lbl mono">Планировка · загрузка</div></div>
+
+<header class="nav">
+  <div class="logo">KOMPOZA</div>
+  <ul>
+    <li><a href="#svc">Услуги</a></li>
+    <li><a href="#work">Проекты</a></li>
+    <li><a href="#cta">Контакты</a></li>
+  </ul>
+  <a class="mono" href="#cta" style="text-decoration:none;color:var(--coral)">Консультация →</a>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <canvas id="planScene"></canvas>
+    <div class="fb" id="planFallback">3D-сцена недоступна в этом браузере.</div>
+
+    <div class="hero-ui">
+      <div class="mono" style="display:flex;justify-content:space-between">
+        <span>Хоумстейджинг &amp; дизайн интерьеров</span><span>Москва · Санкт-Петербург</span>
+      </div>
+
+      <div class="hero-mid">
+        <h1>Из плана —<br>в <em>пространство</em></h1>
+        <p class="lede">Вы отдаёте нам планировку и бюджет. Забираете квартиру, готовую к показам: с мебелью, светом, текстилем и профессиональной съёмкой.</p>
+        <div style="margin-top:26px"><a class="btn" href="#cta">Бесплатный выезд на объект <span aria-hidden="true">→</span></a></div>
+      </div>
+
+      <div class="hero-foot">
+        <div class="phases" id="phases">
+          <i data-p="0">Обмер</i><i data-p="1">Стены</i><i data-p="2">Зонирование</i><i data-p="3">Комплектация</i>
+        </div>
+        <span class="mono">Скролл поднимает план ↓</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="svc">
+    <div class="sec-h reveal"><h2>Два формата</h2><span class="mono">Спецификация</span></div>
+    <div class="cards reveal">
+      <article>
+        <span class="idx">[01]</span>
+        <h3>Хоумстейджинг для аренды</h3>
+        <p>Квартира с отделкой от застройщика превращается в объект, который сдаётся с первых показов. Планировка, коллажи, смета, закупка, сборка, декор и съёмка.</p>
+        <span class="p">от 250 000 ₽</span>
+      </article>
+      <article>
+        <span class="idx">[02]</span>
+        <h3>Редизайн без ремонта</h3>
+        <p>Подготовка малыми средствами: декор, текстиль, свет, перестановка. Аудит квартиры и объявления, список покупок со ссылками, стилизация и фотосессия.</p>
+        <span class="p">от 120 000 ₽</span>
+      </article>
+      <article>
+        <span class="idx">[03]</span>
+        <h3>Что вы получаете</h3>
+        <p>Смету со ссылками на каждый предмет, согласованную до закупки. Фотографии остаются вашими — для объявления и соцсетей.</p>
+        <span class="p">230 проектов в 2025</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="work" style="padding-top:0">
+    <div class="sec-h reveal"><h2>Проекты</h2><span class="mono">2024 — 2025</span></div>
+    <div class="gal reveal">
+      <a href="#"><div class="ph"><img src="img/p2.jpg" alt="Гостиная, Мосфильмовская"></div>
+        <div class="m"><b>Мосфильмовская</b><span class="mono">78 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p5.jpg" alt="Гостиная, ЖК Зиларт"></div>
+        <div class="m"><b>Зиларт</b><span class="mono">28 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p3.jpg" alt="Рабочее место, Люблинский парк"></div>
+        <div class="m"><b>Люблинский парк</b><span class="mono">42 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p4.jpg" alt="Хозяйственная зона, Хамовники"></div>
+        <div class="m"><b>Хамовники</b><span class="mono">33 м²</span></div></a>
+    </div>
+  </section>
+</main>
+
+<section id="cta" class="cta-band">
+  <span class="mono" style="color:rgba(0,0,0,.6)">Первый шаг бесплатный</span>
+  <h2>Покажите план — вернём пространство</h2>
+  <a class="btn" href="#">Оставить заявку <span aria-hidden="true">→</span></a>
+</section>
+
+<footer class="site">
+  <div>
+    <div class="logo" style="font-weight:800;letter-spacing:-.05em;font-size:22px">KOMPOZA</div>
+    <p style="color:var(--muted);font-size:14px;max-width:34ch;margin-top:10px">Хоумстейджинг и дизайн интерьеров. Москва и Санкт-Петербург.</p>
+  </div>
+  <div><div class="mono" style="margin-bottom:12px">Разделы</div><a href="#svc">Услуги</a><a href="#work">Проекты</a></div>
+  <div><div class="mono" style="margin-bottom:12px">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a></div>
+</footer>
+
+<a class="vbadge" href="../index.html">← Вариант C · чертёж</a>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { createStage, addLights, BRAND, easeOut, pointer, REDUCED } from './lib/three-kit.js';
+
+gsap.registerPlugin(ScrollTrigger);
+
+if (!REDUCED) {
+  const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* прелоадер: чертёжные оси прочерчиваются */
+if (REDUCED) document.getElementById('pre').style.display = 'none';
+else {
+  gsap.timeline()
+    .to('#pre .fr', { '--x': 1, duration: .01 })
+    .fromTo('#pre .fr', { scale: .9, opacity: 0 }, { scale: 1, opacity: 1, duration: .6, ease: 'power2.out' })
+    .to('#pre .lbl', { opacity: .5, duration: .4 }, '-=.3')
+    .to('#pre', { opacity: 0, duration: .6, ease: 'power2.inOut' }, '+=.35')
+    .set('#pre', { display: 'none' });
+}
+
+/* ================= сцена: план поднимается в объём ================= */
+const canvas = document.getElementById('planScene');
+const stage = createStage(canvas, { fov: 36, bg: 0x0B0B0C });
+
+if (!stage) {
+  document.getElementById('planFallback').style.display = 'grid';
+  canvas.style.display = 'none';
+} else {
+  const { scene, camera, box, mat } = stage;
+  scene.fog = new THREE.Fog(0x0B0B0C, 18, 46);
+
+  scene.add(new THREE.HemisphereLight(0xBFD4FF, 0x140F0E, .55));
+  const key = new THREE.DirectionalLight(0xFFF0E6, 2.1);
+  key.position.set(7, 12, 6); key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  Object.assign(key.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: .5, far: 44 });
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0xFF9775, .8);
+  rim.position.set(-8, 4, -7);
+  scene.add(rim);
+
+  /* пол-плита */
+  const slab = new THREE.Mesh(box(11.4, .18, 9.4), mat(0x1A1A1D, .95));
+  slab.position.y = -.09; slab.receiveShadow = true;
+  scene.add(slab);
+
+  /* чертёжная сетка, гаснет по мере роста стен */
+  const grid = new THREE.GridHelper(11.4, 22, 0xFF9775, 0x3A3330);
+  grid.position.y = .012;
+  grid.material.transparent = true;
+  scene.add(grid);
+
+  /* стены: [центр X, центр Z, ширина, глубина, доля высоты]
+     передние подняты лишь частично — «разрез», как на архитектурном макете,
+     иначе они закрывают интерьер от камеры */
+  const H = 2.7;
+  const WALLS = [
+    [0, -4.5, 11, .18, 1],      // задняя
+    [-5.5, 0, .18, 9, 1],       // левая
+    [5.5, 0, .18, 9, .34],      // правая — к зрителю, срезаем
+    [-4, 4.5, 3.4, .18, .3],    // передняя, левый отрезок
+    [3.4, 4.5, 4.6, .18, .3],   // передняя, правый отрезок (между ними — вход)
+    [1.4, -1.8, .18, 5.4, 1],   // перегородка спальни
+    [3.6, .9, 4, .18, .75],     // перегородка санузла
+  ];
+
+  const wallMat = mat(0x2C2A2C, .92);
+  const walls = WALLS.map(([x, z, w, d, k = 1]) => {
+    const m = new THREE.Mesh(box(w, H * k, d), wallMat.clone());
+    m.userData.h = H * k;
+    m.position.set(x, 0, z);
+    m.castShadow = true; m.receiveShadow = true;
+    scene.add(m);
+    return m;
+  });
+
+  /* тёплый свет внутри — включается вместе с мебелью */
+  const lamp = new THREE.PointLight(0xFFC79A, 0, 14, 2);
+  lamp.position.set(-2.2, 1.9, -.6);
+  scene.add(lamp);
+
+  /* мебель появляется в последней фазе */
+  const soft = (w, d, color) => {
+    const g = new THREE.Group(), m = mat(color, .93);
+    const seat = new THREE.Mesh(box(w, .42, d), m); seat.position.y = .21;
+    const back = new THREE.Mesh(box(w, .58, .22), m); back.position.set(0, .62, -d / 2 + .11);
+    [seat, back].forEach(p => { p.castShadow = true; g.add(p); });
+    return g;
+  };
+  const FURN = [
+    { o: soft(3.2, 1.4, BRAND.coral),  p: [-2.4, 0, -2.2], r: 0 },
+    { o: soft(1.1, 1.0, BRAND.greige), p: [-4.2, 0, 1.4],  r: .6 },
+    { o: new THREE.Mesh(box(4.4, .04, 3), mat(0x413A38, .96)), p: [-2.6, .04, -.4], r: 0 },
+    { o: new THREE.Mesh(box(1.3, .38, .8), mat(BRAND.oak, .7)), p: [-2.4, .19, -.3], r: 0 },
+    { o: new THREE.Mesh(box(1.2, 2.1, .6), mat(0xE8E2DE, .85)), p: [3.2, 1.05, -3.6], r: 0 },
+    { o: new THREE.Mesh(box(2.4, .9, 1.7), mat(0xE8E2DE, .85)), p: [3.4, .45, -1.2], r: 0 },
+  ];
+  FURN.forEach(f => {
+    f.o.position.set(f.p[0], f.p[1], f.p[2]);
+    f.o.rotation.y = f.r;
+    f.o.traverse(n => { if (n.isMesh) n.castShadow = true; });
+    f.o.visible = false;
+    scene.add(f.o);
+  });
+
+  const phaseEls = [...document.querySelectorAll('#phases i')];
+  const ptr = pointer();
+  let progress = 0, px = 0, py = 0;
+
+  function apply(p) {
+    /* фаза 1: стены поднимаются (0 → .55), фаза 2: мебель (.6 → 1) */
+    const wallsT = easeOut(p / .55);
+    walls.forEach((w, i) => {
+      const local = easeOut(Math.min(1, Math.max(0, (p / .55) * walls.length - i * .35)));
+      const s = Math.max(.004, local);
+      w.scale.y = s;
+      w.position.y = (w.userData.h * s) / 2;
+      w.material.emissive.setHex(0xFF9775);
+      w.material.emissiveIntensity = (1 - local) * .55;
+    });
+
+    grid.material.opacity = Math.max(0, 1 - wallsT * 1.25);
+
+    const furnT = (p - .6) / .4;
+    FURN.forEach((f, i) => {
+      const local = easeOut(Math.min(1, Math.max(0, furnT * FURN.length - i * .5)));
+      f.o.visible = local > 0;
+      f.o.scale.setScalar(Math.max(.001, local));
+      f.o.position.y = f.p[1] + (1 - local) * 2.4;
+    });
+
+    lamp.intensity = Math.max(0, Math.min(1, furnT)) * 26;
+
+    const phase = p < .12 ? 0 : p < .5 ? 1 : p < .72 ? 2 : 3;
+    phaseEls.forEach((el, i) => el.classList.toggle('on', i <= phase));
+  }
+
+  let last = performance.now();
+  stage.onTick(() => {
+    const now = performance.now(), dt = Math.min((now - last) / 1000, .05); last = now;
+    apply(progress);
+    px += (ptr.x * .6 - px) * Math.min(1, dt * 2.5);
+    py += (ptr.y * .35 - py) * Math.min(1, dt * 2.5);
+    /* камера: вид сверху (план) → перспектива в интерьере */
+    const t = easeOut(progress);
+    const y = 17.5 - t * 11.8;
+    const z = .6 + t * 11.2;
+    const x = t * 8.6;
+    camera.position.set(x + px, y - py, z);
+    /* цель смещена влево от центра — композиция уходит вправо, освобождая место под заголовок */
+    camera.lookAt(-1.1 - t * .9, .3 + t * .8, -.4);
+  });
+
+  gsap.ticker.add(stage.render);
+  /* первый кадр рисуем синхронно — иначе до первого rAF сцена пустая */
+  stage.resize(); stage.render();
+  window.__plan = { set(p) { progress = p; apply(p); stage.render(); } };
+
+  if (REDUCED) { progress = 1; apply(1); }
+  else {
+    ScrollTrigger.create({
+      trigger: '#hero', start: 'top top', end: () => '+=' + innerHeight * 2.4,
+      pin: true, scrub: 1, invalidateOnRefresh: true,
+      onUpdate: s => { progress = s.progress; }
+    });
+  }
+}
+
+/* появление секций */
+gsap.set('.reveal', { opacity: 0, y: 28 });
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.to(el, { opacity: 1, y: 0, duration: .85, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 88%' } });
+});
+</script>
+</body>
+</html>

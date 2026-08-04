@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOMPOZA — Важна каждая деталь</title>
+<meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Готовим квартиру к аренде и продаже под ключ: концепция, смета со ссылками, закупка, сборка, фотосессия.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --greige:#EDE6E2;
+  --ink:#000000;
+  --coral:#FF9775;
+  --muted:#8A8078;
+  --line:rgba(0,0,0,.13);
+  --sans:'Inter Tight', system-ui, sans-serif;
+  --serif:'PT Serif', Georgia, serif;
+  --gut:clamp(20px, 4.2vw, 76px);
+  --e:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit}
+.wrap{padding-inline:var(--gut)}
+
+/* ---------- прелоадер: коралловые детали собираются ---------- */
+#pre{position:fixed;inset:0;z-index:999;background:var(--bg);display:grid;place-items:center}
+#pre .bars{display:flex;gap:6px;align-items:flex-end;height:88px}
+#pre .bars i{display:block;width:16px;height:16px;background:var(--coral);transform-origin:bottom}
+#pre .lbl{position:absolute;bottom:8vh;left:0;right:0;text-align:center;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- шапка ---------- */
+header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut);
+  display:flex;justify-content:space-between;align-items:center;mix-blend-mode:difference;color:#fff}
+.nav .logo{font-weight:800;letter-spacing:-.05em;font-size:21px}
+.nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:13px}
+.nav a{text-decoration:none;opacity:.85}
+.nav a:hover{opacity:1}
+@media(max-width:760px){ .nav ul{display:none} }
+
+/* ---------- HERO ---------- */
+.hero{min-height:100svh;display:grid;padding:112px var(--gut) 36px;gap:clamp(16px,3vw,48px);
+  grid-template-columns:1fr;align-content:center;position:relative}
+@media(min-width:960px){.hero{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);align-items:center}}
+.hero-top{display:grid;gap:clamp(18px,2.4vw,34px);align-content:center;position:relative;z-index:2}
+.hero h1{
+  font-size:clamp(40px,6.4vw,96px);line-height:.92;letter-spacing:-.05em;font-weight:800;
+  max-width:9ch;
+}
+/* сцена «композиция из деталей» */
+.hero-3d{position:relative;min-height:clamp(300px,46svh,620px);height:100%}
+.hero-3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-3d .fb{position:absolute;inset:0;display:none;place-items:center;text-align:center;
+  color:var(--muted);font-size:14px;padding:24px;background:var(--greige)}
+.hero-cap{position:absolute;left:0;bottom:6px;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center;
+  background:rgba(255,255,255,.78);padding:5px 10px}
+.hero-cap b{font-weight:600;color:var(--coral);font-variant-numeric:tabular-nums}
+@media(max-width:959px){.hero-3d{order:-1}}
+.hero h1 .ser{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.02em}
+.hero-meta{display:flex;gap:clamp(20px,4vw,60px);flex-wrap:wrap;align-items:flex-start;
+  border-top:1px solid var(--line);padding-top:20px}
+.hero-meta p{max-width:38ch;color:var(--muted);font-size:15px}
+.tag{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* фото со «шпильками-деталями» */
+.shot{position:relative;overflow:hidden;background:var(--greige)}
+.shot>img{width:100%;height:100%;object-fit:cover}
+.pin{position:absolute;display:flex;align-items:center;gap:9px;pointer-events:none;opacity:0}
+.pin .dot{width:9px;height:9px;border-radius:50%;background:var(--coral);
+  box-shadow:0 0 0 0 rgba(255,151,117,.7);animation:pulse 2.6s var(--e) infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,151,117,.65)}70%{box-shadow:0 0 0 15px rgba(255,151,117,0)}100%{box-shadow:0 0 0 0 rgba(255,151,117,0)}}
+.pin .lab{background:var(--coral);color:#000;font-size:11px;letter-spacing:.05em;padding:5px 10px;white-space:nowrap;font-weight:600}
+
+/* фото на всю ширину, отдельной полосой под первым экраном */
+.shot-band{margin:0;aspect-ratio:16/9;max-height:88svh}
+
+/* ---------- манифест с подсветкой слов ---------- */
+.manifest{padding:clamp(90px,16vh,190px) 0}
+.manifest p{
+  font-size:clamp(26px,4.6vw,66px);line-height:1.14;letter-spacing:-.035em;font-weight:600;max-width:19ch;
+}
+.manifest w{color:rgba(0,0,0,.14);transition:color .5s var(--e)}
+.manifest w.on{color:var(--ink)}
+.manifest .em{font-family:var(--serif);font-style:italic;font-weight:400}
+
+/* ---------- услуги ---------- */
+.svc{display:grid;gap:2px;grid-template-columns:1fr}
+@media(min-width:900px){.svc{grid-template-columns:1fr 1fr}}
+.svc article{background:var(--greige);padding:clamp(26px,3.4vw,52px);display:grid;gap:20px;align-content:space-between;
+  min-height:clamp(400px,52vh,560px);position:relative;overflow:hidden}
+.svc article:nth-child(2){background:var(--coral)}
+.svc h3{font-size:clamp(24px,2.8vw,40px);letter-spacing:-.03em;font-weight:700;line-height:1.04}
+.svc ul{list-style:none;margin:0;padding:0;font-size:14.5px;color:rgba(0,0,0,.62)}
+.svc li{padding:8px 0;border-top:1px solid rgba(0,0,0,.13)}
+.svc .price{font-size:clamp(26px,3vw,42px);font-weight:700;letter-spacing:-.03em}
+.svc .price small{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:rgba(0,0,0,.5);margin-bottom:2px}
+
+/* ---------- проекты: горизонтальная лента ---------- */
+.rail-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+.rail{display:flex;gap:clamp(12px,1.6vw,26px);overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-bottom:16px;scrollbar-width:thin}
+.rail::-webkit-scrollbar{height:3px}
+.rail::-webkit-scrollbar-thumb{background:var(--coral)}
+.rail figure{margin:0;flex:0 0 clamp(240px,30vw,420px);scroll-snap-align:start}
+.rail .shot{aspect-ratio:3/4}
+.rail .shot img{transition:transform 1.1s var(--e)}
+.rail figure:hover .shot img{transform:scale(1.06)}
+.rail figcaption{display:flex;justify-content:space-between;gap:12px;padding-top:12px;font-size:13px}
+.rail figcaption b{font-weight:600}
+.rail figcaption span{color:var(--muted)}
+
+/* ---------- процесс: липкая колонка ---------- */
+.proc{display:grid;grid-template-columns:1fr;gap:40px;padding:clamp(70px,12vh,150px) 0}
+@media(min-width:960px){.proc{grid-template-columns:.85fr 1.15fr;gap:clamp(30px,5vw,90px)}}
+.proc-sticky{position:sticky;top:14vh;align-self:start}
+.proc-sticky .shot{aspect-ratio:4/5}
+.proc-sticky .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s var(--e)}
+.proc-sticky .shot img.on{opacity:1}
+.step{padding:clamp(26px,4vh,48px) 0;border-top:1px solid var(--line);display:grid;grid-template-columns:56px 1fr;gap:18px;
+  opacity:.32;transition:opacity .5s var(--e)}
+.step.on{opacity:1}
+.step .n{font-family:var(--serif);font-size:15px;color:var(--coral)}
+.step h4{font-size:clamp(19px,2.1vw,28px);letter-spacing:-.02em;font-weight:600;margin-bottom:6px}
+.step p{color:var(--muted);font-size:14.5px;max-width:44ch}
+
+/* ---------- основатель ---------- */
+.founder{display:grid;grid-template-columns:1fr;gap:clamp(24px,4vw,60px);align-items:center;
+  background:var(--greige);padding:clamp(32px,5vw,80px)}
+@media(min-width:900px){.founder{grid-template-columns:.72fr 1.28fr}}
+.founder .shot{aspect-ratio:3/4}
+.founder blockquote{margin:0;font-family:var(--serif);font-size:clamp(20px,2.7vw,38px);line-height:1.28;letter-spacing:-.015em}
+.founder cite{display:block;margin-top:22px;font-family:var(--sans);font-style:normal;font-size:13px;color:var(--muted)}
+
+/* ---------- цифры ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2px;background:var(--line)}
+.stats div{background:var(--bg);padding:clamp(26px,3.4vw,52px) clamp(18px,2vw,32px)}
+.stats b{display:block;font-size:clamp(40px,6.6vw,104px);font-weight:800;letter-spacing:-.055em;line-height:.92}
+.stats small{display:block;margin-top:10px;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- отзывы ---------- */
+.revs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;background:var(--line)}
+.revs article{background:var(--bg);padding:clamp(24px,2.8vw,44px);display:grid;gap:18px;align-content:space-between}
+.revs p{font-family:var(--serif);font-size:clamp(16px,1.5vw,21px);line-height:1.42}
+.revs footer{font-size:12.5px;color:var(--muted)}
+.revs footer b{display:block;color:var(--ink);font-weight:600;font-family:var(--sans)}
+
+/* ---------- FAQ ---------- */
+.faq details{border-top:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:clamp(18px,2.4vh,30px) 0;display:flex;justify-content:space-between;
+  gap:20px;font-size:clamp(17px,1.9vw,26px);font-weight:600;letter-spacing:-.02em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--coral);font-weight:400;transition:transform .4s var(--e)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq .a{padding:0 0 clamp(18px,2.4vh,30px);color:var(--muted);max-width:62ch;font-size:15px}
+
+/* ---------- CTA / футер ---------- */
+.cta-band{background:var(--coral);padding:clamp(56px,10vh,130px) var(--gut);display:grid;gap:26px;justify-items:start}
+.cta-band h2{font-size:clamp(30px,5.6vw,84px);letter-spacing:-.05em;line-height:.96;font-weight:800;max-width:14ch}
+.cta-band .ser{font-family:var(--serif);font-style:italic;font-weight:400}
+.btn{display:inline-flex;align-items:center;gap:12px;background:var(--coral);color:var(--ink);text-decoration:none;
+  padding:17px 30px;font-weight:600;font-size:15px;transition:transform .35s var(--e),gap .35s var(--e)}
+.btn:hover{transform:translateY(-3px);gap:20px}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+/* внутри коралловой полосы кнопка инвертируется */
+.cta-band .btn{background:var(--ink);color:#fff}
+.cta-band .btn:focus-visible{outline-color:#fff}
+footer.site{padding:clamp(36px,6vh,80px) var(--gut) 40px;display:grid;gap:26px;
+  grid-template-columns:1fr;border-top:1px solid var(--line)}
+@media(min-width:820px){footer.site{grid-template-columns:1.4fr 1fr 1fr}}
+footer.site a{text-decoration:none;color:var(--muted);font-size:14px;display:block;padding:3px 0}
+footer.site a:hover{color:var(--ink)}
+.sec-lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+
+.reveal{opacity:0;transform:translateY(34px)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .manifest w{color:var(--ink)!important}
+  .pin{opacity:1!important}
+}
+/* бейдж варианта */
+.vbadge{position:fixed;z-index:200;left:var(--gut);bottom:18px;background:var(--ink);color:#fff;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div id="pre"><div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lbl">Композиция собирается</div></div>
+
+<header class="nav">
+  <div class="logo">KOMPOZA</div>
+  <ul>
+    <li><a href="#projects">Проекты</a></li>
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#process">Как работаем</a></li>
+    <li><a href="#founder">О студии</a></li>
+  </ul>
+  <a href="#cta" style="text-decoration:none;font-size:13px">Консультация →</a>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="hero-top">
+      <span class="tag">Хоумстейджинг и дизайн интерьеров · Москва и Санкт-Петербург</span>
+      <h1>Важна <span class="ser">каждая</span> деталь</h1>
+      <div class="hero-meta">
+        <p>Готовим квартиру к аренде или продаже под ключ: планировка, смета со ссылками на каждый предмет, закупка, сборка, декор и фотосессия.</p>
+        <a class="btn" href="#cta">Бесплатная консультация <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="hero-3d">
+      <canvas id="heroScene"></canvas>
+      <div class="fb" id="heroFallback">Сцена собирается в 3D — ваш браузер её не поддерживает.</div>
+      <div class="hero-cap"><span>Композиция собрана на</span><b id="asmPct">0%</b></div>
+    </div>
+  </section>
+
+  <figure class="shot shot-band">
+    <img src="img/p1.jpg" alt="Кухня-гостиная с обеденной зоной — проект студии KOMPOZA">
+    <div class="pin" style="left:19%;top:62%"><span class="dot"></span><span class="lab">Стулья — дуб, ткань</span></div>
+    <div class="pin" style="left:47%;top:46%"><span class="dot"></span><span class="lab">Композиция на столе</span></div>
+    <div class="pin" style="left:73%;top:33%"><span class="dot"></span><span class="lab">Свет над островом</span></div>
+  </figure>
+
+  <section class="manifest wrap">
+    <p id="mf">Квартира с отделкой от застройщика становится домом не за счёт ремонта, а за счёт <span class="em">точно подобранных деталей</span>. Мы собираем их так, чтобы объект уходил в аренду с первых показов.</p>
+  </section>
+
+  <section id="services" class="wrap" style="padding-bottom:clamp(70px,12vh,150px)">
+    <div class="rail-head reveal">
+      <h2 style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700">Что мы делаем</h2>
+      <span class="tag">Два формата под разный бюджет</span>
+    </div>
+    <div class="svc">
+      <article class="reveal">
+        <div>
+          <h3>Хоумстейджинг<br>для аренды</h3>
+          <p style="margin-top:14px;color:rgba(0,0,0,.6);max-width:38ch">Квартира с отделкой от застройщика превращается в объект, который сдаётся с первых показов.</p>
+        </div>
+        <ul>
+          <li>Планировка и коллажи по каждой комнате</li>
+          <li>Смета со ссылками на каждый предмет</li>
+          <li>Закупка, доставка, сборка</li>
+          <li>Декор и фотосессия</li>
+        </ul>
+        <div class="price"><small>Стоимость</small>от 250 000 ₽</div>
+      </article>
+      <article class="reveal">
+        <div>
+          <h3>Редизайн<br>без ремонта</h3>
+          <p style="margin-top:14px;color:rgba(0,0,0,.62);max-width:38ch">Подготовка квартиры малыми средствами: декор, текстиль, свет, перестановка.</p>
+        </div>
+        <ul style="color:rgba(0,0,0,.7)">
+          <li style="border-color:rgba(0,0,0,.2)">Аудит квартиры и объявления</li>
+          <li style="border-color:rgba(0,0,0,.2)">Список покупок со ссылками</li>
+          <li style="border-color:rgba(0,0,0,.2)">Стилизация и фотосессия</li>
+        </ul>
+        <div class="price"><small>Стоимость</small>от 120 000 ₽</div>
+      </article>
+    </div>
+  </section>
+
+  <section id="projects" class="wrap" style="padding-bottom:clamp(70px,12vh,150px)">
+    <div class="rail-head reveal">
+      <h2 style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700">Проекты</h2>
+      <span class="tag">Листайте вбок →</span>
+    </div>
+    <div class="rail" id="rail">
+      <figure><div class="shot"><img src="img/p2.jpg" alt="Гостиная, проект Мосфильмовская"></div>
+        <figcaption><b>Мосфильмовская</b><span>Студия · 78 м²</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/p3.jpg" alt="Рабочее место, ЖК Люблинский парк"></div>
+        <figcaption><b>Люблинский парк</b><span>Евро-2 · 42 м²</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/p5.jpg" alt="Гостиная, ЖК Зиларт"></div>
+        <figcaption><b>Зиларт</b><span>Студия · 28 м²</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/p4.jpg" alt="Хозяйственная зона, Хамовники"></div>
+        <figcaption><b>Хамовники</b><span>1-комн · 33 м²</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section id="process" class="proc wrap">
+    <div class="proc-sticky">
+      <div class="shot" style="position:relative">
+        <img src="img/p1.jpg" class="on" alt="">
+        <img src="img/p2.jpg" alt="">
+        <img src="img/p3.jpg" alt="">
+        <img src="img/p4.jpg" alt="">
+        <img src="img/p5.jpg" alt="">
+        <img src="img/p6.jpg" alt="">
+      </div>
+    </div>
+    <div id="steps">
+      <div class="step"><span class="n">01</span><div><h4>Заявка</h4><p>Вы рассказываете об объекте. Отвечаем в течение дня.</p></div></div>
+      <div class="step"><span class="n">02</span><div><h4>Консультация</h4><p>Обсуждаем цель — аренда, продажа или жизнь, — бюджет и сроки. Бесплатно.</p></div></div>
+      <div class="step"><span class="n">03</span><div><h4>Концепция</h4><p>Планировочное решение и коллажи по каждой комнате. Согласовываем с вами.</p></div></div>
+      <div class="step"><span class="n">04</span><div><h4>Подбор мебели и декора</h4><p>Смета со ссылками, ценами и доставкой — вы видите каждый рубль до закупки.</p></div></div>
+      <div class="step"><span class="n">05</span><div><h4>Реализация</h4><p>Закупаем, принимаем доставки, собираем, организуем мастеров и клининг.</p></div></div>
+      <div class="step"><span class="n">06</span><div><h4>Фотосессия</h4><p>Декорируем и снимаем квартиру. Фотографии ваши — для объявления и соцсетей.</p></div></div>
+    </div>
+  </section>
+
+  <section id="founder" class="wrap" style="padding-bottom:clamp(70px,12vh,150px)">
+    <div class="founder reveal">
+      <div class="shot"><img src="img/p7.jpg" alt="Эржена Устинова, основатель студии KOMPOZA"></div>
+      <div>
+        <span class="tag">Основатель студии</span>
+        <blockquote style="margin-top:18px">«Дом — отражение личности, и наша задача раскрыть её через дизайн. Я лично участвую в каждом проекте.»</blockquote>
+        <cite>Эржена Устинова · KOMPOZA</cite>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats wrap" style="padding-block:0;margin-inline:0">
+    <div><b data-count="230">0</b><small>проектов собрано в 2025</small></div>
+    <div><b data-count="3">0</b><small>дня до первой сдачи в аренду</small></div>
+    <div><b data-count="25">0</b><small>% средний рост стоимости</small></div>
+  </section>
+
+  <section class="wrap" style="padding-block:clamp(70px,12vh,150px)">
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700;margin-bottom:26px">Отзывы</h2>
+    <div class="revs">
+      <article><p>«Покупатели приходили на просмотр уже тёплыми — фотографии продавали квартиру за нас. Продали на месяц быстрее соседей с такой же планировкой.»</p><footer><b>Игорь</b>ЖК «Зиларт», продажа</footer></article>
+      <article><p>«Заехали в полностью готовую квартиру: от штор до посуды. Больше всего ценю честную смету — ни одной неожиданной траты за весь проект.»</p><footer><b>Анна</b>Мосфильмовская, для жизни</footer></article>
+      <article><p>«Работали онлайн из другого города. Согласовывали всё по коллажам, приехали уже в собранное пространство.»</p><footer><b>Ольга</b>Удалённый проект</footer></article>
+    </div>
+    <p class="tag" style="margin-top:14px">Отзывы — плейсхолдеры, заменим на настоящие</p>
+  </section>
+
+  <section class="wrap faq" style="padding-bottom:clamp(70px,12vh,150px)">
+    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700;margin-bottom:22px">Вопросы</h2>
+    <details open><summary>Сколько стоит хоумстейджинг?</summary><div class="a">Полный цикл под аренду — от 250 000 ₽, редизайн без ремонта — от 120 000 ₽. Точная сумма зависит от метража и состояния отделки, считаем после бесплатного выезда.</div></details>
+    <details><summary>Нужно ли делать ремонт?</summary><div class="a">Нет. Мы работаем с квартирами, где отделка уже есть — от застройщика или после прошлых жильцов. Наша зона — мебель, свет, текстиль, декор и композиция.</div></details>
+    <details><summary>Сколько времени занимает подготовка?</summary><div class="a">Редизайн без ремонта — от двух недель. Полный цикл с закупкой и сборкой — от четырёх до шести недель, в зависимости от сроков поставки мебели.</div></details>
+    <details><summary>Можно ли работать онлайн?</summary><div class="a">Да. Концепцию и смету согласовываем удалённо, закупку и сборку берём на себя. Вы получаете фотоотчёт на каждом этапе.</div></details>
+  </section>
+</main>
+
+<section id="cta" class="cta-band">
+  <span class="tag" style="color:rgba(0,0,0,.55)">Первый шаг бесплатный</span>
+  <h2>Соберём вашу <span class="ser">композицию</span></h2>
+  <a class="btn" href="#">Оставить заявку <span aria-hidden="true">→</span></a>
+</section>
+
+<footer class="site">
+  <div>
+    <div class="logo" style="font-weight:800;letter-spacing:-.05em;font-size:24px">KOMPOZA</div>
+    <p style="color:var(--muted);font-size:14px;max-width:34ch;margin-top:10px">Хоумстейджинг и дизайн интерьеров. Москва и Санкт-Петербург.</p>
+  </div>
+  <div><div class="sec-lbl">Разделы</div><a href="#projects">Проекты</a><a href="#services">Услуги</a><a href="#process">Как работаем</a><a href="#founder">О студии</a></div>
+  <div><div class="sec-lbl">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a><a href="#">Instagram</a></div>
+</footer>
+
+<a class="vbadge" href="../index.html">← Вариант A · коралл</a>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* инерционный скролл */
+if (!reduce) {
+  const lenis = new Lenis({ duration:1.15, smoothWheel:true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t*1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* прелоадер — детали собираются в линию, затем занавес уходит */
+const bars = document.querySelectorAll('#pre .bars i');
+const tl = gsap.timeline();
+if (reduce) {
+  gsap.set('#pre', {display:'none'});
+} else {
+  tl.fromTo(bars, {scaleY:.2, opacity:0}, {scaleY:1, opacity:1, height:i=>28+i*9, duration:.5, stagger:.06, ease:'power3.out'})
+    .to(bars, {height:16, scaleY:1, duration:.4, stagger:{each:.04, from:'end'}, ease:'power2.inOut'}, '+=.15')
+    .to('#pre', {yPercent:-100, duration:.85, ease:'expo.inOut'}, '+=.05')
+    .set('#pre', {display:'none'});
+}
+
+/* HERO: заголовок и фото */
+const heroTl = gsap.timeline({delay: reduce ? 0 : 1.55});
+heroTl.from('.hero h1', {yPercent:14, opacity:0, duration:1.1, ease:'expo.out'})
+      .from('.hero-meta > *', {y:22, opacity:0, duration:.8, stagger:.1, ease:'power3.out'}, '-=.7')
+      .from('.shot-band img', {scale:1.16, duration:1.6, ease:'expo.out'}, '-=1.1')
+      .to('.shot-band .pin', {opacity:1, duration:.5, stagger:.18, ease:'power2.out'}, '-=.7');
+
+/* параллакс фото в hero */
+if (!reduce) gsap.to('.shot-band img', {
+  yPercent:10, ease:'none',
+  scrollTrigger:{trigger:'.shot-band', start:'top bottom', end:'bottom top', scrub:true}
+});
+
+/* манифест: подсветка слов по скроллу */
+const mf = document.getElementById('mf');
+/* оборачиваем только текстовые узлы — иначе разметка внутри (span.em) будет разорвана */
+(()=>{
+  const walker = document.createTreeWalker(mf, NodeFilter.SHOW_TEXT);
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{
+    const frag = document.createDocumentFragment();
+    node.textContent.split(/(\s+)/).forEach(part=>{
+      if (!part) return;
+      if (/^\s+$/.test(part)) frag.appendChild(document.createTextNode(part));
+      else { const w = document.createElement('w'); w.textContent = part; frag.appendChild(w); }
+    });
+    node.parentNode.replaceChild(frag, node);
+  });
+})();
+const words = mf.querySelectorAll('w');
+ScrollTrigger.create({
+  trigger:'.manifest', start:'top 72%', end:'bottom 62%', scrub:.4,
+  onUpdate:s=>{ const n = Math.round(s.progress * words.length);
+    words.forEach((w,i)=> w.classList.toggle('on', i < n)); }
+});
+
+/* появление блоков */
+gsap.set('.reveal', {opacity:0, y:34});
+gsap.utils.toArray('.reveal').forEach(el=>{
+  gsap.to(el, {opacity:1, y:0, duration:.9, ease:'expo.out',
+    scrollTrigger:{trigger:el, start:'top 86%'}});
+});
+
+/* процесс: смена фото и подсветка шага */
+const steps = gsap.utils.toArray('.step');
+const shots = document.querySelectorAll('.proc-sticky img');
+steps.forEach((st,i)=>{
+  ScrollTrigger.create({
+    trigger:st, start:'top 62%', end:'bottom 62%',
+    onToggle:self=>{
+      if(!self.isActive) return;
+      steps.forEach(s=>s.classList.remove('on')); st.classList.add('on');
+      shots.forEach(s=>s.classList.remove('on')); shots[i]?.classList.add('on');
+    }
+  });
+});
+steps[0].classList.add('on');
+
+/* счётчики */
+document.querySelectorAll('[data-count]').forEach(el=>{
+  const to = +el.dataset.count;
+  ScrollTrigger.create({trigger:el, start:'top 88%', once:true, onEnter:()=>{
+    const proxy = {v:0};
+    gsap.to(proxy, {v:to, duration:1.7, ease:'expo.out',
+      onUpdate:()=>{ el.textContent = Math.round(proxy.v); }});
+  }});
+});
+
+/* лента проектов — колесо мыши прокручивает вбок */
+const rail = document.getElementById('rail');
+rail.addEventListener('wheel', e=>{
+  if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+  const atStart = rail.scrollLeft <= 0 && e.deltaY < 0;
+  const atEnd = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1 && e.deltaY > 0;
+  if (atStart || atEnd) return;
+  e.preventDefault(); rail.scrollLeft += e.deltaY;
+}, {passive:false});
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { createStage, addLights, BRAND, easeOut, stagger, pointer, REDUCED } from './lib/three-kit.js';
+
+const canvas = document.getElementById('heroScene');
+const stage = createStage(canvas, { fov: 32 });
+
+if (!stage) {
+  document.getElementById('heroFallback').style.display = 'grid';
+  canvas.style.display = 'none';
+} else {
+  const { scene, camera, box, mat } = stage;
+  addLights(stage, { ground: BRAND.greige, fill: 1.2, key: 1.55, pos: [5, 9, 6], shadowSpan: 7 });
+
+  /* мягкая мебель из нескольких объёмов — иначе читается коробкой */
+  const upholstered = (w, d, color, armW = .22) => {
+    const g = new THREE.Group(), m = mat(color, .93);
+    const seat = new THREE.Mesh(box(w, .42, d), m); seat.position.y = .21;
+    const back = new THREE.Mesh(box(w, .6, .22), m); back.position.set(0, .64, -d / 2 + .11);
+    const armL = new THREE.Mesh(box(armW, .48, d), m); armL.position.set(-w / 2 + armW / 2, .48, 0);
+    const armR = armL.clone(); armR.position.x = w / 2 - armW / 2;
+    [seat, back, armL, armR].forEach(p => { p.castShadow = true; g.add(p); });
+    return g;
+  };
+
+  const lamp = () => {
+    const g = new THREE.Group();
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.035, .035, 1.9, 12), mat(0x2E2E2E, .5));
+    pole.position.y = .95; pole.castShadow = true;
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(.26, .26, .06, 20), mat(0x2E2E2E, .5));
+    base.position.y = .03;
+    const shade = new THREE.Mesh(
+      new THREE.CylinderGeometry(.3, .42, .48, 22, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0xFFF7F0, roughness: 1, side: THREE.DoubleSide,
+        emissive: 0xFFD9C2, emissiveIntensity: .5 })
+    );
+    shade.position.y = 2.05;
+    g.add(pole, base, shade);
+    return g;
+  };
+
+  /* [построитель, финальная позиция, точка разлёта, финальный поворотY] */
+  const DEFS = [
+    { name: 'Ковёр',  make: () => { const m = new THREE.Mesh(box(4.6, .06, 3.2), mat(BRAND.greige, .96)); m.receiveShadow = true; return m; },
+      to: [0, .03, 0],       from: [0, -1.3, 0],      spin: [0, .5, 0] },
+    { name: 'Кресло', make: () => upholstered(1.35, 1.15, BRAND.rose),
+      to: [-1.3, 0, .15],    from: [-2.5, 1.45, 1.2], rotY: .38, spin: [.5, -.9, .3] },
+    { name: 'Пуф',    make: () => { const m = new THREE.Mesh(box(.72, .42, .72), mat(BRAND.coral, .93)); m.castShadow = true; return m; },
+      to: [1.95, .21, .62],  from: [2.9, 1.85, 1.1],  rotY: -.4, spin: [-.6, .8, .4] },
+    { name: 'Стол',   make: () => { const m = new THREE.Mesh(box(1.3, .4, .85), mat(BRAND.oak, .72)); m.castShadow = true; return m; },
+      to: [.62, .2, .3],     from: [.85, 2.5, 1.4],   spin: [.7, .4, -.5] },
+    { name: 'Торшер', make: lamp,
+      to: [-2.15, 0, -.85],  from: [-2.8, 1.6, -1.8], spin: [.3, .7, -.8] },
+    { name: 'Рама',   make: () => { const m = new THREE.Mesh(box(1.05, .78, .06), mat(BRAND.coral, .7)); m.castShadow = true; return m; },
+      to: [1.62, .39, -1.15], from: [2.5, 1.5, -2.1], rotY: -.42, spin: [-.4, 1.1, .6] },
+    { name: 'Ваза',   make: () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(.1, .14, .38, 18), mat(0xFAF7F5, .55)); m.castShadow = true; return m; },
+      to: [.42, .59, .3],    from: [-.55, 2.9, 1.3],  spin: [.8, .6, .9] },
+    { name: 'Книги',  make: () => { const g = new THREE.Group();
+        const a = new THREE.Mesh(box(.42, .06, .3), mat(BRAND.ink, .8)); a.position.y = .03;
+        const b = new THREE.Mesh(box(.38, .055, .27), mat(BRAND.coral, .8)); b.position.set(.02, .088, .01);
+        [a, b].forEach(p => p.castShadow = true); g.add(a, b); return g; },
+      to: [1.02, .4, .42],   from: [1.6, 2.35, 1.5],  rotY: .3, spin: [.6, -.7, .5] },
+  ];
+
+  const items = DEFS.map(d => {
+    const obj = d.make();
+    obj.userData = d;
+    scene.add(obj);
+    return obj;
+  });
+
+  const pct = document.getElementById('asmPct');
+  const ptr = pointer();
+  let progress = 0, intro = 0, camX = 0, camY = 0;
+
+  function apply(p) {
+    const locals = stagger(p, items.length, .62);
+    items.forEach((obj, i) => {
+      const t = easeOut(locals[i]);
+      const d = obj.userData;
+      obj.position.set(
+        d.from[0] + (d.to[0] - d.from[0]) * t,
+        d.from[1] + (d.to[1] - d.from[1]) * t,
+        d.from[2] + (d.to[2] - d.from[2]) * t
+      );
+      const s = d.spin || [0, 0, 0];
+      obj.rotation.set(s[0] * (1 - t), (d.rotY || 0) * t + s[1] * (1 - t), s[2] * (1 - t));
+      const sc = .82 + t * .18;
+      obj.scale.setScalar(sc * intro);
+    });
+    if (pct) pct.textContent = Math.round(p * 100) + '%';
+  }
+
+  /* появление при загрузке: предметы «проявляются» в разлёте, дальше их собирает скролл */
+  if (REDUCED) { intro = 1; }
+  else { gsap.to({ v: 0 }, { v: 1, duration: .9, delay: 1.4, ease: 'power2.out',
+    onUpdate() { intro = this.targets()[0].v; } }); }
+
+  let last = performance.now();
+  stage.onTick(() => {
+    const now = performance.now(), dt = Math.min((now - last) / 1000, .05); last = now;
+    apply(progress);
+    /* камера подъезжает по мере сборки + мягкий параллакс за курсором */
+    camX += (ptr.x * .5 - camX) * Math.min(1, dt * 3);
+    camY += (ptr.y * .3 - camY) * Math.min(1, dt * 3);
+    const z = 8.6 - progress * 1.6;
+    camera.position.set(3.9 - progress * .7 + camX, 3.5 - progress * .9 - camY, z);
+    camera.lookAt(0, .85 - progress * .3, 0);
+  });
+
+  gsap.ticker.add(stage.render);
+  /* первый кадр рисуем синхронно — иначе до первого rAF сцена пустая */
+  stage.resize(); stage.render();
+
+  /* просмотр сцены на любом прогрессе без скролла (только для прототипа) */
+  window.__hero = { set(p) { intro = 1; progress = p; apply(p); stage.render(); } };
+
+  if (REDUCED) { progress = 1; apply(1); }
+  else {
+    ScrollTrigger.create({
+      trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 1.5,
+      pin: true, scrub: 1, invalidateOnRefresh: true,
+      onUpdate: s => { progress = s.progress; }
+    });
+  }
+}
+</script>
+</body>
+</html>

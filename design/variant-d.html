@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOMPOZA — соберите смету сами</title>
+<meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Соберите комплектацию квартиры и посмотрите смету — каждый предмет с ценой, до закупки.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EF; --paper:#FFFFFF; --ink:#141212; --muted:#8B7F7D;
+  --wine:#5B2824; --cool:#D1E6FD; --rose:#E6DDDB;
+  --line:rgba(91,40,36,.18);
+  --sans:'Golos Text',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --gut:clamp(16px,3.2vw,52px);
+  --e:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit}
+.wrap{padding-inline:var(--gut)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+header.nav{position:sticky;top:0;z-index:60;padding:14px var(--gut);display:flex;justify-content:space-between;
+  align-items:center;background:rgba(244,241,239,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .logo{font-weight:600;letter-spacing:.3em;font-size:15px}
+.nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+.nav ul a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+@media(max-width:880px){.nav ul{display:none}}
+
+/* ---------- конфигуратор ---------- */
+.cfg{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);min-height:calc(100svh - 52px)}
+/* на десктопе высота фиксирована, иначе «Итого» уезжает за экран, а 1fr-строка не работает */
+@media(min-width:1000px){.cfg{grid-template-columns:minmax(330px,.62fr) 1.38fr;height:calc(100svh - 53px)}}
+.cfg-side{background:var(--bg);padding:clamp(16px,2vw,28px);display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;gap:14px;min-height:0;overflow:hidden}
+.cfg-side h1{font-size:clamp(24px,2.7vw,38px);font-weight:700;letter-spacing:-.03em;line-height:1.04;max-width:16ch}
+.cfg-side h1 em{font-style:normal;color:var(--wine)}
+.cfg-side .sub{color:var(--muted);font-size:14.5px;margin-top:10px;max-width:40ch}
+
+.items{display:grid;gap:0;align-content:start;overflow-y:auto;min-height:0;
+  border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:center;
+  padding:11px 4px;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;
+  font:inherit;color:inherit;text-align:left;width:100%;transition:background .25s var(--e)}
+.item:hover,.item:focus-visible{background:var(--rose);outline:none}
+.item .tick{width:20px;height:20px;border:1px solid var(--line);display:grid;place-items:center;
+  font-size:12px;color:#fff;transition:background .25s var(--e),border-color .25s var(--e)}
+.item[aria-pressed="true"] .tick{background:var(--wine);border-color:var(--wine)}
+.item .nm{font-size:14.5px}
+.item .nm small{display:block;color:var(--muted);font-size:11.5px;font-family:var(--mono);letter-spacing:.04em}
+.item .pr{font-family:var(--mono);font-size:13px;white-space:nowrap}
+.item[aria-pressed="false"]{opacity:.45}
+
+.total{border-top:2px solid var(--wine);padding-top:14px;display:grid;gap:10px}
+.total .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-family:var(--mono)}
+.total .row.big{font-size:clamp(20px,2.4vw,30px);font-weight:700}
+.total .row.big span:last-child{color:var(--wine);font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;background:var(--wine);color:#fff;
+  text-decoration:none;padding:15px 26px;font-weight:600;font-size:14.5px;
+  transition:transform .3s var(--e),gap .3s var(--e)}
+.btn:hover{transform:translateY(-2px);gap:18px}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+.cfg-stage{background:var(--rose);position:relative;min-height:clamp(340px,54svh,760px)}
+.cfg-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.cfg-stage .fb{position:absolute;inset:0;display:none;place-items:center;padding:30px;text-align:center;color:var(--muted)}
+.hint{position:absolute;left:14px;bottom:14px;background:rgba(255,255,255,.9);padding:7px 12px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tip{position:absolute;pointer-events:none;transform:translate(-50%,-140%);background:var(--ink);color:#fff;
+  padding:6px 10px;font-family:var(--mono);font-size:11px;white-space:nowrap;opacity:0;transition:opacity .18s var(--e)}
+.tip.on{opacity:1}
+
+/* ---------- остальное ---------- */
+.sec{padding-block:clamp(56px,10vh,130px)}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+.sec-h h2{font-size:clamp(25px,3.3vw,48px);letter-spacing:-.035em;font-weight:700}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line)}
+.steps article{background:var(--bg);padding:clamp(20px,2.4vw,34px);display:grid;gap:12px;align-content:start}
+.steps .idx{font-family:var(--mono);font-size:11px;color:var(--wine);letter-spacing:.12em}
+.steps h3{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.steps p{color:var(--muted);font-size:14.5px}
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line)}
+.gal a{background:var(--bg);text-decoration:none}
+.gal .ph{aspect-ratio:3/4;overflow:hidden;background:var(--rose)}
+.gal .ph img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--e)}
+.gal a:hover .ph img{transform:scale(1.05)}
+.gal .m{padding:12px 14px 20px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.gal b{font-weight:600}
+.cta-band{background:var(--cool);padding:clamp(48px,8vh,116px) var(--gut);display:grid;gap:22px;justify-items:start}
+.cta-band h2{font-size:clamp(27px,4.8vw,70px);letter-spacing:-.04em;line-height:1;font-weight:700;max-width:15ch}
+footer.site{padding:clamp(30px,5vh,64px) var(--gut) 36px;display:grid;gap:22px;grid-template-columns:1fr;border-top:1px solid var(--line)}
+@media(min-width:820px){footer.site{grid-template-columns:1.4fr 1fr 1fr}}
+footer.site a{text-decoration:none;color:var(--muted);font-size:14px;display:block;padding:3px 0}
+footer.site a:hover{color:var(--wine)}
+.reveal{opacity:0;transform:translateY(26px)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .reveal{opacity:1!important;transform:none!important}
+}
+.vbadge{position:fixed;z-index:200;right:var(--gut);bottom:16px;background:var(--wine);color:#fff;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 13px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">KOMPOZA</div>
+  <ul><li><a href="#how">Как работаем</a></li><li><a href="#work">Проекты</a></li><li><a href="#cta">Контакты</a></li></ul>
+  <a class="mono" href="#cta" style="text-decoration:none;color:var(--wine)">Консультация →</a>
+</header>
+
+<section class="cfg">
+  <div class="cfg-side">
+    <div>
+      <span class="mono">Комплектация · студия 28 м²</span>
+      <h1 style="margin-top:12px">Соберите смету <em>сами</em></h1>
+      <p class="sub">Включайте и выключайте позиции — прямо в списке или кликом по предмету в комнате. Так же вы согласуете реальную смету: до того, как мы что-то купим.</p>
+    </div>
+
+    <div class="items" id="items"></div>
+
+    <div class="total">
+      <div class="row"><span class="mono">Позиций выбрано</span><span id="cnt">0 / 0</span></div>
+      <div class="row"><span class="mono">Доставка и сборка</span><span id="fee">0 ₽</span></div>
+      <div class="row big"><span>Итого</span><span id="sum">0 ₽</span></div>
+      <a class="btn" href="#cta" style="margin-top:6px">Обсудить мой объект <span aria-hidden="true">→</span></a>
+      <p class="mono" style="margin:0">Цены — пример для демонстрации формата</p>
+    </div>
+  </div>
+
+  <div class="cfg-stage">
+    <canvas id="roomScene"></canvas>
+    <div class="fb" id="roomFallback">3D-конфигуратор недоступен в этом браузере — список слева работает.</div>
+    <div class="hint">Кликните предмет в комнате</div>
+    <div class="tip" id="tip"></div>
+  </div>
+</section>
+
+<main>
+  <section class="sec wrap" id="how">
+    <div class="sec-h reveal"><h2>Как это работает</h2><span class="mono">Три шага</span></div>
+    <div class="steps reveal">
+      <article><span class="idx">[01]</span><h3>Выезд и обмер</h3><p>Приезжаем на объект, обсуждаем цель — аренда, продажа или жизнь. Бесплатно.</p></article>
+      <article><span class="idx">[02]</span><h3>Смета со ссылками</h3><p>Присылаем комплектацию: каждый предмет с ценой, ссылкой и сроком доставки. Вы вычёркиваете лишнее.</p></article>
+      <article><span class="idx">[03]</span><h3>Закупка и сборка</h3><p>Забираем логистику на себя: доставки, сборка, мастера, клининг, декор и съёмка.</p></article>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="work" style="padding-top:0">
+    <div class="sec-h reveal"><h2>Проекты</h2><span class="mono">2024 — 2025</span></div>
+    <div class="gal reveal">
+      <a href="#"><div class="ph"><img src="img/p5.jpg" alt="Гостиная, ЖК Зиларт"></div><div class="m"><b>Зиларт</b><span class="mono">28 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p2.jpg" alt="Гостиная, Мосфильмовская"></div><div class="m"><b>Мосфильмовская</b><span class="mono">78 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p3.jpg" alt="Рабочее место, Люблинский парк"></div><div class="m"><b>Люблинский парк</b><span class="mono">42 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p4.jpg" alt="Хозяйственная зона, Хамовники"></div><div class="m"><b>Хамовники</b><span class="mono">33 м²</span></div></a>
+    </div>
+  </section>
+</main>
+
+<section id="cta" class="cta-band">
+  <span class="mono">Первый шаг бесплатный</span>
+  <h2>Посчитаем вашу квартиру</h2>
+  <a class="btn" href="#">Оставить заявку <span aria-hidden="true">→</span></a>
+</section>
+
+<footer class="site">
+  <div>
+    <div style="font-weight:600;letter-spacing:.3em;font-size:17px">KOMPOZA</div>
+    <p style="color:var(--muted);font-size:14px;max-width:34ch;margin-top:10px">Хоумстейджинг и дизайн интерьеров. Москва и Санкт-Петербург.</p>
+  </div>
+  <div><div class="mono" style="margin-bottom:12px">Разделы</div><a href="#how">Как работаем</a><a href="#work">Проекты</a></div>
+  <div><div class="mono" style="margin-bottom:12px">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a></div>
+</footer>
+
+<a class="vbadge" href="../index.html">← Вариант D · конфигуратор</a>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { createStage, addLights, BRAND, easeOut, REDUCED } from './lib/three-kit.js';
+
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- позиции сметы ---------- */
+const CATALOG = [
+  { id:'sofa',    name:'Диван-кровать',   spec:'ткань рогожка', price:68400 },
+  { id:'rug',     name:'Ковёр',           spec:'200×300, шерсть', price:24900 },
+  { id:'table',   name:'Журнальный стол', spec:'дуб', price:12300 },
+  { id:'chair',   name:'Кресло',          spec:'с подлокотниками', price:31700 },
+  { id:'lamp',    name:'Торшер',          spec:'латунь', price:9800 },
+  { id:'shelf',   name:'Стеллаж',         spec:'дуб, настенный', price:14600 },
+  { id:'art',     name:'Картина',         spec:'печать в раме', price:8400 },
+  { id:'textile', name:'Текстиль и декор',spec:'шторы, подушки, зелень', price:27500 },
+];
+const FEE = 21000;
+const state = Object.fromEntries(CATALOG.map(c => [c.id, true]));
+const fmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ₽';
+
+/* ---------- список слева ---------- */
+const itemsEl = document.getElementById('items');
+itemsEl.innerHTML = CATALOG.map(c => `
+  <button class="item" type="button" data-id="${c.id}" aria-pressed="true">
+    <span class="tick" aria-hidden="true">✓</span>
+    <span class="nm">${c.name}<small>${c.spec}</small></span>
+    <span class="pr">${fmt(c.price)}</span>
+  </button>`).join('');
+
+function recalc() {
+  const on = CATALOG.filter(c => state[c.id]);
+  const goods = on.reduce((s, c) => s + c.price, 0);
+  const fee = on.length ? FEE : 0;
+  document.getElementById('cnt').textContent = `${on.length} / ${CATALOG.length}`;
+  document.getElementById('fee').textContent = fmt(fee);
+  const sumEl = document.getElementById('sum');
+  const from = parseInt(sumEl.dataset.v || '0', 10), to = goods + fee;
+  sumEl.dataset.v = to;
+
+  /* Итог выставляем синхронно: в фоновой вкладке rAF не тикает и твин застыл бы
+     на промежуточном числе. Анимация счётчика — только украшение поверх верного значения. */
+  sumEl.textContent = fmt(to);
+  if (REDUCED || from === to) return;
+
+  const proxy = { v: from };
+  gsap.to(proxy, { v: to, duration: .5, ease: 'power2.out', overwrite: true,
+    onUpdate: () => sumEl.textContent = fmt(Math.round(proxy.v / 100) * 100),
+    onComplete: () => sumEl.textContent = fmt(to) });
+}
+
+function toggle(id, from) {
+  state[id] = !state[id];
+  const btn = itemsEl.querySelector(`[data-id="${id}"]`);
+  if (btn) btn.setAttribute('aria-pressed', String(state[id]));
+  recalc();
+  if (window.__room3d) window.__room3d.sync(id);
+}
+itemsEl.addEventListener('click', e => {
+  const btn = e.target.closest('.item');
+  if (btn) toggle(btn.dataset.id);
+});
+recalc();
+
+/* ---------- сцена ---------- */
+const canvas = document.getElementById('roomScene');
+const stage = createStage(canvas, { fov: 32 });
+
+if (!stage) {
+  document.getElementById('roomFallback').style.display = 'grid';
+  canvas.style.display = 'none';
+} else {
+  const { scene, camera, box, mat } = stage;
+  addLights(stage, { ground: 0xE6DDDB, fill: 1.2, key: 1.6, pos: [5, 9, 5], shadowSpan: 8 });
+
+  const floor = new THREE.Mesh(box(10, .2, 8.4), mat(0xF0EBE8, .95));
+  floor.position.y = -.1; floor.receiveShadow = true; scene.add(floor);
+  const wallB = new THREE.Mesh(box(10, 4.6, .2), mat(0xF7F3F1, .95));
+  wallB.position.set(0, 2.3, -4.2); wallB.receiveShadow = true; scene.add(wallB);
+  const wallL = new THREE.Mesh(box(.2, 4.6, 8.4), mat(0xEDE7E4, .95));
+  wallL.position.set(-5, 2.3, 0); wallL.receiveShadow = true; scene.add(wallL);
+
+  const upholstered = (w, d, color, armW = .26) => {
+    const g = new THREE.Group(), m = mat(color, .93);
+    const seat = new THREE.Mesh(box(w, .44, d), m); seat.position.y = .22;
+    const back = new THREE.Mesh(box(w, .6, .24), m); back.position.set(0, .66, -d / 2 + .12);
+    const armL = new THREE.Mesh(box(armW, .5, d), m); armL.position.set(-w / 2 + armW / 2, .5, 0);
+    const armR = armL.clone(); armR.position.x = w / 2 - armW / 2;
+    [seat, back, armL, armR].forEach(p => { p.castShadow = true; g.add(p); });
+    return g;
+  };
+  const lampObj = () => {
+    const g = new THREE.Group();
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 2.1, 12), mat(0x3A3A3A, .5));
+    pole.position.y = 1.05;
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(.28, .28, .06, 20), mat(0x3A3A3A, .5));
+    base.position.y = .03;
+    const shade = new THREE.Mesh(new THREE.CylinderGeometry(.32, .44, .5, 20, 1, true),
+      new THREE.MeshStandardMaterial({ color: 0xFFF7F0, roughness: 1, side: THREE.DoubleSide,
+        emissive: 0xFFE3CC, emissiveIntensity: .5 }));
+    shade.position.y = 2.2;
+    [pole, base].forEach(p => p.castShadow = true);
+    g.add(pole, base, shade);
+    return g;
+  };
+  const textileObj = () => {
+    const g = new THREE.Group();
+    const c1 = new THREE.Mesh(box(.48, .48, .17), mat(BRAND.cool, .95)); c1.position.set(-2.1, .74, -1.1); c1.rotation.z = .2;
+    const c2 = new THREE.Mesh(box(.44, .44, .16), mat(BRAND.rose, .95)); c2.position.set(-.5, .72, -1.05); c2.rotation.z = -.15;
+    const curtain = new THREE.Mesh(box(.12, 3.3, 1.5), mat(0xF3ECE9, .98)); curtain.position.set(-4.7, 1.65, -1.6);
+    const vase = new THREE.Mesh(new THREE.CylinderGeometry(.12, .16, .44, 16), mat(0xFAF7F5, .6)); vase.position.set(1.1, .66, 1.15);
+    [c1, c2, curtain, vase].forEach(p => p.castShadow = true);
+    g.add(c1, c2, curtain, vase);
+    return g;
+  };
+
+  const BUILD = {
+    rug:   () => { const m = new THREE.Mesh(box(6, .05, 4.1), mat(BRAND.cool, .96)); m.receiveShadow = true; return m; },
+    sofa:  () => upholstered(3.5, 1.5, BRAND.wine),
+    table: () => { const m = new THREE.Mesh(box(1.5, .42, .95), mat(BRAND.oak, .7)); m.castShadow = true; return m; },
+    chair: () => upholstered(1.15, 1.05, BRAND.rose, .2),
+    lamp:  lampObj,
+    shelf: () => { const m = new THREE.Mesh(box(3, .12, .48), mat(BRAND.oak, .7)); m.castShadow = true; return m; },
+    art:   () => { const m = new THREE.Mesh(box(1.5, 1.05, .07), mat(BRAND.wine, .65)); m.castShadow = true; return m; },
+    textile: textileObj,
+  };
+  const PLACE = {
+    rug:   [.2, .025, .7,  0],
+    sofa:  [-1.3, 0, -1.1, 0],
+    table: [.5, .21, 1.05, 0],
+    chair: [2.7, 0, 1.5, -.6],
+    lamp:  [-3.9, 0, -2.0, 0],
+    shelf: [-2.6, 1.85, -3.9, 0],
+    art:   [1.7, 2.35, -4.05, 0],
+    textile: [0, 0, 0, 0],
+  };
+
+  const objects = {};
+  CATALOG.forEach((c, i) => {
+    const o = BUILD[c.id]();
+    const [x, y, z, r] = PLACE[c.id];
+    o.position.set(x, y, z);
+    o.rotation.y = r;
+    o.userData = { id: c.id, name: c.name, price: c.price, baseY: y, order: i };
+    o.traverse(n => { if (n.isMesh) n.userData.pickId = c.id; });
+    scene.add(o);
+    objects[c.id] = o;
+  });
+
+  /* каждый предмет держит собственный прогресс появления */
+  const anim = Object.fromEntries(CATALOG.map(c => [c.id, { v: 0, target: 1 }]));
+
+  function sync(id) {
+    anim[id].target = state[id] ? 1 : 0;
+  }
+  /* влёт при загрузке — каскадом */
+  CATALOG.forEach((c, i) => {
+    anim[c.id].v = 0;
+    if (REDUCED) anim[c.id].v = 1;
+    else gsap.to(anim[c.id], { v: 1, duration: .85, delay: .25 + i * .11, ease: 'power3.out' });
+  });
+
+  /* ---------- наведение и клик ---------- */
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const tip = document.getElementById('tip');
+  let hovered = null;
+
+  function pick(ev) {
+    const r = canvas.getBoundingClientRect();
+    ndc.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
+    ndc.y = -((ev.clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    const hits = ray.intersectObjects(Object.values(objects), true);
+    for (const h of hits) {
+      const id = h.object.userData.pickId;
+      if (id && state[id]) return { id, x: ev.clientX - r.left, y: ev.clientY - r.top };
+    }
+    return null;
+  }
+
+  canvas.addEventListener('pointermove', ev => {
+    const hit = pick(ev);
+    hovered = hit ? hit.id : null;
+    canvas.style.cursor = hit ? 'pointer' : 'default';
+    if (hit) {
+      const c = CATALOG.find(c => c.id === hit.id);
+      tip.textContent = `${c.name} · ${fmt(c.price)}`;
+      tip.style.left = hit.x + 'px';
+      tip.style.top = hit.y + 'px';
+      tip.classList.add('on');
+    } else tip.classList.remove('on');
+  }, { passive: true });
+
+  canvas.addEventListener('pointerleave', () => { hovered = null; tip.classList.remove('on'); });
+  canvas.addEventListener('click', ev => { const hit = pick(ev); if (hit) toggle(hit.id); });
+
+  window.__room3d = { sync, state, set(id, on) { state[id] = on; sync(id); } };
+
+  /* ---------- цикл ---------- */
+  let last = performance.now(), spin = 0;
+  stage.onTick(() => {
+    const now = performance.now(), dt = Math.min((now - last) / 1000, .05); last = now;
+
+    CATALOG.forEach(c => {
+      const a = anim[c.id];
+      a.v += (a.target - a.v) * Math.min(1, dt * 6);
+      const o = objects[c.id];
+      const t = easeOut(a.v);
+      o.visible = a.v > .01;
+      o.scale.setScalar(Math.max(.001, t));
+      o.position.y = o.userData.baseY + (1 - t) * 3.2;
+      /* подсветка наведённого предмета */
+      const lift = hovered === c.id ? .12 : 0;
+      o.position.y += lift;
+    });
+
+    spin += dt * .06;
+    const a = .8 + Math.sin(spin) * .15;
+    const rad = 16.8;
+    camera.position.set(Math.sin(a) * rad, 8.6, Math.cos(a) * rad);
+    camera.lookAt(0, 1, -.3);
+  });
+
+  gsap.ticker.add(stage.render);
+  /* первый кадр рисуем синхронно — иначе до первого rAF сцена пустая */
+  stage.resize(); stage.render();
+}
+
+/* появление секций */
+gsap.set('.reveal', { opacity: 0, y: 26 });
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.to(el, { opacity: 1, y: 0, duration: .8, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 88%' } });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOMPOZA — Пространство идей</title>
+<meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Комплектация квартиры под ключ: планировка, смета со ссылками на каждый предмет, закупка, сборка, фотосессия.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --rose:#E6DDDB;
+  --wine:#5B2824;
+  --cool:#D1E6FD;
+  --ink:#000000;
+  --muted:#8B7F7D;
+  --line:rgba(91,40,36,.22);
+  --sans:'Golos Text', system-ui, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --gut:clamp(18px, 3.6vw, 64px);
+  --e:cubic-bezier(.65,.05,.36,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit}
+.wrap{padding-inline:var(--gut)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rule{height:1px;background:var(--line);width:100%}
+
+/* ---------- прелоадер ---------- */
+#pre{position:fixed;inset:0;z-index:999;background:var(--wine);color:#fff;display:grid;place-items:center}
+#pre .num{font-family:var(--mono);font-size:clamp(56px,13vw,180px);font-weight:500;letter-spacing:-.03em}
+#pre .cap{position:absolute;bottom:7vh;left:var(--gut);right:var(--gut);display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+
+/* ---------- шапка ---------- */
+header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:16px var(--gut);
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .logo{font-weight:600;letter-spacing:.3em;font-size:15px}
+.nav ul{display:flex;gap:24px;list-style:none;margin:0;padding:0}
+.nav ul a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.nav ul a:hover{color:var(--wine)}
+@media(max-width:820px){.nav ul{display:none}}
+
+/* ---------- HERO ---------- */
+.hero{min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;padding:96px var(--gut) 26px;gap:22px}
+.hero-mark{display:flex;justify-content:center;align-items:center;white-space:nowrap;
+  font-size:clamp(30px,9.4vw,140px);font-weight:500;letter-spacing:.3em;line-height:1}
+.hero-mark span{display:inline-block}
+.hero-mark span:last-child{margin-right:-.3em}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:26px;align-content:center}
+@media(min-width:900px){.hero-grid{grid-template-columns:1fr 1fr 1fr;align-items:end}}
+.hero h1{font-size:clamp(24px,2.9vw,40px);font-weight:600;letter-spacing:-.025em;line-height:1.1;max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--wine)}
+.hero p{color:var(--muted);font-size:14.5px;max-width:38ch}
+.spec{display:grid;gap:0}
+.spec div{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.spec div b{font-weight:500;color:var(--ink)}
+.spec div span{color:var(--muted)}
+
+.btn{display:inline-flex;align-items:center;gap:11px;background:var(--wine);color:#fff;text-decoration:none;
+  padding:15px 26px;font-weight:600;font-size:14px;transition:transform .3s var(--e),gap .3s var(--e)}
+.btn:hover{transform:translateY(-2px);gap:19px}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+/* ---------- 3D сцена ---------- */
+.room{position:relative;height:100svh;background:var(--rose);overflow:hidden}
+.room canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.room-ui{position:absolute;inset:0;pointer-events:none;padding:clamp(18px,3vw,52px);
+  display:grid;grid-template-rows:auto 1fr auto}
+.room-ui h2{font-size:clamp(20px,2.6vw,36px);font-weight:600;letter-spacing:-.025em;max-width:15ch}
+.room-list{align-self:end;justify-self:start;display:grid;gap:0;min-width:min(320px,72vw);
+  background:rgba(255,255,255,.9);backdrop-filter:blur(10px)}
+.room-list i{font-style:normal;display:flex;justify-content:space-between;gap:16px;padding:9px 14px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  border-bottom:1px solid var(--line);color:var(--muted);opacity:.4;transition:opacity .35s var(--e),color .35s var(--e)}
+.room-list i.on{opacity:1;color:var(--ink)}
+.room-list i.on b{color:var(--wine)}
+.room-list i b{font-weight:500}
+.room-hint{align-self:end;justify-self:end;font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.room-fallback{position:absolute;inset:0;display:none;place-items:center;padding:40px;text-align:center;color:var(--muted)}
+
+/* ---------- услуги как спецификация ---------- */
+.svc-row{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}
+@media(min-width:900px){.svc-row{grid-template-columns:64px 1.1fr 1.4fr auto;align-items:start;gap:24px}}
+.svc-row{padding:clamp(22px,3vh,40px) 0;transition:background .4s var(--e)}
+.svc-row:hover{background:var(--rose)}
+.svc-row .idx{font-family:var(--mono);font-size:11px;color:var(--wine);letter-spacing:.1em}
+.svc-row h3{font-size:clamp(21px,2.5vw,34px);font-weight:600;letter-spacing:-.025em;line-height:1.06}
+.svc-row ul{list-style:none;margin:8px 0 0;padding:0;color:var(--muted);font-size:14px}
+.svc-row li::before{content:"— ";color:var(--wine)}
+.svc-row .p{font-family:var(--mono);font-size:clamp(15px,1.5vw,20px);white-space:nowrap;font-weight:500}
+
+/* ---------- каталог проектов ---------- */
+.cat{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line)}
+.cat a{background:var(--bg);text-decoration:none;display:grid;gap:0}
+.cat .ph{aspect-ratio:3/4;overflow:hidden;position:relative;background:var(--rose)}
+.cat .ph img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--e),filter .9s var(--e)}
+.cat a:hover .ph img{transform:scale(1.05)}
+.cat .ph::after{content:"";position:absolute;inset:0;background:var(--wine);opacity:0;transition:opacity .5s var(--e);mix-blend-mode:multiply}
+.cat a:hover .ph::after{opacity:.22}
+.cat .m{padding:14px 16px 20px;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.cat b{font-weight:600;font-size:16px}
+.cat .mono{margin:0}
+
+/* ---------- процесс: горизонтальный пиннинг ---------- */
+.hproc{overflow:hidden;background:var(--wine);color:#fff}
+.htrack{display:flex;align-items:stretch;height:100svh}
+.hcard{flex:0 0 clamp(280px,42vw,560px);padding:clamp(24px,4vw,64px);border-right:1px solid rgba(255,255,255,.2);
+  display:grid;align-content:space-between;gap:24px}
+.hcard .idx{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--cool)}
+.hcard h4{font-size:clamp(24px,3.4vw,52px);font-weight:600;letter-spacing:-.03em;line-height:1.02}
+.hcard p{color:rgba(255,255,255,.72);font-size:15px;max-width:34ch}
+.hcard.intro{background:rgba(0,0,0,.18)}
+
+/* ---------- смета ---------- */
+.est{border-top:1px solid var(--line)}
+.est .r{display:grid;grid-template-columns:1fr auto;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.02em}
+.est .r span:last-child{white-space:nowrap}
+.est .r.tot{font-weight:700;border-bottom:0;padding-top:18px;font-size:15px}
+.est .r.tot span:last-child{color:var(--wine)}
+
+/* ---------- отзывы / FAQ ---------- */
+.revs{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1px;background:var(--line)}
+.revs article{background:var(--bg);padding:clamp(22px,2.6vw,40px);display:grid;gap:16px;align-content:space-between}
+.revs p{font-size:15.5px;line-height:1.5}
+.revs footer{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.revs footer b{display:block;color:var(--ink);font-weight:500;margin-bottom:2px}
+.faq details{border-top:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:clamp(16px,2.2vh,26px) 0;display:flex;justify-content:space-between;
+  gap:20px;font-size:clamp(16px,1.8vw,23px);font-weight:600;letter-spacing:-.02em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"[+]";font-family:var(--mono);font-size:13px;color:var(--wine);font-weight:400}
+.faq details[open] summary::after{content:"[–]"}
+.faq .a{padding:0 0 clamp(16px,2.2vh,26px);color:var(--muted);max-width:64ch;font-size:15px}
+
+/* ---------- CTA / футер ---------- */
+.cta-band{background:var(--cool);padding:clamp(50px,9vh,120px) var(--gut);display:grid;gap:24px;justify-items:start}
+.cta-band h2{font-size:clamp(28px,5vw,74px);letter-spacing:-.04em;line-height:1;font-weight:700;max-width:15ch}
+footer.site{padding:clamp(32px,5vh,70px) var(--gut) 36px;display:grid;gap:24px;grid-template-columns:1fr;
+  border-top:1px solid var(--line)}
+@media(min-width:820px){footer.site{grid-template-columns:1.4fr 1fr 1fr}}
+footer.site a{text-decoration:none;color:var(--muted);font-size:14px;display:block;padding:3px 0}
+footer.site a:hover{color:var(--wine)}
+
+.reveal{opacity:0;transform:translateY(28px)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .room-list i{opacity:1!important}
+}
+.vbadge{position:fixed;z-index:200;left:var(--gut);bottom:16px;background:var(--wine);color:#fff;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 13px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div id="pre"><div class="num">000</div>
+  <div class="cap"><span>Kompoza</span><span>Сборка композиции</span></div></div>
+
+<header class="nav">
+  <div class="logo">KOMPOZA</div>
+  <ul>
+    <li><a href="#room">Как это работает</a></li>
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#projects">Проекты</a></li>
+    <li><a href="#estimate">Смета</a></li>
+  </ul>
+  <a class="mono" href="#cta" style="text-decoration:none;color:var(--wine)">Консультация →</a>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="mono" style="display:flex;justify-content:space-between"><span>Хоумстейджинг &amp; дизайн интерьеров</span><span>Москва · Санкт-Петербург</span></div>
+
+    <div class="hero-grid">
+      <div class="hero-mark" id="mark" aria-label="KOMPOZA" style="grid-column:1/-1"></div>
+      <div>
+        <h1>Квартира — это <em>композиция</em> из деталей</h1>
+      </div>
+      <div>
+        <p>Мы собираем интерьер из мебели, света и текстиля так, чтобы объект уходил в аренду с первых показов — и по цене выше рынка.</p>
+        <div style="margin-top:20px"><a class="btn" href="#cta">Бесплатный выезд замерщика <span aria-hidden="true">→</span></a></div>
+      </div>
+      <div class="spec">
+        <div><b>Проектов в 2025</b><span>230</span></div>
+        <div><b>Срок под ключ</b><span>от 4 недель</span></div>
+        <div><b>Смета</b><span>со ссылками</span></div>
+        <div><b>Работа онлайн</b><span>да</span></div>
+      </div>
+    </div>
+
+    <div class="mono" style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px">
+      <span>Golos Text · JetBrains Mono</span><span>Прокрутите вниз ↓</span>
+    </div>
+  </section>
+
+  <!-- ====== 3D: комната собирается по скроллу ====== -->
+  <section class="room" id="room">
+    <canvas id="scene"></canvas>
+    <div class="room-fallback" id="fallback">3D-сцена недоступна в этом браузере. На боевом сайте здесь будет статичный кадр проекта.</div>
+    <div class="room-ui">
+      <h2>Пустая квартира от застройщика — и та&nbsp;же квартира через четыре недели</h2>
+      <div></div>
+      <div class="room-list" id="roomList">
+        <i data-i="0"><b>01</b> Ковёр <span>—</span></i>
+        <i data-i="1"><b>02</b> Диван <span>—</span></i>
+        <i data-i="2"><b>03</b> Журнальный стол <span>—</span></i>
+        <i data-i="3"><b>04</b> Кресло <span>—</span></i>
+        <i data-i="4"><b>05</b> Шкаф <span>—</span></i>
+        <i data-i="5"><b>06</b> Стеллаж <span>—</span></i>
+        <i data-i="6"><b>07</b> Торшер <span>—</span></i>
+        <i data-i="7"><b>08</b> Картина и декор <span>—</span></i>
+      </div>
+      <div class="room-hint">Скролл собирает комнату</div>
+    </div>
+  </section>
+
+  <section id="services" class="wrap" style="padding-block:clamp(64px,11vh,140px)">
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:24px">
+      <h2 style="font-size:clamp(26px,3.4vw,50px);letter-spacing:-.035em;font-weight:700">Услуги</h2>
+      <span class="mono">Спецификация · 2 позиции</span>
+    </div>
+    <div class="reveal">
+      <div class="svc-row">
+        <span class="idx">[01]</span>
+        <h3>Хоумстейджинг<br>для аренды</h3>
+        <ul>
+          <li>Планировка и коллажи по каждой комнате</li>
+          <li>Смета со ссылками на каждый предмет</li>
+          <li>Закупка, доставка, сборка</li>
+          <li>Декор и фотосессия</li>
+        </ul>
+        <span class="p">от 250 000 ₽</span>
+      </div>
+      <div class="svc-row">
+        <span class="idx">[02]</span>
+        <h3>Редизайн<br>без ремонта</h3>
+        <ul>
+          <li>Аудит квартиры и объявления</li>
+          <li>Список покупок со ссылками</li>
+          <li>Стилизация и фотосессия</li>
+        </ul>
+        <span class="p">от 120 000 ₽</span>
+      </div>
+      <div class="rule"></div>
+    </div>
+  </section>
+
+  <section id="projects" class="wrap" style="padding-bottom:clamp(64px,11vh,140px)">
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:24px">
+      <h2 style="font-size:clamp(26px,3.4vw,50px);letter-spacing:-.035em;font-weight:700">Каталог проектов</h2>
+      <span class="mono">2024 — 2025</span>
+    </div>
+    <div class="cat reveal">
+      <a href="#"><div class="ph"><img src="img/p5.jpg" alt="Гостиная, ЖК Зиларт"></div>
+        <div class="m"><b>Зиларт</b><span class="mono">Студия · 28 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p2.jpg" alt="Гостиная, Мосфильмовская"></div>
+        <div class="m"><b>Мосфильмовская</b><span class="mono">Студия · 78 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p3.jpg" alt="Рабочее место, Люблинский парк"></div>
+        <div class="m"><b>Люблинский парк</b><span class="mono">Евро-2 · 42 м²</span></div></a>
+      <a href="#"><div class="ph"><img src="img/p4.jpg" alt="Хозяйственная зона, Хамовники"></div>
+        <div class="m"><b>Хамовники</b><span class="mono">1-комн · 33 м²</span></div></a>
+    </div>
+  </section>
+
+  <!-- ====== процесс: горизонтальный скролл ====== -->
+  <section class="hproc" id="hproc">
+    <div class="htrack" id="htrack">
+      <div class="hcard intro">
+        <span class="idx">Процесс</span>
+        <h4>Шесть шагов<br>от заявки<br>до фотосессии</h4>
+        <p>Каждый этап согласуем с вами. Вы видите смету до того, как мы что-то купим.</p>
+      </div>
+      <div class="hcard"><span class="idx">01</span><h4>Заявка</h4><p>Вы рассказываете об объекте. Отвечаем в течение дня.</p></div>
+      <div class="hcard"><span class="idx">02</span><h4>Консультация</h4><p>Обсуждаем цель — аренда, продажа или жизнь, — бюджет и сроки. Бесплатно.</p></div>
+      <div class="hcard"><span class="idx">03</span><h4>Концепция</h4><p>Планировочное решение и коллажи по каждой комнате.</p></div>
+      <div class="hcard"><span class="idx">04</span><h4>Подбор</h4><p>Смета со ссылками, ценами и доставкой — каждый рубль виден до закупки.</p></div>
+      <div class="hcard"><span class="idx">05</span><h4>Реализация</h4><p>Закупаем, принимаем доставки, собираем, организуем мастеров и клининг.</p></div>
+      <div class="hcard"><span class="idx">06</span><h4>Фотосессия</h4><p>Декорируем и снимаем квартиру. Фотографии ваши — для объявления и соцсетей.</p></div>
+    </div>
+  </section>
+
+  <section id="estimate" class="wrap" style="padding-block:clamp(64px,11vh,140px)">
+    <div class="reveal" style="display:grid;grid-template-columns:1fr;gap:clamp(24px,4vw,64px)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap">
+        <h2 style="font-size:clamp(26px,3.4vw,50px);letter-spacing:-.035em;font-weight:700">Каждый рубль виден</h2>
+        <span class="mono">Пример сметы · студия 28 м²</span>
+      </div>
+      <div class="est">
+        <div class="r"><span>Диван-кровать, ткань рогожка</span><span>68 400 ₽</span></div>
+        <div class="r"><span>Ковёр 200×300, шерсть</span><span>24 900 ₽</span></div>
+        <div class="r"><span>Журнальный стол, дуб</span><span>12 300 ₽</span></div>
+        <div class="r"><span>Кресло с подлокотниками</span><span>31 700 ₽</span></div>
+        <div class="r"><span>Торшер, латунь</span><span>9 800 ₽</span></div>
+        <div class="r"><span>Текстиль: шторы, подушки, плед</span><span>27 500 ₽</span></div>
+        <div class="r"><span>Декор, посуда, зелень</span><span>18 200 ₽</span></div>
+        <div class="r"><span>Доставка и сборка</span><span>21 000 ₽</span></div>
+        <div class="r tot"><span>Итого по смете</span><span>213 800 ₽</span></div>
+      </div>
+      <p class="mono">Цифры — пример для демонстрации формата, не реальная смета</p>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:clamp(64px,11vh,140px)">
+    <h2 class="reveal" style="font-size:clamp(26px,3.4vw,50px);letter-spacing:-.035em;font-weight:700;margin-bottom:24px">Отзывы</h2>
+    <div class="revs">
+      <article><p>«Покупатели приходили на просмотр уже тёплыми — фотографии продавали квартиру за нас. Продали на месяц быстрее соседей с такой же планировкой.»</p><footer><b>Игорь</b>ЖК «Зиларт» · продажа</footer></article>
+      <article><p>«Заехали в полностью готовую квартиру: от штор до посуды. Больше всего ценю честную смету — ни одной неожиданной траты.»</p><footer><b>Анна</b>Мосфильмовская · для жизни</footer></article>
+      <article><p>«Работали онлайн из другого города. Согласовывали по коллажам, приехали уже в собранное пространство.»</p><footer><b>Ольга</b>Удалённый проект</footer></article>
+    </div>
+    <p class="mono" style="margin-top:12px">Отзывы — плейсхолдеры, заменим на настоящие</p>
+  </section>
+
+  <section class="wrap faq" style="padding-bottom:clamp(64px,11vh,140px)">
+    <h2 class="reveal" style="font-size:clamp(26px,3.4vw,50px);letter-spacing:-.035em;font-weight:700;margin-bottom:20px">Вопросы</h2>
+    <details open><summary>Сколько стоит хоумстейджинг?</summary><div class="a">Полный цикл под аренду — от 250 000 ₽, редизайн без ремонта — от 120 000 ₽. Точная сумма зависит от метража и состояния отделки, считаем после бесплатного выезда.</div></details>
+    <details><summary>Нужно ли делать ремонт?</summary><div class="a">Нет. Мы работаем с квартирами, где отделка уже есть — от застройщика или после прошлых жильцов. Наша зона — мебель, свет, текстиль, декор и композиция.</div></details>
+    <details><summary>Сколько времени занимает подготовка?</summary><div class="a">Редизайн без ремонта — от двух недель. Полный цикл с закупкой и сборкой — от четырёх до шести недель, в зависимости от сроков поставки мебели.</div></details>
+    <details><summary>Можно ли работать онлайн?</summary><div class="a">Да. Концепцию и смету согласовываем удалённо, закупку и сборку берём на себя. Вы получаете фотоотчёт на каждом этапе.</div></details>
+  </section>
+</main>
+
+<section id="cta" class="cta-band">
+  <span class="mono">Первый шаг бесплатный</span>
+  <h2>Соберём вашу композицию</h2>
+  <a class="btn" href="#">Оставить заявку <span aria-hidden="true">→</span></a>
+</section>
+
+<footer class="site">
+  <div>
+    <div style="font-weight:600;letter-spacing:.3em;font-size:17px">KOMPOZA</div>
+    <p style="color:var(--muted);font-size:14px;max-width:34ch;margin-top:10px">Хоумстейджинг и дизайн интерьеров. Москва и Санкт-Петербург.</p>
+  </div>
+  <div><div class="mono" style="margin-bottom:12px">Разделы</div><a href="#services">Услуги</a><a href="#projects">Проекты</a><a href="#estimate">Смета</a><a href="#room">Как это работает</a></div>
+  <div><div class="mono" style="margin-bottom:12px">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a><a href="#">Instagram</a></div>
+</footer>
+
+<a class="vbadge" href="../index.html">← Вариант B · бордо</a>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+gsap.registerPlugin(ScrollTrigger);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!reduce) {
+  const lenis = new Lenis({duration:1.1, smoothWheel:true});
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t*1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* ---------- прелоадер: счётчик ---------- */
+const numEl = document.querySelector('#pre .num');
+if (reduce) { document.getElementById('pre').style.display='none'; }
+else {
+  const p = {v:0};
+  gsap.timeline()
+    .to(p, {v:100, duration:1.25, ease:'power2.inOut',
+      onUpdate:()=> numEl.textContent = String(Math.round(p.v)).padStart(3,'0')})
+    .to('#pre', {yPercent:-100, duration:.8, ease:'expo.inOut'}, '+=.12')
+    .set('#pre', {display:'none'});
+}
+
+/* ---------- HERO: буквы складываются в композицию ---------- */
+const mark = document.getElementById('mark');
+mark.innerHTML = 'KOMPOZA'.split('').map(l=>`<span>${l}</span>`).join('');
+if (!reduce) {
+  gsap.from('#mark span', {
+    delay:1.5, yPercent:i=>i%2?70:-70, opacity:0, duration:1.05,
+    stagger:{each:.055, from:'center'}, ease:'expo.out'
+  });
+  gsap.from('.hero-grid > div:not(.hero-mark), .hero .spec div', {
+    delay:1.95, y:18, opacity:0, duration:.7, stagger:.06, ease:'power3.out'
+  });
+}
+
+/* ---------- 3D комната ---------- */
+const canvas = document.getElementById('scene');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true}); }
+catch(e){ document.getElementById('fallback').style.display='grid'; canvas.style.display='none'; }
+
+if (renderer) {
+  const C = { wine:0x5B2824, cool:0xD1E6FD, rose:0xE6DDDB, wood:0xB08968, white:0xF7F4F3, dark:0x2A2A2A };
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  /* свет */
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xE6DDDB, 1.25));
+  const key = new THREE.DirectionalLight(0xffffff, 1.5);
+  key.position.set(5, 9, 4); key.castShadow = true;
+  key.shadow.mapSize.set(1024,1024);
+  key.shadow.camera.left=-9; key.shadow.camera.right=9; key.shadow.camera.top=9; key.shadow.camera.bottom=-9;
+  scene.add(key);
+
+  const mat = (c, rough=.85) => new THREE.MeshStandardMaterial({color:c, roughness:rough, metalness:.02});
+
+  /* коробка комнаты */
+  const room = new THREE.Group(); scene.add(room);
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(11, .25, 9), mat(0xEFE9E6));
+  floor.position.y = -.125; floor.receiveShadow = true; room.add(floor);
+  const wallBack = new THREE.Mesh(new THREE.BoxGeometry(11, 5.4, .22), mat(0xF6F2F0));
+  wallBack.position.set(0, 2.7, -4.5); wallBack.receiveShadow = true; room.add(wallBack);
+  const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(.22, 5.4, 9), mat(0xEDE7E4));
+  wallLeft.position.set(-5.5, 2.7, 0); wallLeft.receiveShadow = true; room.add(wallLeft);
+
+  /* предметы: [геометрия, материал, финальная позиция, поворотY] */
+  const box = (w,h,d)=> new THREE.BoxGeometry(w,h,d);
+  /* мягкая мебель собирается из нескольких объёмов — иначе читается как коробка */
+  const upholstered = (w, d, color, armW=.28) => {
+    const g = new THREE.Group(), m = mat(color, .92);
+    const seat = new THREE.Mesh(box(w, .45, d), m); seat.position.y = .225;
+    const back = new THREE.Mesh(box(w, .62, .26), m); back.position.set(0, .68, -d/2 + .13);
+    const armL = new THREE.Mesh(box(armW, .52, d), m); armL.position.set(-w/2 + armW/2, .52, 0);
+    const armR = armL.clone(); armR.position.x = w/2 - armW/2;
+    [seat, back, armL, armR].forEach(p=>{ p.castShadow = true; p.receiveShadow = true; g.add(p); });
+    return g;
+  };
+
+  const defs = [
+    { name:'Ковёр',      geo: box(6.2, .06, 4.2),  m: mat(C.cool, .95),  pos:[.1, .03, .55] },
+    { name:'Диван',      build:()=>upholstered(3.6, 1.5, C.wine),        pos:[-1.2, 0, -.6] },
+    { name:'Стол',       geo: box(1.5, .42, .95),  m: mat(C.wood, .7),   pos:[.6, .21, 1.5] },
+    { name:'Кресло',     build:()=>upholstered(1.15, 1.05, C.rose, .2),  pos:[2.9, 0, 1.9], rot:-.55 },
+    { name:'Шкаф',       geo: box(1.4, 3.2, .7),   m: mat(C.white, .8),  pos:[4.2, 1.6, -3.6] },
+    { name:'Стеллаж',    geo: box(3.2, .12, .5),   m: mat(C.wood, .7),   pos:[-3.1, 1.9, -4.1] },
+    { name:'Торшер',     geo: null,                m: null,              pos:[-4.2, 0, -2.2] },
+    { name:'Картина',    geo: box(1.7, 1.15, .07), m: mat(C.wine, .6),   pos:[1.4, 2.5, -4.32] },
+  ];
+
+  const items = [];
+  defs.forEach((d, i) => {
+    let mesh;
+    if (d.build) {
+      mesh = d.build();
+    } else if (d.name === 'Торшер') {
+      mesh = new THREE.Group();
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,2.3,12), mat(0x3A3A3A,.5));
+      pole.position.y = 1.15; pole.castShadow = true;
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,.07,20), mat(0x3A3A3A,.5));
+      base.position.y = .035; base.castShadow = true;
+      const shade = new THREE.Mesh(new THREE.CylinderGeometry(.42,.55,.62,20, 1, true),
+        new THREE.MeshStandardMaterial({color:0xFFF6EE, roughness:1, side:THREE.DoubleSide, emissive:0xFFE9D6, emissiveIntensity:.45}));
+      shade.position.y = 2.45;
+      mesh.add(pole, base, shade);
+    } else {
+      mesh = new THREE.Mesh(d.geo, d.m);
+      mesh.castShadow = true; mesh.receiveShadow = true;
+    }
+    mesh.position.set(d.pos[0], d.pos[1], d.pos[2]);
+    if (d.rot) mesh.rotation.y = d.rot;
+    mesh.userData.finalY = d.pos[1];
+    mesh.visible = false;
+    room.add(mesh);
+    items.push(mesh);
+  });
+
+  /* подушки и зелень как «декор» — привязаны к последнему пункту */
+  const deco = new THREE.Group();
+  const cushion = new THREE.Mesh(box(.5,.5,.18), mat(C.cool,.95));
+  cushion.position.set(-2.3, .72, -.9); cushion.rotation.z = .18; cushion.castShadow = true;
+  const cushion2 = new THREE.Mesh(box(.46,.46,.17), mat(C.rose,.95));
+  cushion2.position.set(-.35, .70, -.88); cushion2.rotation.z = -.14; cushion2.castShadow = true;
+  const vase = new THREE.Mesh(new THREE.CylinderGeometry(.11,.15,.42,16), mat(C.white,.6));
+  vase.position.set(.55, .63, 1.5); vase.castShadow = true;
+  deco.add(cushion, cushion2, vase);
+  deco.visible = false; room.add(deco);
+  items[7].userData.deco = deco;
+
+  /* размеры */
+  function resize(){
+    const r = canvas.getBoundingClientRect();
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+  }
+  resize(); addEventListener('resize', resize);
+
+  /* прогресс сборки */
+  let progress = 0, camAngle = 0;
+  const listEls = [...document.querySelectorAll('#roomList i')];
+
+  function apply(p){
+    const n = items.length;
+    items.forEach((it, i) => {
+      const start = i / n, end = start + (1/n) * .8;
+      let t = (p - start) / (end - start);
+      t = Math.max(0, Math.min(1, t));
+      const ease = 1 - Math.pow(1 - t, 3);
+      it.visible = t > 0;
+      it.position.y = it.userData.finalY + (1 - ease) * 5.5;
+      const s = .55 + ease * .45;
+      it.scale.setScalar(s);
+      if (it.userData.deco) { it.userData.deco.visible = t > .55; }
+      listEls[i]?.classList.toggle('on', t > .12);
+      const val = listEls[i]?.querySelector('span');
+      if (val) val.textContent = t >= 1 ? '✓' : (t > .12 ? '···' : '—');
+    });
+  }
+  apply(0);
+
+  function render(){
+    /* облёт камеры: стартуем спереди-справа, чтобы левая стена не закрывала сцену */
+    const a = 0.82 - camAngle * 0.42;
+    const rad = 17.5 - camAngle * 1.6;
+    camera.position.set(Math.sin(a) * rad, 9.6 - camAngle * 2.4, Math.cos(a) * rad);
+    camera.lookAt(0, 1.3, -.3);
+    renderer.render(scene, camera);
+  }
+  render();
+  gsap.ticker.add(render);
+
+  /* хук для просмотра сцены на любом прогрессе без скролла (только для прототипа) */
+  window.__room = { set(p){ camAngle = p; apply(p); render(); } };
+
+  if (reduce) { apply(1); camAngle = .5; render(); }
+  else {
+    ScrollTrigger.create({
+      trigger:'#room', start:'top top', end:()=>'+=' + (innerHeight * 2.6), pin:true, scrub:.6,
+      invalidateOnRefresh:true,
+      onUpdate:s=>{ progress = s.progress; camAngle = s.progress; apply(progress); }
+    });
+  }
+}
+
+/* ---------- появление блоков ---------- */
+gsap.set('.reveal', {opacity:0, y:28});
+gsap.utils.toArray('.reveal').forEach(el=>{
+  gsap.to(el, {opacity:1, y:0, duration:.8, ease:'expo.out', scrollTrigger:{trigger:el, start:'top 88%'}});
+});
+
+/* ---------- процесс: горизонтальный пиннинг ---------- */
+const track = document.getElementById('htrack');
+if (!reduce) {
+  const dist = () => track.scrollWidth - innerWidth;
+  gsap.to(track, {
+    x: () => -dist(), ease:'none',
+    scrollTrigger:{ trigger:'#hproc', start:'top top', end:()=>'+=' + dist(), pin:true, scrub:.5, invalidateOnRefresh:true }
+  });
+} else {
+  document.getElementById('hproc').style.overflowX = 'auto';
+  track.style.height = 'auto';
+}
+</script>
+</body>
+</html>

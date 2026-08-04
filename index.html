@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOMPOZA — версии сайта</title>
+<meta name="description" content="Прототипы сайта студии хоумстейджинга KOMPOZA: четыре направления с разными 3D-сценариями.">
+<meta property="og:title" content="KOMPOZA — версии сайта">
+<meta property="og:description" content="Четыре направления сайта студии хоумстейджинга, каждое со своей 3D-механикой.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0B0C; --panel:#141416; --ink:#F3EFEC; --muted:#8A8078;
+  --coral:#FF9775; --wine:#5B2824; --cool:#D1E6FD; --greige:#EDE6E2;
+  --line:rgba(243,239,236,.13);
+  --sans:'Golos Text',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --gut:clamp(18px,4vw,72px);
+  --e:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+.wrap{padding-inline:var(--gut)}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- заставка ---------- */
+.top{position:relative;min-height:min(78svh,760px);display:grid;overflow:hidden;
+  border-bottom:1px solid var(--line)}
+.top canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.top-ui{position:relative;z-index:2;display:grid;align-content:center;gap:20px;
+  padding:clamp(60px,10vh,120px) var(--gut)}
+.top h1{font-size:clamp(30px,5.4vw,78px);letter-spacing:-.045em;line-height:1;font-weight:800;max-width:17ch;
+  text-shadow:0 2px 44px rgba(11,11,12,.75)}
+.top h1 em{font-style:normal;color:var(--coral)}
+.top p{color:var(--muted);max-width:56ch;font-size:15.5px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.legend i{width:11px;height:11px;display:block}
+
+/* ---------- карточки версий ---------- */
+.grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line)}
+@media(min-width:820px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--panel);text-decoration:none;display:grid;grid-template-rows:auto 1fr auto;
+  padding:clamp(22px,3vw,42px);gap:18px;transition:background .45s var(--e)}
+.card:hover,.card:focus-visible{background:#1B1B1F;outline:none}
+.card:focus-visible{box-shadow:inset 0 0 0 2px var(--coral)}
+.card .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.card .sw{display:flex;gap:3px}
+.card .sw i{width:16px;height:16px;display:block;border:1px solid rgba(255,255,255,.16)}
+.card h2{font-size:clamp(21px,2.5vw,34px);letter-spacing:-.032em;font-weight:700;line-height:1.04}
+.card .kind{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--coral)}
+.card p{color:var(--muted);font-size:14.5px}
+.card dl{margin:0;display:grid;gap:8px}
+.card dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card dd{margin:0;font-size:14.5px}
+.card .go{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:14.5px;color:var(--coral);
+  transition:gap .3s var(--e)}
+.card:hover .go{gap:16px}
+
+/* ---------- прочее ---------- */
+.sec{padding-block:clamp(48px,8vh,110px)}
+.sec h2{font-size:clamp(22px,3vw,42px);letter-spacing:-.04em;font-weight:700;margin-bottom:18px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line)}
+.notes div{background:var(--panel);padding:clamp(18px,2.2vw,30px)}
+.notes h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.notes p{color:var(--muted);font-size:14px}
+.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px}
+.links a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  border-bottom:1px solid var(--line);padding-bottom:3px;text-decoration:none;color:var(--muted)}
+.links a:hover{color:var(--coral);border-color:var(--coral)}
+footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <canvas id="markScene"></canvas>
+  <div class="top-ui">
+    <span class="mono">Композа · хоумстейджинг и дизайн интерьеров · прототипы</span>
+    <h1>Четыре направления сайта — и в каждом своя <em>3D-механика</em></h1>
+    <p>Это рабочие прототипы, а не картинки. Открывайте и скроллите: в каждом варианте 3D-сцена решает свою задачу — показать услугу, а не украсить страницу. Айдентика во всех вариантах сохранена.</p>
+    <div class="legend">
+      <span><i style="background:#FF9775"></i>A · коралл</span>
+      <span><i style="background:#5B2824"></i>B · бордо</span>
+      <span><i style="background:#EDE6E2"></i>C · чертёж</span>
+      <span><i style="background:#D1E6FD"></i>D · конфигуратор</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+
+    <a class="card" href="design/variant-b.html">
+      <div class="hd">
+        <div><span class="kind">Вариант B · инженерная точность</span>
+          <h2 style="margin-top:8px">Комната собирается<br>по скроллу</h2></div>
+        <div class="sw"><i style="background:#FFFFFF"></i><i style="background:#E6DDDB"></i><i style="background:#5B2824"></i><i style="background:#D1E6FD"></i></div>
+      </div>
+      <p>Пустая квартира от застройщика — и по мере прокрутки в неё влетают восемь позиций комплектации. Слева чек-лист отмечает каждую галочкой, камера облетает сцену.</p>
+      <dl>
+        <dt>3D-механика</dt><dd>Сборка комнаты, привязанная к скроллу</dd>
+        <dt>Типографика</dt><dd>Golos Text + JetBrains Mono — настоящие, бесплатные</dd>
+      </dl>
+      <span class="go">Открыть <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="card" href="design/variant-c.html">
+      <div class="hd">
+        <div><span class="kind">Вариант C · чертёж оживает</span>
+          <h2 style="margin-top:8px">План поднимается<br>в пространство</h2></div>
+        <div class="sw"><i style="background:#0B0B0C"></i><i style="background:#FF9775"></i><i style="background:#EDE6E2"></i></div>
+      </div>
+      <p>Тёмная кинематографичная тема. Сверху — светящийся план квартиры на чертёжной сетке; скролл поднимает стены в объём, включает свет и расставляет мебель. Передние стены срезаны, как на архитектурном макете.</p>
+      <dl>
+        <dt>3D-механика</dt><dd>Экструзия плана + пролёт камеры сверху в интерьер</dd>
+        <dt>Типографика</dt><dd>Inter Tight + JetBrains Mono</dd>
+      </dl>
+      <span class="go">Открыть <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="card" href="design/variant-d.html">
+      <div class="hd">
+        <div><span class="kind">Вариант D · конфигуратор</span>
+          <h2 style="margin-top:8px">Смета, которую<br>собирают кликом</h2></div>
+        <div class="sw"><i style="background:#F4F1EF"></i><i style="background:#5B2824"></i><i style="background:#D1E6FD"></i><i style="background:#E6DDDB"></i></div>
+      </div>
+      <p>Единственный вариант без скролл-сценария: комната интерактивная. Клик по предмету — или по строке в списке — убирает его из комплектации, и смета пересчитывается на глазах. Прямая демонстрация «честной сметы».</p>
+      <dl>
+        <dt>3D-механика</dt><dd>Клик по объекту через raycaster, живой пересчёт сметы</dd>
+        <dt>Типографика</dt><dd>Golos Text + JetBrains Mono</dd>
+      </dl>
+      <span class="go">Открыть <span aria-hidden="true">→</span></span>
+    </a>
+
+    <a class="card" href="design/variant-a.html">
+      <div class="hd">
+        <div><span class="kind">Вариант A · тёплый редакционный</span>
+          <h2 style="margin-top:8px">Детали слетаются<br>в композицию</h2></div>
+        <div class="sw"><i style="background:#FFFFFF"></i><i style="background:#EDE6E2"></i><i style="background:#000000"></i><i style="background:#FF9775"></i></div>
+      </div>
+      <p>Журнальная подача с огромной типографикой. Предметы парят в разлёте и по скроллу стягиваются в собранный натюрморт — счётчик показывает процент сборки. Ниже — коралловые «шпильки», подписывающие каждый предмет на фото.</p>
+      <dl>
+        <dt>3D-механика</dt><dd>Разлёт → сборка предметов, параллакс за курсором</dd>
+        <dt>Типографика</dt><dd>Oceanic Grotesk + Oceanic Text — в прототипе подстановка</dd>
+      </dl>
+      <span class="go">Открыть <span aria-hidden="true">→</span></span>
+    </a>
+
+  </div>
+
+  <section class="sec wrap">
+    <h2>Что дальше</h2>
+    <div class="notes">
+      <div><h3>Механики можно соединить</h3><p>Сборка комнаты из B, экструзия плана из C и кликабельная смета из D живут в одной сцене: план поднимается, комната наполняется, предметы остаются интерактивными.</p></div>
+      <div><h3>Это прототипы на чистом HTML</h3><p>Так быстрее итерировать. На Next.js переносятся без потерь: разметка, сцены и анимации переиспользуются, добавится сборка, SSR и оптимизация картинок.</p></div>
+      <div><h3>Контент временный</h3><p>Фотографии — реальные съёмки с текущего сайта. Отзывы, цифры в сметах и портрет основателя — плейсхолдеры, помечены прямо на страницах.</p></div>
+      <div><h3>Производительность</h3><p>Сцены собраны на примитивах без загрузки моделей, тени только от ключевого света. Уважается системная настройка «уменьшить движение».</p></div>
+    </div>
+    <div class="links">
+      <a href="design/concepts.html">Сравнение концепций айдентики</a>
+      <a href="design/variant-a.html">Вариант A</a>
+      <a href="design/variant-b.html">Вариант B</a>
+      <a href="design/variant-c.html">Вариант C</a>
+      <a href="design/variant-d.html">Вариант D</a>
+    </div>
+  </section>
+</main>
+
+<footer>KOMPOZA · прототипы сайта · 2026</footer>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { createStage, easeOut, pointer, REDUCED } from './design/lib/three-kit.js';
+
+/* Монограмма «K» набирается вокселями в четыре цвета — по одному на каждый вариант. */
+const MASK = [
+  'X...X',
+  'X..X.',
+  'X.X..',
+  'XX...',
+  'X.X..',
+  'X..X.',
+  'X...X',
+];
+const PALETTE = [0xFF9775, 0x5B2824, 0xEDE6E2, 0xD1E6FD];
+
+const canvas = document.getElementById('markScene');
+const stage = createStage(canvas, { fov: 32, bg: 0x0B0B0C });
+
+if (stage) {
+  const { scene, camera, box, mat } = stage;
+  scene.add(new THREE.HemisphereLight(0xC9D9F5, 0x1A1414, .75));
+  const key = new THREE.DirectionalLight(0xFFF2E8, 2.0);
+  key.position.set(5, 8, 7); key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  Object.assign(key.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: .5, far: 34 });
+  scene.add(key);
+  /* position у объектов three доступен только на чтение — задаём через .set(), не присваиванием */
+  const rim = new THREE.DirectionalLight(0xFF9775, .55);
+  rim.position.set(-6, 2, -5);
+  scene.add(rim);
+
+  const S = 0.82;
+  const cubes = [];
+  let n = 0;
+  MASK.forEach((row, r) => {
+    [...row].forEach((ch, c) => {
+      if (ch !== 'X') return;
+      const m = new THREE.Mesh(box(.78, .78, .78), mat(PALETTE[n % PALETTE.length], .78));
+      m.castShadow = true; m.receiveShadow = true;
+      const to = [(c - 2) * S, (3 - r) * S, 0];
+      /* точка разлёта — детерминированная, чтобы кадр был стабильным между загрузками */
+      const ang = n * 2.399;
+      const from = [to[0] + Math.cos(ang) * 2.6, to[1] + Math.sin(ang * 1.7) * 1.9, Math.sin(ang) * 4.5];
+      m.userData = { to, from, spin: [Math.cos(ang), Math.sin(ang * .7), Math.sin(ang * 1.3)] };
+      scene.add(m); cubes.push(m); n++;
+    });
+  });
+
+  const ptr = pointer();
+  let t0 = performance.now(), px = 0, py = 0, last = t0;
+
+  stage.onTick(() => {
+    const now = performance.now(), dt = Math.min((now - last) / 1000, .05); last = now;
+    /* сборка проигрывается один раз при загрузке */
+    const elapsed = (now - t0) / 1000;
+    const p = REDUCED ? 1 : Math.min(1, Math.max(0, (elapsed - .35) / 2.1));
+
+    cubes.forEach((m, i) => {
+      const local = easeOut(Math.min(1, Math.max(0, p * cubes.length * .5 - i * .28)));
+      const d = m.userData;
+      m.position.set(
+        d.from[0] + (d.to[0] - d.from[0]) * local,
+        d.from[1] + (d.to[1] - d.from[1]) * local,
+        d.from[2] + (d.to[2] - d.from[2]) * local
+      );
+      m.rotation.set(d.spin[0] * (1 - local) * 2.4, d.spin[1] * (1 - local) * 2.4, d.spin[2] * (1 - local) * 2.4);
+      m.scale.setScalar(.35 + local * .65);
+    });
+
+    px += (ptr.x * .9 - px) * Math.min(1, dt * 2.2);
+    py += (ptr.y * .5 - py) * Math.min(1, dt * 2.2);
+    const drift = REDUCED ? 0 : Math.sin(elapsed * .25) * .35;
+    camera.position.set(1.4 + px + drift, 1.1 - py, 12.8);
+    /* цель левее монограммы — она уходит в правую половину кадра, под текст слева */
+    camera.lookAt(-3.4, .1, 0);
+  });
+
+  /* первый кадр рисуем синхронно — иначе до первого rAF заставка пустая */
+  stage.resize(); stage.render();
+  const loop = () => { stage.render(); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+  window.__mark = stage;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ru" data-concept="2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOMPOZA — сравнение концепций айдентики</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700;900&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ease: cubic-bezier(.22,1,.36,1);
+  --ease-io: cubic-bezier(.65,0,.35,1);
+  --dur: .9s;
+  --gut: clamp(20px, 4vw, 64px);
+}
+
+/* Концепция 1 — коралл */
+[data-concept="1"]{
+  --bg:        #FFFFFF;
+  --surface:   #EDE6E2;
+  --ink:       #000000;
+  --accent:    #FF9775;
+  --accent-ink:#000000;
+  --muted:     #8A8078;
+  --line:      rgba(0,0,0,.12);
+  --display:   'Inter Tight', system-ui, sans-serif;
+  --body:      'Inter Tight', system-ui, sans-serif;
+  --util:      'Inter Tight', system-ui, sans-serif;  /* служебное — тот же гротеск */
+  --accent-face:'PT Serif', Georgia, serif;           /* засечный только как акцент */
+  --track:     -.045em;   /* плотный логотип */
+  --radius:    2px;
+  --disp-weight: 700;
+}
+/* Концепция 2 — бордо */
+[data-concept="2"]{
+  --bg:        #FFFFFF;
+  --surface:   #E6DDDB;
+  --ink:       #000000;
+  --accent:    #5B2824;
+  --accent-ink:#FFFFFF;
+  --cool:      #D1E6FD;
+  --muted:     #8B7F7D;
+  --line:      rgba(91,40,36,.18);
+  --display:   'Golos Text', system-ui, sans-serif;
+  --body:      'Golos Text', system-ui, sans-serif;
+  --util:      'JetBrains Mono', ui-monospace, monospace;
+  --accent-face:'Golos Text', system-ui, sans-serif;
+  --track:     .34em;     /* разреженный логотип */
+  --radius:    0px;
+  --disp-weight: 500;
+}
+[data-concept="1"]{ --cool: #EDE6E2; }
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+
+/* ============ ПЕРЕКЛЮЧАТЕЛЬ ============ */
+.switch{
+  position:fixed; z-index:100; bottom:22px; left:50%; transform:translateX(-50%);
+  display:flex; gap:0; align-items:stretch;
+  border:1px solid var(--ink); background:var(--bg);
+  box-shadow:0 6px 28px rgba(0,0,0,.14);
+  transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.switch button{
+  font-family:var(--util); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  padding:11px 16px; border:0; background:transparent; color:var(--ink); cursor:pointer;
+  transition:background .45s var(--ease), color .45s var(--ease);
+}
+.switch button[aria-pressed="true"]{ background:var(--ink); color:var(--bg); }
+.switch button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+/* ============ HERO ============ */
+.hero{
+  min-height:100svh; position:relative; display:grid;
+  grid-template-rows:auto 1fr auto; padding:var(--gut); padding-bottom:80px; gap:24px;
+  border-bottom:1px solid var(--line);
+}
+.topbar{display:flex; justify-content:space-between; align-items:baseline; gap:24px; flex-wrap:wrap}
+.eyebrow{
+  font-family:var(--util); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); transition:font-family var(--dur) var(--ease);
+}
+
+/* Логотип: буквы как отдельные «детали» */
+.wordmark{
+  display:flex; justify-content:center; align-items:center; flex-wrap:nowrap;
+  white-space:nowrap; max-width:100%;
+  font-family:var(--display); font-weight:var(--disp-weight);
+  font-size:clamp(30px, 8.6vw, 124px); line-height:.9;
+  letter-spacing:var(--track);
+  transition:letter-spacing var(--dur) var(--ease), font-weight var(--dur) var(--ease);
+}
+/* letter-spacing добавляет пробел и после последней буквы — снимаем его, иначе логотип уезжает вправо */
+.wordmark span:last-child{ margin-right:calc(-1 * var(--track)); }
+.wordmark span{
+  display:inline-block;
+  transition:transform var(--dur) var(--ease), color var(--dur) var(--ease);
+  will-change:transform;
+}
+/* при переключении буквы «разлетаются и пересобираются» */
+.wordmark.morph span{ transform:translateY(var(--dy)) rotate(var(--dr)); }
+
+.hero-body{
+  display:grid; grid-template-columns:1fr; gap:clamp(24px,5vw,64px);
+  align-items:end;
+}
+@media(min-width:900px){ .hero-body{grid-template-columns:1.15fr .85fr} }
+
+.claim{
+  font-family:var(--display); font-weight:var(--disp-weight);
+  font-size:clamp(26px,3.4vw,46px); line-height:1.08; letter-spacing:-.02em;
+  max-width:16ch; margin:0;
+}
+[data-concept="1"] .claim em{ font-family:var(--accent-face); font-style:italic; font-weight:400; }
+[data-concept="2"] .claim em{ font-style:normal; color:var(--accent); }
+
+.lede{ color:var(--muted); font-size:15px; line-height:1.6; max-width:44ch; margin:18px 0 0 }
+
+/* Фото-панель с «деталями» */
+.stage{ position:relative; aspect-ratio:5/4; max-height:44svh; overflow:hidden; border-radius:var(--radius); background:var(--surface); }
+.stage img{ width:100%; height:100%; object-fit:cover; }
+.stage::after{
+  content:""; position:absolute; inset:0;
+  background:var(--accent); mix-blend-mode:multiply; opacity:0;
+  transition:opacity var(--dur) var(--ease);
+}
+[data-concept="2"] .stage::after{ opacity:.16 }
+[data-concept="1"] .stage::after{ opacity:.10 }
+
+/* Плашка-«деталь», парящая над фото */
+.detail-chip{
+  position:absolute; left:0; bottom:22px; padding:14px 20px 16px;
+  background:var(--accent); color:var(--accent-ink);
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
+  max-width:76%;
+}
+.detail-chip b{ display:block; font-size:26px; font-weight:700; letter-spacing:-.02em; line-height:1 }
+.detail-chip small{ font-family:var(--util); font-size:10px; letter-spacing:.1em; text-transform:uppercase; opacity:.82 }
+
+.hero-foot{ display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+  border-top:1px solid var(--line); padding-top:16px }
+
+.cta{
+  display:inline-flex; align-items:center; gap:12px;
+  background:var(--accent); color:var(--accent-ink);
+  border:0; border-radius:var(--radius);
+  font-family:var(--body); font-size:14px; font-weight:600;
+  padding:15px 26px; cursor:pointer; text-decoration:none;
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease), transform .3s var(--ease);
+}
+.cta:hover{ transform:translateX(4px) }
+.cta:focus-visible{ outline:2px solid var(--ink); outline-offset:3px }
+
+/* ============ СИСТЕМА ============ */
+.system{ padding:clamp(48px,8vh,110px) var(--gut); display:grid; gap:clamp(32px,5vw,64px) }
+.sec-title{
+  font-family:var(--util); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 20px
+}
+.grid3{ display:grid; gap:clamp(20px,3vw,40px); grid-template-columns:1fr }
+@media(min-width:820px){ .grid3{grid-template-columns:repeat(3,1fr)} }
+
+/* палитра */
+.swatches{ display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:2px }
+.sw{ height:clamp(92px,13vh,132px); display:flex; align-items:flex-end; padding:10px;
+  font-family:var(--util); font-size:10px; letter-spacing:.04em;
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease) }
+
+/* типографика */
+.type-spec dt{ font-family:var(--display); font-size:clamp(24px,3vw,38px); font-weight:var(--disp-weight); letter-spacing:-.01em; margin-top:14px }
+.type-spec dd{ margin:4px 0 0; font-family:var(--util); font-size:11px; letter-spacing:.06em; color:var(--muted); text-transform:uppercase }
+.type-sample{ font-size:15px; line-height:1.65; color:var(--muted); margin-top:6px; font-family:var(--body) }
+
+/* карточка проекта */
+.card{ border-radius:var(--radius); overflow:hidden; background:var(--surface);
+  transition:background var(--dur) var(--ease), transform .5s var(--ease) }
+.card:hover{ transform:translateY(-6px) }
+.card .ph{ aspect-ratio:4/3; overflow:hidden }
+.card .ph img{ width:100%;height:100%;object-fit:cover; transition:transform .8s var(--ease) }
+.card:hover .ph img{ transform:scale(1.05) }
+.card .meta{ padding:16px 18px 20px }
+.card h4{ margin:0; font-family:var(--display); font-weight:var(--disp-weight); font-size:19px; letter-spacing:-.01em }
+.card p{ margin:5px 0 0; font-family:var(--util); font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted) }
+
+/* заметки */
+.notes{ background:var(--surface); padding:clamp(36px,6vw,80px) var(--gut);
+  transition:background var(--dur) var(--ease) }
+.notes-inner{ display:grid; gap:28px; grid-template-columns:1fr }
+@media(min-width:820px){ .notes-inner{grid-template-columns:1fr 1fr} }
+.note h3{ font-family:var(--display); font-weight:var(--disp-weight); font-size:20px; margin:0 0 12px; letter-spacing:-.01em }
+.note ul{ margin:0; padding-left:0; list-style:none }
+.note li{ position:relative; padding-left:22px; margin-bottom:9px; font-size:14px; line-height:1.55 }
+.note li::before{ content:""; position:absolute; left:0; top:.55em; width:9px; height:1px; background:var(--accent);
+  transition:background var(--dur) var(--ease) }
+.note li.warn::before{ height:9px; top:.28em; width:9px; border-radius:50%; background:transparent; border:1px solid var(--muted) }
+
+.foot{ padding:26px var(--gut) 60px; font-family:var(--util); font-size:11px; letter-spacing:.06em;
+  color:var(--muted); text-transform:uppercase; border-top:1px solid var(--line) }
+
+/* появление по скроллу */
+.reveal{ opacity:0; transform:translateY(26px); transition:opacity .8s var(--ease), transform .8s var(--ease) }
+.reveal.in{ opacity:1; transform:none }
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ animation-duration:.01ms!important; transition-duration:.01ms!important }
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="switch" role="group" aria-label="Выбор концепции айдентики">
+  <button type="button" data-set="1" aria-pressed="false">Концепция 1 · коралл</button>
+  <button type="button" data-set="2" aria-pressed="true">Концепция 2 · бордо</button>
+</div>
+
+<header class="hero">
+  <div class="topbar">
+    <span class="eyebrow" id="tagline">Хоумстейджинг &amp; дизайн интерьеров · Москва и Санкт-Петербург</span>
+    <span class="eyebrow">kompoza.ru</span>
+  </div>
+
+  <div style="display:grid;gap:clamp(18px,3vw,38px);align-content:center;min-height:0">
+    <div class="wordmark" id="wordmark" aria-label="KOMPOZA"></div>
+
+    <div class="hero-body">
+      <div>
+        <h1 class="claim" id="claim">Квартира — это <em>композиция</em> из деталей</h1>
+        <p class="lede" id="lede">Собираем интерьер из мебели, света и текстиля так, чтобы объект уходил в аренду с первых показов — и по цене выше рынка.</p>
+        <div style="margin-top:26px"><a class="cta" href="#" onclick="return false">Бесплатная консультация <span aria-hidden="true">→</span></a></div>
+      </div>
+
+      <figure class="stage" style="margin:0">
+        <img src="https://optim.tildacdn.com/tild3363-6164-4231-a333-376564346164/DSC_1227-HDR.jpg" alt="Интерьер гостиной, проект студии KOMPOZA">
+        <figcaption class="detail-chip"><b>230</b><small>проектов собрано в 2025</small></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="hero-foot">
+    <span class="eyebrow">Проекты · Услуги · О студии · Контакты</span>
+    <span class="eyebrow" id="fontnote">Golos Text + JetBrains Mono</span>
+  </div>
+</header>
+
+<main>
+  <section class="system">
+    <div class="reveal">
+      <h2 class="sec-title">Палитра</h2>
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <div class="grid3">
+      <div class="reveal">
+        <h2 class="sec-title">Типографика</h2>
+        <dl class="type-spec" id="typespec"></dl>
+      </div>
+      <div class="reveal" style="grid-column:span 2">
+        <h2 class="sec-title">Проекты</h2>
+        <div class="grid3" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+          <article class="card">
+            <div class="ph"><img src="https://optim.tildacdn.com/tild6331-3132-4364-b164-626165643436/DSC_1284-HDR_1.jpg" alt="Проект на Мосфильмовской"></div>
+            <div class="meta"><h4>Мосфильмовская</h4><p>Студия · 78 м²</p></div>
+          </article>
+          <article class="card">
+            <div class="ph"><img src="https://optim.tildacdn.com/tild6461-6164-4232-a164-326134373265/DSC_4546.jpg" alt="Проект в ЖК Люблинский парк"></div>
+            <div class="meta"><h4>Люблинский парк</h4><p>Евро-2 · 42 м²</p></div>
+          </article>
+          <article class="card">
+            <div class="ph"><img src="https://optim.tildacdn.com/tild6331-6632-4536-a131-373663333232/DSC_1472.jpg" alt="Проект в ЖК Зиларт"></div>
+            <div class="meta"><h4>Зиларт</h4><p>Студия · 28 м²</p></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes">
+    <div class="notes-inner">
+      <div class="note reveal">
+        <h3 id="note-title">Что даёт эта концепция</h3>
+        <ul id="note-pros"></ul>
+      </div>
+      <div class="note reveal">
+        <h3>На что закладываться</h3>
+        <ul id="note-cons"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  Сравнение концепций айдентики · фотографии — реальные съёмки студии с текущего сайта
+</footer>
+
+<script>
+const DATA = {
+  "1": {
+    tagline: "Хоумстейджинг & дизайн интерьеров · Москва и Санкт-Петербург",
+    claim: 'Важна <em>каждая деталь</em>',
+    lede: 'Собираем интерьер из мебели, света и текстиля так, чтобы объект уходил в аренду с первых показов — и по цене выше рынка.',
+    fontnote: 'Oceanic Grotesk + Oceanic Text · подстановка',
+    swatches: [
+      ["#FFFFFF","#000000","Белый"],
+      ["#EDE6E2","#000000","Тёплый греж"],
+      ["#000000","#FFFFFF","Чёрный"],
+      ["#FF9775","#000000","Коралл"]
+    ],
+    type: [
+      ["Oceanic Grotesk","Дисплей · заголовки","Подставлен Inter Tight — Oceanic лицензируется платно"],
+      ["Oceanic Text","Акцент · цитаты","Подставлен PT Serif"]
+    ],
+    pros: [
+      "Прямая преемственность: текущий сайт и соцсети уже коралловые — узнаваемость не сбрасывается в ноль",
+      "Коралл на беже читается тепло и «жилой», это точное попадание в хоумстейджинг",
+      "Высокий контраст акцента — CTA и цены выделяются без усилий",
+      "Палитра из 4 цветов проще в поддержке и сложнее испортить"
+    ],
+    cons: [
+      "Шрифты Oceanic от TypeToday — платная лицензия, для веба нужна отдельная (webfont)",
+      "Пока лицензии нет, сайт будет жить на подстановке — айдентика поедет",
+      "Коралл — самый частый акцент в нише ремонта и дизайна, отстройки от конкурентов даёт меньше",
+      "Всего один акцентный цвет: длинную страницу с 12 секциями им сложно ритмизировать"
+    ]
+  },
+  "2": {
+    tagline: "Хоумстейджинг & дизайн интерьеров · Москва и Санкт-Петербург",
+    claim: 'Квартира — это <em>композиция</em> из деталей',
+    lede: 'Собираем интерьер из мебели, света и текстиля так, чтобы объект уходил в аренду с первых показов — и по цене выше рынка.',
+    fontnote: 'Golos Text + JetBrains Mono',
+    swatches: [
+      ["#FFFFFF","#000000","Белый"],
+      ["#E6DDDB","#000000","Розовато-серый"],
+      ["#5B2824","#FFFFFF","Бордо"],
+      ["#D1E6FD","#000000","Голубой"],
+      ["#000000","#FFFFFF","Чёрный"]
+    ],
+    type: [
+      ["Golos Text","Дисплей и текст","Бесплатная, отличная кириллица, есть веб-начертания"],
+      ["JetBrains Mono","Утилитарный · подписи, цифры","Бесплатная, задаёт «инженерную» точность"]
+    ],
+    pros: [
+      "Шрифты бесплатные и есть в вебе — айдентика на сайте будет ровно такой, как в презентации",
+      "Пять цветов вместо четырёх: длинную страницу есть чем ритмизировать без визуального шума",
+      "Бордо + голубой — редкая пара в нише, отстройка от конкурентов сильная",
+      "Разреженный трекинг логотипа — готовая анимация: буквы буквально «складываются в композицию»",
+      "Моноширинный шрифт для смет, метражей и цен — попадание в вашу услугу «честная смета»"
+    ],
+    cons: [
+      "Разрыв с текущим сайтом и соцсетями — узнаваемость придётся набирать заново",
+      "Бордо тяжелее коралла: на больших плоскостях легко уйти в «дорого-богато», нужна дисциплина по площади",
+      "Голубой #D1E6FD близок к серому на плохих экранах — нужен контроль контраста",
+      "Пять цветов требуют строгих правил применения, иначе система расползётся"
+    ]
+  }
+};
+
+const root = document.documentElement;
+const LETTERS = "KOMPOZA".split("");
+
+// собрать логотип из букв-«деталей»
+const wm = document.getElementById('wordmark');
+wm.innerHTML = LETTERS.map(l => `<span>${l}</span>`).join('');
+const spans = [...wm.querySelectorAll('span')];
+
+function render(c){
+  const d = DATA[c];
+  document.getElementById('tagline').textContent = d.tagline;
+  document.getElementById('claim').innerHTML = d.claim;
+  document.getElementById('lede').textContent = d.lede;
+  document.getElementById('fontnote').textContent = d.fontnote;
+
+  document.getElementById('swatches').innerHTML = d.swatches
+    .map(([bg,fg,name]) => `<div class="sw" style="background:${bg};color:${fg};${bg==='#FFFFFF'?'box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)':''}">${name}<br>${bg}</div>`)
+    .join('');
+
+  document.getElementById('typespec').innerHTML = d.type
+    .map(([n,role,note]) => `<dt>${n}</dt><dd>${role}</dd><p class="type-sample">${note}</p>`)
+    .join('');
+
+  document.getElementById('note-pros').innerHTML = d.pros.map(t=>`<li>${t}</li>`).join('');
+  document.getElementById('note-cons').innerHTML = d.cons.map(t=>`<li class="warn">${t}</li>`).join('');
+}
+
+// разлёт и пересборка букв при смене концепции
+function morph(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  spans.forEach((s,i)=>{
+    const dir = i % 2 ? 1 : -1;
+    s.style.setProperty('--dy', (14 + i*7) * dir + 'px');
+    s.style.setProperty('--dr', (dir * (2 + i*.6)) + 'deg');
+  });
+  wm.classList.add('morph');
+  setTimeout(()=>{
+    wm.classList.remove('morph');
+    spans.forEach(s=>{ s.style.setProperty('--dy','0px'); s.style.setProperty('--dr','0deg'); });
+  }, 240);
+}
+
+function setConcept(c){
+  root.setAttribute('data-concept', c);
+  document.querySelectorAll('.switch button').forEach(b=>{
+    b.setAttribute('aria-pressed', String(b.dataset.set === c));
+  });
+  morph();
+  render(c);
+}
+
+document.querySelectorAll('.switch button').forEach(b=>{
+  b.addEventListener('click', ()=> setConcept(b.dataset.set));
+});
+
+// появление секций
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+render('2');
+
+// клавиши 1/2 для быстрого переключения
+addEventListener('keydown', e=>{
+  if(e.key === '1' || e.key === '2') setConcept(e.key);
+});
+</script>
+</body>
+</html>
