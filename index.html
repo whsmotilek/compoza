@@ -7,6 +7,10 @@
 <meta name="description" content="Прототипы сайта студии хоумстейджинга KOMPOZA: четыре направления с разными 3D-сценариями.">
 <meta property="og:title" content="KOMPOZA — версии сайта">
 <meta property="og:description" content="Четыре направления сайта студии хоумстейджинга, каждое со своей 3D-механикой.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="design/img/p1.jpg">
+<meta name="theme-color" content="#0B0B0C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%235B2824'/%3E%3Cpath d='M9 7v18M9 16l9-9M9 16l9 9' stroke='%23FF9775' stroke-width='3' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -97,7 +101,7 @@ footer{padding:30px var(--gut) 56px;border-top:1px solid var(--line);color:var(-
     <div class="legend">
       <span><i style="background:#FF9775"></i>A · коралл</span>
       <span><i style="background:#5B2824"></i>B · бордо</span>
-      <span><i style="background:#EDE6E2"></i>C · чертёж</span>
+      <span><i style="background:#0B0B0C;box-shadow:inset 0 0 0 1px #FF9775"></i>C · тёмная</span>
       <span><i style="background:#D1E6FD"></i>D · конфигуратор</span>
     </div>
   </div>
@@ -268,7 +272,7 @@ if (stage) {
   });
 
   /* первый кадр рисуем синхронно — иначе до первого rAF заставка пустая */
-  stage.resize(); stage.render();
+  stage.resize(); stage.renderNow();
   const loop = () => { stage.render(); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
   window.__mark = stage;

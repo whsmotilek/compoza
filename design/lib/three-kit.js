@@ -58,11 +58,25 @@ export function createStage(canvas, opts = {}) {
   resize();
   addEventListener('resize', resize);
 
+  /* Пока сцена за пределами экрана, кадры не считаем: теневой проход пересчитывается
+     каждый кадр и грел бы процессор всё время чтения страницы. */
+  let onScreen = true;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }, { rootMargin: '120px' }).observe(canvas);
+  }
+
   const tickers = [];
   const stage = {
     THREE, scene, camera, renderer, resize,
+    get onScreen() { return onScreen; },
     onTick(fn) { tickers.push(fn); },
     render() {
+      if (!onScreen) return;
+      for (const fn of tickers) fn();
+      renderer.render(scene, camera);
+    },
+    /* принудительный кадр — нужен для первой отрисовки и отладки */
+    renderNow() {
       for (const fn of tickers) fn();
       renderer.render(scene, camera);
     },

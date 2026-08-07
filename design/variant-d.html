@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KOMPOZA — соберите смету сами</title>
 <meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Соберите комплектацию квартиры и посмотрите смету — каждый предмет с ценой, до закупки.">
+<meta name="theme-color" content="#F4F1EF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%235B2824'/%3E%3Cpath d='M9 7v18M9 16l9-9M9 16l9 9' stroke='%23FF9775' stroke-width='3' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F4F1EF; --paper:#FFFFFF; --ink:#141212; --muted:#8B7F7D;
+  --bg:#F4F1EF; --paper:#FFFFFF; --ink:#141212; --muted:#685D5B;
   --wine:#5B2824; --cool:#D1E6FD; --rose:#E6DDDB;
   --line:rgba(91,40,36,.18);
   --sans:'Golos Text',system-ui,sans-serif;
@@ -159,6 +161,14 @@ footer.site a:hover{color:var(--wine)}
 .verline{padding:16px var(--gut) 34px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
 .verline a{color:var(--muted);text-decoration:none}
 .verline a:hover{color:var(--wine)}
+
+/* видимый фокус для клавиатуры — был только у кнопки */
+:where(a,button,summary):focus-visible{outline:2px solid var(--wine);outline-offset:4px;border-radius:2px}
+/* якоря не должны уезжать под фиксированную шапку */
+[id]{scroll-margin-top:96px}
+
+/* тихий уровень для доверительных секций */
+.sec-h.minor h2{font-size:clamp(21px,2.2vw,32px);letter-spacing:-.028em;font-weight:600}
 </style>
 </head>
 <body>
@@ -208,10 +218,10 @@ footer.site a:hover{color:var(--wine)}
   <section class="sec wrap" id="work" style="padding-top:0">
     <div class="sec-h reveal"><h2>Проекты</h2><span class="mono">2024 — 2025</span></div>
     <div class="gal reveal">
-      <a href="#"><div class="ph"><img src="img/p5.jpg" alt="Гостиная, ЖК Зиларт"></div><div class="m"><b>Зиларт</b><span class="mono">28 м²</span></div></a>
-      <a href="#"><div class="ph"><img src="img/p2.jpg" alt="Гостиная, Мосфильмовская"></div><div class="m"><b>Мосфильмовская</b><span class="mono">78 м²</span></div></a>
-      <a href="#"><div class="ph"><img src="img/p3.jpg" alt="Рабочее место, Люблинский парк"></div><div class="m"><b>Люблинский парк</b><span class="mono">42 м²</span></div></a>
-      <a href="#"><div class="ph"><img src="img/p4.jpg" alt="Хозяйственная зона, Хамовники"></div><div class="m"><b>Хамовники</b><span class="mono">33 м²</span></div></a>
+      <a href="#cta" title="Обсудить похожий объект"><div class="ph"><img src="img/p5.jpg" alt="Гостиная, ЖК Зиларт"></div><div class="m"><b>Зиларт</b><span class="mono">28 м²</span></div></a>
+      <a href="#cta" title="Обсудить похожий объект"><div class="ph"><img src="img/p2.jpg" alt="Гостиная, Мосфильмовская"></div><div class="m"><b>Мосфильмовская</b><span class="mono">78 м²</span></div></a>
+      <a href="#cta" title="Обсудить похожий объект"><div class="ph"><img src="img/p3.jpg" alt="Рабочее место, Люблинский парк"></div><div class="m"><b>Люблинский парк</b><span class="mono">42 м²</span></div></a>
+      <a href="#cta" title="Обсудить похожий объект"><div class="ph"><img src="img/p4.jpg" alt="Хозяйственная зона, Хамовники"></div><div class="m"><b>Хамовники</b><span class="mono">33 м²</span></div></a>
     </div>
   </section>
 
@@ -219,7 +229,7 @@ footer.site a:hover{color:var(--wine)}
     <div class="sec-h reveal"><h2>Два формата</h2><span class="mono">Под разный бюджет</span></div>
     <div class="tariffs reveal">
       <article>
-        <span class="idx">[01]</span>
+        <span class="idx">Полный цикл</span>
         <h3>Хоумстейджинг для аренды</h3>
         <ul>
           <li>Планировка и коллажи по каждой комнате</li>
@@ -230,7 +240,7 @@ footer.site a:hover{color:var(--wine)}
         <div class="p"><span class="mono">Стоимость</span><b>от 250 000 ₽</b></div>
       </article>
       <article class="alt">
-        <span class="idx">[02]</span>
+        <span class="idx">Малый бюджет</span>
         <h3>Редизайн без ремонта</h3>
         <ul>
           <li>Аудит квартиры и объявления</li>
@@ -257,7 +267,7 @@ footer.site a:hover{color:var(--wine)}
   </section>
 
   <section class="sec wrap" id="reviews">
-    <div class="sec-h reveal"><h2>Отзывы</h2><span class="mono">Владельцы объектов</span></div>
+    <div class="sec-h minor reveal"><h2>Отзывы</h2><span class="mono">Владельцы объектов</span></div>
     <div class="revs reveal">
       <article><p>Покупатели приходили на просмотр уже тёплыми — фотографии продавали квартиру за нас. Продали на месяц быстрее соседей с такой же планировкой.</p><footer><b>Игорь</b>ЖК «Зиларт» · продажа</footer></article>
       <article><p>Заехали в полностью готовую квартиру: от штор до посуды. Больше всего ценю честную смету — ни одной неожиданной траты за весь проект.</p><footer><b>Анна</b>Мосфильмовская · для жизни</footer></article>
@@ -266,7 +276,7 @@ footer.site a:hover{color:var(--wine)}
   </section>
 
   <section class="sec wrap faq" id="faq" style="padding-top:0">
-    <div class="sec-h reveal"><h2>Вопросы</h2><span class="mono">Коротко о главном</span></div>
+    <div class="sec-h minor reveal"><h2>Вопросы</h2><span class="mono">Коротко о главном</span></div>
     <div class="reveal">
       <details open><summary>Цены в конфигураторе настоящие?</summary><div class="a">Это типовой набор для студии 28 м² — он показывает порядок сумм и формат сметы. Ваша смета считается после бесплатного выезда: под метраж, состояние отделки и задачу.</div></details>
       <details><summary>Нужно ли делать ремонт?</summary><div class="a">Нет. Мы работаем с квартирами, где отделка уже есть — от застройщика или после прошлых жильцов. Наша зона — мебель, свет, текстиль, декор и композиция.</div></details>
@@ -280,7 +290,7 @@ footer.site a:hover{color:var(--wine)}
 <section id="cta" class="cta-band">
   <span class="mono">Первый шаг бесплатный</span>
   <h2>Посчитаем вашу квартиру</h2>
-  <a class="btn" href="#">Оставить заявку <span aria-hidden="true">→</span></a>
+  <a class="btn" href="tel:+79644097037">Позвонить и обсудить объект <span aria-hidden="true">→</span></a>
 </section>
 
 <footer class="site">
@@ -289,7 +299,7 @@ footer.site a:hover{color:var(--wine)}
     <p style="color:var(--muted);font-size:14px;max-width:34ch;margin-top:10px">Хоумстейджинг и дизайн интерьеров. Москва и Санкт-Петербург.</p>
   </div>
   <div><div class="mono" style="margin-bottom:12px">Разделы</div><a href="#how">Как работаем</a><a href="#work">Проекты</a></div>
-  <div><div class="mono" style="margin-bottom:12px">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a></div>
+  <div><div class="mono" style="margin-bottom:12px">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="https://t.me/kompoza_studio" rel="noopener">Telegram</a></div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -314,7 +324,9 @@ const CATALOG = [
   { id:'art',     name:'Картина',         spec:'печать в раме', price:8400 },
   { id:'textile', name:'Текстиль и декор',spec:'шторы, подушки, зелень', price:27500 },
 ];
-const FEE = 21000;
+/* логистика зависит от объёма: выезд плюс работа по каждой позиции,
+   иначе при одной позиции сумма выглядит абсурдно */
+const FEE_BASE = 9000, FEE_PER = 1500;
 const state = Object.fromEntries(CATALOG.map(c => [c.id, true]));
 const fmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ₽';
 
@@ -330,7 +342,7 @@ itemsEl.innerHTML = CATALOG.map(c => `
 function recalc() {
   const on = CATALOG.filter(c => state[c.id]);
   const goods = on.reduce((s, c) => s + c.price, 0);
-  const fee = on.length ? FEE : 0;
+  const fee = on.length ? FEE_BASE + on.length * FEE_PER : 0;
   document.getElementById('cnt').textContent = `${on.length} / ${CATALOG.length}`;
   document.getElementById('fee').textContent = fmt(fee);
   const sumEl = document.getElementById('sum');
@@ -525,7 +537,7 @@ if (!stage) {
 
   gsap.ticker.add(stage.render);
   /* первый кадр рисуем синхронно — иначе до первого rAF сцена пустая */
-  stage.resize(); stage.render();
+  stage.resize(); stage.renderNow();
 }
 
 /* появление секций */

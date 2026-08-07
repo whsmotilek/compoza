@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KOMPOZA — Важна каждая деталь</title>
 <meta name="description" content="Хоумстейджинг и дизайн интерьеров в Москве и Санкт-Петербурге. Готовим квартиру к аренде и продаже под ключ: концепция, смета со ссылками, закупка, сборка, фотосессия.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%235B2824'/%3E%3Cpath d='M9 7v18M9 16l9-9M9 16l9 9' stroke='%23FF9775' stroke-width='3' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,7 +16,7 @@
   --greige:#EDE6E2;
   --ink:#000000;
   --coral:#FF9775;
-  --muted:#8A8078;
+  --muted:#6A625B;
   --line:rgba(0,0,0,.13);
   --sans:'Golos Text', system-ui, sans-serif;
   --mono:'JetBrains Mono', ui-monospace, monospace;
@@ -85,6 +87,8 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
 
 /* фото на всю ширину, отдельной полосой под первым экраном */
 .shot-band{margin:0;aspect-ratio:16/9;max-height:88svh}
+/* запас по высоте под параллакс — иначе сдвиг обнажает фон полосы */
+.shot-band>img{height:112%;position:relative;top:-6%}
 
 /* ---------- манифест с подсветкой слов ---------- */
 .manifest{padding:clamp(90px,16vh,190px) 0}
@@ -93,6 +97,9 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:80;padding:18px var(--gut
 }
 .manifest w{color:rgba(0,0,0,.14);transition:color .5s var(--e)}
 .manifest w.on{color:var(--ink)}
+/* акцент задаётся на словах внутри .em, иначе обёртка <w> перебивает цвет */
+.manifest .em w{color:rgba(255,151,117,.3)}
+.manifest .em w.on{color:var(--coral)}
 .manifest .em{color:var(--coral)}
 .manifest w.on .em,.manifest .em{transition:color .5s var(--e)}
 
@@ -195,6 +202,16 @@ footer.site a:hover{color:var(--ink)}
 .verline{padding:16px var(--gut) 34px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
 .verline a{color:var(--muted);text-decoration:none}
 .verline a:hover{color:var(--coral)}
+
+/* видимый фокус для клавиатуры — был только у кнопки */
+:where(a,button,summary):focus-visible{outline:2px solid var(--coral);outline-offset:4px;border-radius:2px}
+/* якоря не должны уезжать под фиксированную шапку */
+[id]{scroll-margin-top:96px}
+
+/* Иерархия заголовков: узловые секции (что делаем / проекты) крупнее,
+   доверительные (отзывы / вопросы) — тише. Один кегль на всё читается как шаблон. */
+.h-major{font-size:clamp(28px,3.6vw,54px);letter-spacing:-.042em;font-weight:700;line-height:1.02}
+.h-minor{font-size:clamp(21px,2.2vw,32px);letter-spacing:-.028em;font-weight:600;line-height:1.06}
 </style>
 </head>
 <body>
@@ -243,7 +260,7 @@ footer.site a:hover{color:var(--ink)}
 
   <section id="services" class="wrap" style="padding-bottom:clamp(70px,12vh,150px)">
     <div class="rail-head reveal">
-      <h2 style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700">Что мы делаем</h2>
+      <h2 class="h-major">Что мы делаем</h2>
       <span class="tag">Два формата под разный бюджет</span>
     </div>
     <div class="svc">
@@ -277,7 +294,7 @@ footer.site a:hover{color:var(--ink)}
 
   <section id="projects" class="wrap" style="padding-bottom:clamp(70px,12vh,150px)">
     <div class="rail-head reveal">
-      <h2 style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700">Проекты</h2>
+      <h2 class="h-major">Проекты</h2>
       <span class="tag">Листайте вбок →</span>
     </div>
     <div class="rail" id="rail">
@@ -331,7 +348,7 @@ footer.site a:hover{color:var(--ink)}
   </section>
 
   <section class="wrap" style="padding-block:clamp(70px,12vh,150px)">
-    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700;margin-bottom:26px">Отзывы</h2>
+    <h2 class="reveal h-minor" style="margin-bottom:22px">Отзывы</h2>
     <div class="revs">
       <article><p>«Покупатели приходили на просмотр уже тёплыми — фотографии продавали квартиру за нас. Продали на месяц быстрее соседей с такой же планировкой.»</p><footer><b>Игорь</b>ЖК «Зиларт», продажа</footer></article>
       <article><p>«Заехали в полностью готовую квартиру: от штор до посуды. Больше всего ценю честную смету — ни одной неожиданной траты за весь проект.»</p><footer><b>Анна</b>Мосфильмовская, для жизни</footer></article>
@@ -340,7 +357,7 @@ footer.site a:hover{color:var(--ink)}
   </section>
 
   <section class="wrap faq" style="padding-bottom:clamp(70px,12vh,150px)">
-    <h2 class="reveal" style="font-size:clamp(26px,3.6vw,54px);letter-spacing:-.04em;font-weight:700;margin-bottom:22px">Вопросы</h2>
+    <h2 class="reveal h-minor" style="margin-bottom:18px">Вопросы</h2>
     <details open><summary>Сколько стоит хоумстейджинг?</summary><div class="a">Полный цикл под аренду — от 250 000 ₽, редизайн без ремонта — от 120 000 ₽. Точная сумма зависит от метража и состояния отделки, считаем после бесплатного выезда.</div></details>
     <details><summary>Нужно ли делать ремонт?</summary><div class="a">Нет. Мы работаем с квартирами, где отделка уже есть — от застройщика или после прошлых жильцов. Наша зона — мебель, свет, текстиль, декор и композиция.</div></details>
     <details><summary>Сколько времени занимает подготовка?</summary><div class="a">Редизайн без ремонта — от двух недель. Полный цикл с закупкой и сборкой — от четырёх до шести недель, в зависимости от сроков поставки мебели.</div></details>
@@ -351,7 +368,7 @@ footer.site a:hover{color:var(--ink)}
 <section id="cta" class="cta-band">
   <span class="tag" style="color:rgba(0,0,0,.55)">Первый шаг бесплатный</span>
   <h2>Соберём вашу <span class="ser">композицию</span></h2>
-  <a class="btn" href="#">Оставить заявку <span aria-hidden="true">→</span></a>
+  <a class="btn" href="tel:+79644097037">Позвонить и обсудить объект <span aria-hidden="true">→</span></a>
 </section>
 
 <footer class="site">
@@ -360,7 +377,7 @@ footer.site a:hover{color:var(--ink)}
     <p style="color:var(--muted);font-size:14px;max-width:34ch;margin-top:10px">Хоумстейджинг и дизайн интерьеров. Москва и Санкт-Петербург.</p>
   </div>
   <div><div class="sec-lbl">Разделы</div><a href="#projects">Проекты</a><a href="#services">Услуги</a><a href="#process">Как работаем</a><a href="#founder">О студии</a></div>
-  <div><div class="sec-lbl">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="#">Telegram</a><a href="#">Instagram</a></div>
+  <div><div class="sec-lbl">Контакты</div><a href="tel:+79644097037">+7 964 409 7037</a><a href="mailto:studio@kompoza.ru">studio@kompoza.ru</a><a href="https://t.me/kompoza_studio" rel="noopener">Telegram</a><a href="https://instagram.com/kompoza.studio" rel="noopener">Instagram</a></div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -399,8 +416,8 @@ heroTl.from('.hero h1', {yPercent:14, opacity:0, duration:1.1, ease:'expo.out'})
       .to('.shot-band .pin', {opacity:1, duration:.5, stagger:.18, ease:'power2.out'}, '-=.7');
 
 /* параллакс фото в hero */
-if (!reduce) gsap.to('.shot-band img', {
-  yPercent:10, ease:'none',
+if (!reduce) gsap.fromTo('.shot-band img', {yPercent:-5}, {
+  yPercent:5, ease:'none',
   scrollTrigger:{trigger:'.shot-band', start:'top bottom', end:'bottom top', scrub:true}
 });
 
@@ -587,7 +604,7 @@ if (!stage) {
 
   gsap.ticker.add(stage.render);
   /* первый кадр рисуем синхронно — иначе до первого rAF сцена пустая */
-  stage.resize(); stage.render();
+  stage.resize(); stage.renderNow();
 
   /* просмотр сцены на любом прогрессе без скролла (только для прототипа) */
   window.__hero = { set(p) { intro = 1; progress = p; apply(p); stage.render(); } };
