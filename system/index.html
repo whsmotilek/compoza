@@ -155,6 +155,48 @@ li::before{content:"";position:absolute;left:2px;top:.68em;width:7px;height:1px;
   justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
 .goal b{color:var(--cool-ink)}
 
+/* ---------- РИТМ: фактура и выносные полосы ---------- */
+main{position:relative}
+/* очень слабая изометрическая сетка — снимает ощущение пустого фона */
+main::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(115deg,transparent 0 49.6%,var(--line) 49.6% 50%,transparent 50%),
+    linear-gradient(65deg,transparent 0 49.6%,var(--line) 49.6% 50%,transparent 50%);
+  background-size:82px 82px}
+
+/* полоса во всю ширину экрана с одной сильной мыслью */
+.band{position:relative;margin-top:clamp(30px,4.5vh,50px);padding:clamp(24px,4vw,40px) 0;
+  background:var(--wine-d);color:#F7EAE7}
+.band::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:100vw;
+  transform:translateX(-50%);background:var(--wine-d);z-index:-1}
+.band-in{position:relative;display:grid;gap:clamp(14px,2.4vw,30px);align-items:center}
+@media(min-width:820px){.band-in{grid-template-columns:auto minmax(0,1fr)}}
+.band .big{font-family:var(--mono);font-size:clamp(34px,7vw,64px);font-weight:700;
+  letter-spacing:-.05em;line-height:.94;color:var(--coral);white-space:nowrap}
+.band .big small{display:block;margin-top:9px;font-family:var(--sans);font-size:12px;
+  font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#C79A93;white-space:normal}
+.band p{margin:0;color:#E3CBC6;font-size:clamp(15px,1.7vw,17.5px);max-width:58ch}
+.band p b{color:#FFF7F5;font-weight:700}
+.band p + p{margin-top:10px}
+
+/* карточкам — чуть больше глубины */
+.card,.mod,.find,.q,.wv,.pay-row{position:relative}
+.cards .card::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:linear-gradient(90deg,var(--wine),transparent 70%);opacity:.55}
+
+/* ---------- ЦИТАТЫ ---------- */
+.quotes{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+@media(min-width:900px){.quotes{grid-template-columns:1fr 1fr}}
+.q{margin:0;background:var(--surface);padding:20px 20px 22px;display:grid;align-content:start}
+.q blockquote{margin:0;font-size:clamp(15.5px,1.8vw,18.5px);line-height:1.4;font-weight:600;
+  letter-spacing:-.018em;color:var(--ink);position:relative;padding-left:15px}
+.q blockquote::before{content:"";position:absolute;left:0;top:.22em;bottom:.22em;width:3px;
+  background:var(--wine)}
+.q figcaption{margin-top:11px;padding-left:15px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.q-fix{margin-top:14px;padding:12px 14px;background:var(--sunk);border:1px solid var(--line);
+  font-size:14px;color:var(--ink-2);line-height:1.55}
+.q-fix b{color:var(--ink);font-weight:700}
+
 /* ---------- ГРАФИК ПЛАТЕЖЕЙ ---------- */
 .pay{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px}
 .pay-row{background:var(--surface);padding:14px 16px;display:grid;gap:4px 12px;
@@ -319,29 +361,30 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   <canvas id="heroScene" aria-hidden="true"></canvas>
   <div class="wrap hero-in">
     <div class="kicker">Kompoza · разбор по данным таблицы управления v4</div>
-    <h1>Портфель обнуляется <em>к декабрю</em>. Это видно в ваших же цифрах</h1>
-    <p class="sub">Я разобрал выгрузку на 8 листов, методичку по боевой CRM и переписку по KPI.
-    Ниже — что в данных не сходится и из чего состоит система, которая это чинит.
-    <b>Этот разбор уже сделан, до всякой оплаты.</b></p>
+    <h1>Портфель вырастет втрое. <em>Операционка</em> на это не рассчитана</h1>
+    <p class="sub">Цель — 50 объектов в работе к концу года. Сейчас процессы держатся
+    на чатах, таблице и памяти Эржены. Ниже — что упрётся в потолок при таком росте
+    и из чего состоит система, которая это снимает. <b>Разбор уже сделан, до всякой оплаты.</b></p>
 
     <div class="kpis">
-      <div><b>28</b><span>объектов в работе<br>22 Москва · 6 Питер</span></div>
-      <div><b class="bad">0</b><span>строк в листах Лиды,<br>Кейсы, Комиссии</span></div>
-      <div><b class="bad">0/28</b><span>объектов с заполненным<br>этапом производства</span></div>
-      <div><b>6,12 млн</b><span>сальдо дизайнерам<br>без сроков выплат</span></div>
+      <div><b>50</b><span>объектов в работе —<br>цель к концу года</span></div>
+      <div><b class="bad">42</b><span>потолок текущей команды,<br>и это работа на износ</span></div>
+      <div><b>3</b><span>типа объектов, у каждого<br>свой конвейер этапов</span></div>
+      <div><b>25</b><span>кейсов в запасе —<br>главный канал лидов</span></div>
     </div>
 
     <div class="alarm">
       <div class="al-l">
-        <div class="t">Если ничего не менять</div>
-        <div class="v">−1,08 млн ₽/мес</div>
+        <div class="t">Разрыв, который нужно закрыть</div>
+        <div class="v">42 → 50</div>
       </div>
       <div class="al-r">
-        <p>Прогноз чистой прибыли падает с <b>1 423 527</b> до <b>341 253 ₽/мес</b> за девяносто дней.
-        Объекты доделываются и уходят, а новых в таблице не появляется: воронка не ведётся,
-        договоров за месяц — один из пятнадцати плана.</p>
-        <p class="al-note">Система не продаёт за вас. Она показывает дыру до того, как та станет
-        фактом, и не даёт обращениям теряться по личным перепискам.</p>
+        <p>Шесть дизайнеров при пиковой загрузке в семь объектов дают <b>42</b>. Цель — <b>50</b>.
+        Разрыв закрывается людьми, но нанимать вслепую нельзя: нужен прогноз загрузки,
+        а он считается только там, где видно фактические этапы и реальные сроки,
+        а не плановые даты.</p>
+        <p class="al-note">Это не про то, что сейчас что-то делается плохо. Это про то,
+        что ручное управление на 17 объектах работает, а на 50 — перестаёт.</p>
       </div>
     </div>
   </div>
@@ -350,7 +393,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
 <nav class="tabs" aria-label="Разделы">
   <div class="tabs-in" role="tablist">
     <button role="tab" aria-selected="true"  aria-controls="p-sut"   id="t-sut">Суть</button>
-    <button role="tab" aria-selected="false" aria-controls="p-diag"  id="t-diag">Что сломано</button>
+    <button role="tab" aria-selected="false" aria-controls="p-diag"  id="t-diag">Что в данных</button>
     <button role="tab" aria-selected="false" aria-controls="p-arch"  id="t-arch">Как устроено</button>
     <button role="tab" aria-selected="false" aria-controls="p-mods"  id="t-mods">Модули</button>
     <button role="tab" aria-selected="false" aria-controls="p-flow"  id="t-flow">Конвейер</button>
@@ -364,145 +407,133 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
 
 <!-- ============ СУТЬ ============ -->
 <section class="panel" id="p-sut" role="tabpanel" aria-labelledby="t-sut">
-  <h2>Что происходит — за 30 секунд</h2>
-  <p class="lead">Производство в таблице описано неплохо. Ломается всё остальное:
-  доходная часть не ведётся вообще, а главный показатель считает не то, что написано на этикетке.</p>
+  <h2>Что уже мешает — вашими словами</h2>
+  <p class="lead">Это не догадки по таблице. Всё ниже названо прямо в брифе и переписке —
+  я собрал в одном месте и показываю, что с каждым пунктом делает система.</p>
 
-  <div class="cards c3">
-    <div class="card"><div class="k">01</div><h4>Воронка пуста</h4>
-      <p>Листы «Лиды» и «Кейсы» — ноль строк. При том что кейс стабильно даёт 20 тыс+ просмотров
-      и это единственный канал привлечения. Договоров за месяц: 1 из 15 плана.</p></div>
-    <div class="card"><div class="k">02</div><h4>Прибыль не измеряется</h4>
-      <p>Лист «Комиссии» пуст, а вся прибыль сверх дизайн-проекта — это проценты от работ
-      и мебели. Они приходят пачкой раз в два месяца и нигде не фиксируются.</p></div>
-    <div class="card"><div class="k">03</div><h4>Производство вслепую</h4>
-      <p>Этап не заполнен ни у одного из 28 объектов, фактический финал — тоже.
-      Сроки считаются по плановым датам, которые никто не сверял с фактом.</p></div>
+  <div class="quotes">
+    <figure class="q">
+      <blockquote>Есть затык с внесением входящих лидов в таблицу. Надо стараться упростить этот момент. С напоминанием ежедневным, чуть ли не в игровой форме</blockquote>
+      <figcaption>из брифа</figcaption>
+      <div class="q-fix"><b>Что делает система.</b> Лид заводится пересылкой сообщения боту или тремя касаниями: имя, контакт, источник. Вечером один вопрос с кнопками «всё верно» и «добавить» — вместо формы на два десятка полей.</div>
+    </figure>
+    <figure class="q">
+      <blockquote>Процент от мебели приходит рандомно. Работы посчитать не проблема, а вот мебель — сразу за несколько объектов и может раз в два месяца. Сложно контролировать, в этом и затык</blockquote>
+      <figcaption>из переписки по KPI</figcaption>
+      <div class="q-fix"><b>Что делает система.</b> Ожидаемая комиссия считается при заказе, фактическая — отдельным событием прихода. Платёж за несколько объектов заводится одной строкой и разносится пропорционально суммам поставок. Видно, сколько поставщик ещё должен.</div>
+    </figure>
+    <figure class="q">
+      <blockquote>Процент от работ и материалов разнится от объекта к объекту. Поэтому пока не понимаю, как считать</blockquote>
+      <figcaption>из переписки по KPI</figcaption>
+      <div class="q-fix"><b>Что делает система.</b> Ставка задаётся на уровне объекта и поставщика, а не одна на всех. Дальше считается само: выручка, себестоимость и маржа — три раздельные величины, каждая из своих событий.</div>
+    </figure>
+    <figure class="q">
+      <blockquote>Важно быть внимательными с доступами, кто что видит. Важно сохранить многие финансовые сегменты невидимыми никому. Или только тем, кого это касается</blockquote>
+      <figcaption>из брифа</figcaption>
+      <div class="q-fix"><b>Что делает система.</b> Право проверяется на сервере, а не прячется в интерфейсе. Дизайнер видит своё вознаграждение и не видит чужого; комиссии и маржу не видит никто, кроме владельца. Клиент открывает свой объект без цен закупки.</div>
+    </figure>
+    <figure class="q">
+      <blockquote>Отправляю этапы для разных типов объектов. Это важно для систематизации и упрощения работы команды</blockquote>
+      <figcaption>из брифа</figcaption>
+      <div class="q-fix"><b>Что делает система.</b> Стейджинг, вайтбокс и бетон становятся шаблонами с воротами между этапами. Отмеченное дизайнером в ТЗ само превращается в задачи в нужной последовательности, мастер закрывает работу фотографией.</div>
+    </figure>
+    <figure class="q">
+      <blockquote>Кейсы набирают стабильно 20 тысяч просмотров, на кейс приходят лиды. Но часто они ещё ждут ключи</blockquote>
+      <figcaption>из переписки по KPI</figcaption>
+      <div class="q-fix"><b>Что делает система.</b> Дата ключей становится осью воронки: до 30 дней — горячий, 31–90 — регулярное касание, дальше прогрев. Появляется портфель будущих стартов — сколько объектов уже ждёт очереди.</div>
+    </figure>
   </div>
+
+  <div class="band"><div class="wrap band-in">
+    <div class="big">17 → 50<small>объектов в работе</small></div>
+    <div>
+      <p>Всё перечисленное сейчас решается вручную и <b>на семнадцати объектах работает</b>.
+      Вопрос не в том, что процессы плохие — вопрос в том, что они не масштабируются
+      втрое без потери управляемости.</p>
+      <p>Система нужна не вместо людей, а чтобы те же люди тянули втрое больший портфель.</p>
+    </div>
+  </div></div>
+
+  <h3 class="mt">Куда упирается рост</h3>
+  <p>Единственная арифметика, которую стоит показать: цель по объектам против физического
+  потолка команды. Числа заданы в вашей же таблице — комфортная и пиковая загрузка указаны там.</p>
 
   <div class="chart">
-    <div class="ch-h"><h4>Прогноз базовой ЧП по месяцам</h4><span>из листа Dashboard</span></div>
+    <div class="ch-h"><h4>Объекты в работе одновременно</h4><span>дизайнеров в Москве — 6</span></div>
     <div class="bars">
-      <div class="bar"><span class="nm">Август</span>
-        <span class="tr"><span class="fl" style="width:67.7%"></span></span>
-        <span class="vl">1 453 443</span></div>
-      <div class="bar"><span class="nm">Сентябрь</span>
-        <span class="tr"><span class="fl" style="width:72.0%"></span></span>
-        <span class="vl">1 545 953</span></div>
-      <div class="bar"><span class="nm">Октябрь</span>
-        <span class="tr"><span class="fl warn" style="width:37.4%"></span></span>
-        <span class="vl">803 399</span></div>
-      <div class="bar"><span class="nm">Ноябрь</span>
-        <span class="tr"><span class="fl crit" style="width:15.9%"></span></span>
-        <span class="vl">341 253</span></div>
-      <div class="bar"><span class="nm">Декабрь</span>
-        <span class="tr"><span class="fl crit" style="width:8.5%"></span></span>
-        <span class="vl">182 712</span></div>
+      <div class="bar"><span class="nm">Сейчас</span>
+        <span class="tr"><span class="fl ok" style="width:34%"></span></span><span class="vl">17</span></div>
+      <div class="bar"><span class="nm">Комфортно</span>
+        <span class="tr"><span class="fl" style="width:60%"></span></span><span class="vl">30</span></div>
+      <div class="bar"><span class="nm">На износ</span>
+        <span class="tr"><span class="fl warn" style="width:84%"></span></span><span class="vl">42</span></div>
+      <div class="bar"><span class="nm">Цель</span>
+        <span class="tr"><span class="fl crit" style="width:100%"></span></span><span class="vl">50</span></div>
     </div>
-    <div class="goal"><span>Цель на два месяца</span><b>2 145 750 ₽/мес</b></div>
+    <div class="goal"><span>Чтобы держать 50 при комфортной загрузке</span><b>нужно 9–10 дизайнеров</b></div>
   </div>
-  <p>Это не прогноз кризиса — это арифметика. Объекты доделываются и уходят, а новых
-  в таблице не появляется. Система не добавляет продаж сама, но она показывает дыру
-  до того, как та станет фактом, и не даёт лидам теряться.</p>
+  <p>Нанимать заранее — лишняя зарплата, нанимать поздно — сорванные сроки сразу на всех объектах.
+  Решается прогнозом: система считает, сколько объектов будет активно через месяц, и подаёт сигнал
+  по порогу, а не по ощущению, что команда задыхается.</p>
 
-  <div class="chart">
-    <div class="ch-h"><h4>Что в таблице заполняется, а что нет</h4><span>28 объектов</span></div>
-    <div class="bars">
-      <div class="bar"><span class="nm">Объекты</span>
-        <span class="tr"><span class="fl ok" style="width:100%"></span></span><span class="vl">28 / 28</span></div>
-      <div class="bar"><span class="nm">Этап</span>
-        <span class="tr"><span class="fl crit" style="width:1%"></span></span><span class="vl">0 / 28</span></div>
-      <div class="bar"><span class="nm">Факт. финал</span>
-        <span class="tr"><span class="fl crit" style="width:1%"></span></span><span class="vl">0 / 28</span></div>
-      <div class="bar"><span class="nm">Лиды</span>
-        <span class="tr"><span class="fl crit" style="width:1%"></span></span><span class="vl">0 строк</span></div>
-      <div class="bar"><span class="nm">Кейсы</span>
-        <span class="tr"><span class="fl crit" style="width:1%"></span></span><span class="vl">0 строк</span></div>
-      <div class="bar"><span class="nm">Комиссии</span>
-        <span class="tr"><span class="fl crit" style="width:1%"></span></span><span class="vl">0 строк</span></div>
-    </div>
+  <div class="note">
+    <p><b>Про данные.</b> Таблица управления свежая и заполнена частично: часть сведений ещё
+    не перенесена, часть живёт в чатах и у людей в голове. Поэтому я не строю выводы на пустых
+    ячейках — всё выше опирается на то, что названо прямо. Собрать недостающее и посчитать
+    экономику на полных данных — как раз задача первого шага.</p>
   </div>
-  <p>Инструмент в этом не виноват. Лист «Лиды» — это 23 колонки: человек, у которого в переписке
-  висит новое обращение, туда не пойдёт. <strong>Цену внесения нужно уронить до трёх касаний</strong> —
-  тогда и напоминания начнут работать.</p>
 </section>
 
 <!-- ============ ДИАГНОЗ ============ -->
 <section class="panel" id="p-diag" role="tabpanel" aria-labelledby="t-diag" hidden>
-  <h2>Шесть вещей, которые не сходятся</h2>
-  <p class="lead">Всё проверено по выгрузке, а не со слов. Порядок — по цене ошибки.</p>
+  <h2>Что видно в таблице и что нужно уточнить</h2>
+  <p class="lead">Выгрузка свежая и заполнена частично. Поэтому ниже не диагнозы,
+  а то, что <strong>бросается в глаза и требует проверки</strong> на первом шаге.
+  Пустые ячейки я сознательно не трактую: отсутствие строки значит, что её пока не внесли,
+  а не что события не было.</p>
 
   <div class="find crit">
-    <div class="find-h"><span class="sev crit">критично</span><h3>Главный KPI считает не прибыль</h3></div>
-    <p>В листе «Объекты» колонка «Начислено дизайнеру» у большинства строк совпадает
-    с «Базовой ЧП проекта» до рубля.</p>
+    <div class="find-h"><span class="sev crit">проверить первым</span><h3>Что означает «Начислено дизайнеру»</h3></div>
+    <p>В листе «Объекты» эта колонка у большинства строк совпадает с «Базовой ЧП проекта» до рубля.</p>
     <div class="ev">Ленинский &nbsp; ЧП 325 000 → дизайнеру <b>325 000</b><br>
 Лучи &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ЧП 345 000 → дизайнеру <b>345 000</b><br>
-Скай Гарден &nbsp; ЧП 395 000 → дизайнеру <b>395 000</b><br>
-────────────────────────────────<br>
-Итого &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ЧП 8 335 000 → <b>7 220 000 (87%)</b></div>
-    <p>Либо студия отдаёт исполнителям 87% прибыли, либо это стоимость дизайн-проекта —
-    и тогда run-rate 1,42 млн это <strong>оборот, а не прибыль</strong>.</p>
-    <div class="fix"><b>Решение:</b> три раздельные величины вместо одной — выручка,
-    прямая себестоимость и маржа. Каждая собирается из своих событий.</div>
-  </div>
-
-  <div class="find crit">
-    <div class="find-h"><span class="sev crit">критично</span><h3>Доходная часть не ведётся</h3></div>
-    <p>Три листа из восьми пусты, и это ровно те три, что отвечают за деньги и рост:
-    лиды, кейсы, комиссии.</p>
-    <div class="fix"><b>Решение:</b> лид заводится за три касания в боте, кейс получает метку
-    и связывается с лидами сам, комиссия — событие прихода денег, а не поле в таблице.</div>
-  </div>
-
-  <div class="find crit">
-    <div class="find-h"><span class="sev crit">критично</span><h3>Производство не отслеживается</h3></div>
-    <p>Этап пуст у всех 28 объектов. Ваши этапы по трём типам работ — это десятки контрольных
-    точек, и вести их в таблице физически негде.</p>
-    <div class="fix"><b>Решение:</b> этап — состояние с закрытым набором переходов.
-    Мастер закрывает работу в боте с фото, дата фиксируется сама.</div>
+Скай Гарден &nbsp; ЧП 395 000 → дизайнеру <b>395 000</b></div>
+    <p>Читается двояко: либо «ЧП проекта» — это стоимость дизайн-проекта, которая целиком уходит
+    исполнителю, либо колонки заполнялись по-разному в разное время. От ответа зависит,
+    что показывает главный показатель — прибыль или оборот.</p>
+    <div class="fix"><b>Что делаем:</b> разводим три величины, которые сейчас смешаны —
+    выручка, прямая себестоимость и маржа. Каждая собирается из своих событий.</div>
   </div>
 
   <div class="find warn">
-    <div class="find-h"><span class="sev warn">внимание</span><h3>Обязательства без срока</h3></div>
-    <p>Сальдо дизайнерам 6,12 млн ₽ при run-rate 1,42 млн ₽/мес. Выглядит как немедленный долг,
-    хотя часть объектов далеко от финала. Поле «План следующей выплаты» пусто везде.</p>
-    <div class="fix"><b>Решение:</b> у начисления есть условие выплаты — этап или дата.
-    На дашборде «к выплате в ближайшие 30 дней», а не всё сальдо разом.</div>
+    <div class="find-h"><span class="sev warn">уточнить</span><h3>У обязательств нет срока</h3></div>
+    <p>По заполненным строкам сальдо к выплате дизайнерам — около 6,12 млн ₽. Это не значит,
+    что сумма к выплате сейчас: часть объектов далеко от финала. Но даты выплаты нет ни у одной
+    строки, поэтому нагрузку на ближайший месяц по таблице не увидеть.</p>
+    <div class="fix"><b>Что делаем:</b> у начисления появляется условие выплаты — этап или дата.
+    На дашборде «к выплате в ближайшие 30 дней» вместо общей суммы без срока.</div>
   </div>
 
   <div class="find warn">
-    <div class="find-h"><span class="sev warn">внимание</span><h3>Цель не обеспечена командой</h3></div>
-    <p>Цель — 50 активных объектов. Сейчас в Москве шесть дизайнеров, комфортный максимум 5,
-    пиковый 7.</p>
-    <div class="chart" style="margin-top:14px;border:0;padding:0;background:none">
-      <div class="bars">
-        <div class="bar"><span class="nm">Юлия</span>
-          <span class="tr"><span class="fl crit" style="width:71%"></span></span><span class="vl">5 / 7</span></div>
-        <div class="bar"><span class="nm">Чойгана</span>
-          <span class="tr"><span class="fl crit" style="width:71%"></span></span><span class="vl">5 / 7</span></div>
-        <div class="bar"><span class="nm">Катя</span>
-          <span class="tr"><span class="fl warn" style="width:57%"></span></span><span class="vl">4 / 7</span></div>
-        <div class="bar"><span class="nm">Настя</span>
-          <span class="tr"><span class="fl" style="width:43%"></span></span><span class="vl">3 / 7</span></div>
-        <div class="bar"><span class="nm">Татьяна</span>
-          <span class="tr"><span class="fl ok" style="width:1%"></span></span><span class="vl">0 / 7</span></div>
-        <div class="bar"><span class="nm">Кристина</span>
-          <span class="tr"><span class="fl ok" style="width:1%"></span></span><span class="vl">0 / 7</span></div>
-      </div>
-      <div class="goal"><span>Потолок команды при работе на износ</span><b>42 объекта против цели 50</b></div>
-    </div>
-    <div class="fix"><b>Решение:</b> прогноз загрузки на 30 дней вперёд с порогом найма —
-    сигнал до того, как команда перегреется.</div>
+    <div class="find-h"><span class="sev warn">математика</span><h3>Цель упирается в размер команды</h3></div>
+    <p>Здесь считать нечего — числа заданы в самой таблице. Шесть московских дизайнеров,
+    комфортная загрузка 5, пиковая 7.</p>
+    <div class="ev">6 × 7 (пик, на износ) &nbsp;= <b>42 объекта</b><br>
+цель к концу года &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <b>50 объектов</b><br>
+при комфортных 5–6 нужно <b>9–10 дизайнеров</b></div>
+    <div class="fix"><b>Что делаем:</b> прогноз активных объектов на 30 дней вперёд и порог,
+    по которому подключается следующий дизайнер — до перегрева, а не после.</div>
   </div>
 
   <div class="find warn">
-    <div class="find-h"><span class="sev warn">внимание</span><h3>Методичка описывает другой бизнес</h3></div>
+    <div class="find-h"><span class="sev warn">важно до старта</span><h3>Методичка описывает другой бизнес</h3></div>
     <p>Её раздел 9.3 предлагает сделать ядром системы <strong>аренду комплекта реквизита</strong> —
     с возвратом, продлением и списанием за повреждение. У Kompoza аренды нет: мебель покупается
-    клиенту и остаётся в квартире, студия живёт на проценте от поставщика.</p>
-    <div class="fix"><b>Решение:</b> третья центральная сущность — не аренда,
-    а <strong>закупка и комиссия</strong>. Всё остальное из методички переносится почти целиком.</div>
+    клиенту и остаётся в квартире, а студия зарабатывает процент от поставщика. Если взять
+    методичку буквально, ядро будет спроектировано под чужую модель денег.</p>
+    <div class="fix"><b>Что делаем:</b> третья центральная сущность — не аренда,
+    а <strong>закупка и комиссия</strong>. Остальное из методички переносится почти целиком:
+    журнал действий, области доступа, деньги событиями, закрытый набор статусов.</div>
   </div>
 </section>
 
@@ -660,6 +691,15 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
       <div><b>Ставки поставщиков</b> справочником с историей по датам.</div>
     </div><div class="where"><b>Где:</b> веб &nbsp;·&nbsp; <b>Кто:</b> только Эржена и Женя</div></div></div>
 
+  <div class="band"><div class="wrap band-in">
+    <div class="big">3<small>поверхности, одна база</small></div>
+    <div>
+      <p>Модули с первого по шестой закрывают то, что назвали вы. Дальше — то,
+      что появляется само, когда данные уже устроены правильно: <b>прогноз загрузки,
+      цена лида по каналу, кабинет клиента</b>.</p>
+    </div>
+  </div></div>
+
   <div class="mod"><div class="mod-h"><span class="code">M7</span><h3>Вознаграждения и выплаты</h3><span class="wv-tag">Этап III</span></div>
     <div class="mod-b"><div class="fx">
       <div><b>Начисление с условием выплаты</b> — привязано к этапу или дате.</div>
@@ -808,8 +848,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
       <p>Лиды в три касания, ожидание ключей, портфель будущих стартов, кейсы с метками,
       заявки с сайта, вечерние сводки, кабинет клиента.</p>
       <div class="chips"><span class="chip">M1</span><span class="chip">M9</span><span class="chip">M10</span><span class="chip">M11 полностью</span></div>
-      <div class="out"><b>Результат:</b> воронка измеряется, видно цену лида по каналу,
-      прогноз перестаёт обваливаться вслепую.</div></div>
+      <div class="out"><b>Результат:</b> обращения не теряются, видно цену лида по каналу
+      и портфель будущих стартов — сколько объектов уже ждёт очереди.</div></div>
   </div>
 
   <div class="note"><p><b>Про параллельность.</b> Этапы I и II последовательны жёстко.
@@ -966,6 +1006,16 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   <p>Система в любом случае остаётся у вас: на вашем сервере, с вашими аккаунтами.
   Она продолжит работать, даже если сопровождение не понадобится.</p>
 
+  <div class="band"><div class="wrap band-in">
+    <div class="big">320 000<small>₽ за весь путь</small></div>
+    <div>
+      <p>Четыре платежа по факту сдачи, без предоплаты за проект.
+      Это <b>примерно один средний проект студии</b> — медиана чистой прибыли по объекту
+      составляет 275 000 ₽.</p>
+      <p>Остановиться можно после любого шага, всё сделанное остаётся у вас.</p>
+    </div>
+  </div></div>
+
   <h3 class="mt">Откуда берётся цена</h3>
   <p>У Kompoza сейчас нет системы — ни CRM, ни описанных процессов. Это меняет характер работы:
   заметная часть времени уходит не на код, а на то, чтобы разобраться, как всё устроено
@@ -1001,33 +1051,35 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   а когда команда начинает пользоваться. Поэтому первые месяцы после запуска всегда идут
   в режиме доработок — это часть нормального внедрения, а не признак недоделанной системы.</p>
 
-  <h3 class="mt">Откуда берётся эффект — на ваших цифрах</h3>
+  <h3 class="mt">Что окупает систему</h3>
+  <p>Здесь нет обещаний роста выручки — продают люди, а не софт. Окупаемость складывается
+  из того, что перестаёт теряться, и из решений, которые становятся возможными.</p>
   <div class="tw">
     <table>
-      <thead><tr><th>Источник</th><th>Что в данных сейчас</th><th>Эффект</th></tr></thead>
+      <thead><tr><th>Что меняется</th><th>Как это считается деньгами</th></tr></thead>
       <tbody>
-        <tr><td><b>Портфель не обнуляется</b></td>
-          <td>Прогноз ЧП падает с 1 423 527 до 341 253 ₽/мес за 90 дней</td>
-          <td class="c"><b>до 1,08 млн ₽/мес</b><br><span style="font-size:11.5px">цена бездействия</span></td></tr>
-        <tr><td><b>Лиды не теряются</b></td>
-          <td>Лист «Лиды» пуст при 20 тыс+ просмотров на кейс. Медиана ЧП проекта — 275 000 ₽</td>
-          <td class="c"><b>+275 тыс ₽</b><br><span style="font-size:11.5px">за каждый спасённый договор</span></td></tr>
-        <tr><td><b>Комиссии не теряются</b></td>
-          <td>Лист «Комиссии» пуст, долг поставщиков не виден</td>
-          <td class="c"><b>считается</b><br><span style="font-size:11.5px">после месяца учёта</span></td></tr>
-        <tr><td><b>Нет кассового разрыва</b></td>
-          <td>Сальдо 6,12 млн ₽ без сроков при run-rate 1,42 млн ₽/мес</td>
-          <td class="c"><b>управляемый график</b></td></tr>
+        <tr><td><b>Обращения не теряются</b></td>
+          <td>Кейс даёт 20 тыс+ просмотров, лиды приходят в личные переписки и живут там.
+          Медиана чистой прибыли проекта — <b>275 000 ₽</b>: один сохранённый договор
+          закрывает почти весь первый шаг</td></tr>
+        <tr><td><b>Комиссии под контролем</b></td>
+          <td>Видно, сколько поставщик уже перечислил и сколько должен по заказанным объёмам.
+          Вы сами назвали это затыком — сейчас это не сводится вручную</td></tr>
+        <tr><td><b>Выплаты по графику</b></td>
+          <td>Обязательства перед дизайнерами получают срок. Понятно, сколько уходит
+          в ближайший месяц, а не общая сумма без даты</td></tr>
         <tr><td><b>Найм вовремя</b></td>
-          <td>Цель 50 объектов, потолок команды 42 при работе на износ</td>
-          <td class="c"><b>порог за 30 дней</b><br><span style="font-size:11.5px">до перегрева</span></td></tr>
+          <td>Порог по прогнозу загрузки. Ранний найм — лишняя зарплата, поздний — сорванные
+          сроки сразу на всех объектах</td></tr>
+        <tr><td><b>Решение, какие объекты брать</b></td>
+          <td>Маржа на месяц занятого слота дизайнера. При цели 50 объектов выбор между типами
+          квартир перестаёт быть вопросом ощущений</td></tr>
+        <tr><td><b>Время Эржены</b></td>
+          <td>Согласования, статусы и «что там по объекту» уходят из чатов в систему
+          и в кабинет клиента</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="note"><p><b>Считаем на пальцах.</b> Система стоит 320 тыс — меньше трети того,
-  что портфель теряет за один месяц к декабрю. Это чуть больше стоимости одного среднего проекта
-  (медиана ЧП — 275 тыс ₽). Первый шаг за 40 тыс окупается ещё до разработки:
-  он отвечает, сколько бизнес зарабатывает на самом деле.</p></div>
 
   <h3 class="mt">Чем заказчик рискует</h3>
   <div class="cards c3">
@@ -1057,10 +1109,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
       Предоплаты за весь проект нет, после любого этапа можно остановиться.
       Во время работ никаких ежемесячных платежей нет — только эти четыре.</div></details>
     <details><summary>У нас уже есть таблица. Зачем ещё система?</summary>
-      <div class="a">Таблица описывает производство и делает это неплохо. Но три листа из восьми
-      пусты — и это ровно те, что отвечают за деньги и рост. Дело не в дисциплине: лист «Лиды» —
-      это 23 колонки, туда никто не пойдёт с телефона. Система меняет цену внесения,
-      а не требует больше усердия.</div></details>
+      <div class="a">Таблица — хорошая основа, часть логики из неё переезжает в систему как есть.
+      Но у таблицы есть потолок: в неё нельзя пустить мастера на объекте, она не напоминает,
+      не разграничивает доступ к деньгам и не ведёт этап производства по десяткам контрольных
+      точек. При 50 объектах и трёх типах конвейера это перестаёт быть удобством
+      и становится ограничением.</div></details>
     <details><summary>Сейчас непростой период, лишних денег нет</summary>
       <div class="a">Поэтому путь разбит на шаги с оплатой по факту сдачи. Первый стоит 40 тыс
       и отвечает на вопрос, сколько бизнес зарабатывает на самом деле — при разнице между
