@@ -1,0 +1,656 @@
+<title>Операционное ядро Kompoza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#FBF9F8; --surface:#FFFFFF; --sunk:#F2EDEB;
+  --ink:#171313; --ink-2:#5C5350; --ink-3:#8A7E7A;
+  --wine:#5B2824; --wine-soft:#8A4A44;
+  --cool:#D1E6FD; --cool-ink:#1B4C7E;
+  --rose:#E6DDDB;
+  --line:rgba(91,40,36,.16); --line-2:rgba(91,40,36,.30);
+  --crit:#A3231B; --crit-bg:#FBECEA;
+  --warn:#8A5A00; --warn-bg:#FBF2DF;
+  --ok:#1F6B4A;  --ok-bg:#E6F2EB;
+  --sans:'Golos Text',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+  --gut:clamp(18px,4vw,64px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131011; --surface:#1B1717; --sunk:#221D1D;
+    --ink:#F2EBE9; --ink-2:#BDB0AC; --ink-3:#8E817D;
+    --wine:#E8A49C; --wine-soft:#C9817A;
+    --cool:#2A4763; --cool-ink:#BBD9F5;
+    --rose:#33292A;
+    --line:rgba(242,235,233,.16); --line-2:rgba(242,235,233,.30);
+    --crit:#F09C93; --crit-bg:#3A1F1C;
+    --warn:#E5B863; --warn-bg:#342816;
+    --ok:#7FC9A3;  --ok-bg:#16301F;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131011; --surface:#1B1717; --sunk:#221D1D;
+  --ink:#F2EBE9; --ink-2:#BDB0AC; --ink-3:#8E817D;
+  --wine:#E8A49C; --wine-soft:#C9817A;
+  --cool:#2A4763; --cool-ink:#BBD9F5;
+  --rose:#33292A;
+  --line:rgba(242,235,233,.16); --line-2:rgba(242,235,233,.30);
+  --crit:#F09C93; --crit-bg:#3A1F1C;
+  --warn:#E5B863; --warn-bg:#342816;
+  --ok:#7FC9A3;  --ok-bg:#16301F;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0}
+a{color:var(--wine)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+.page{max-width:1180px;margin:0 auto;padding:0 var(--gut) 90px}
+@media(min-width:1040px){
+  .page{display:grid;grid-template-columns:186px minmax(0,1fr);gap:clamp(28px,4vw,64px);max-width:1240px}
+  .toc{position:sticky;top:0;align-self:start;padding-top:40px;height:100svh;overflow-y:auto}
+}
+.toc{display:none}
+@media(min-width:1040px){.toc{display:block}}
+.toc ol{list-style:none;padding:0;display:grid;gap:1px}
+.toc a{display:block;padding:5px 0;font-size:13.5px;text-decoration:none;color:var(--ink-2);
+  border-left:2px solid transparent;padding-left:11px;transition:color .2s,border-color .2s}
+.toc a:hover,.toc a:focus-visible{color:var(--ink);border-left-color:var(--wine)}
+.toc .n{font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-right:7px}
+
+header.top{padding:38px 0 26px;border-bottom:1px solid var(--line-2)}
+.eyebrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;background:var(--sunk);color:var(--ink-2);border:1px solid var(--line)}
+h1{font-size:clamp(29px,4.4vw,50px);font-weight:800;letter-spacing:-.035em;line-height:1.04;
+  text-wrap:balance;max-width:19ch}
+.lede{margin-top:16px;font-size:clamp(16px,1.6vw,18.5px);color:var(--ink-2);max-width:66ch}
+.lede b{color:var(--ink);font-weight:600}
+
+section{padding-top:50px;scroll-margin-top:16px}
+h2{font-size:clamp(21px,2.5vw,29px);font-weight:700;letter-spacing:-.026em;text-wrap:balance;
+  display:flex;gap:13px;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:12px;color:var(--wine);font-weight:500;flex:none}
+h3{font-size:17.5px;font-weight:600;letter-spacing:-.015em;margin-top:26px}
+h4{font-size:15px;font-weight:600;margin-top:18px}
+p{margin-top:12px;max-width:70ch;color:var(--ink-2)}
+p.tight{margin-top:7px}
+strong{color:var(--ink);font-weight:600}
+ul,ol{margin-top:12px;padding-left:0;list-style:none;max-width:70ch;display:grid;gap:8px}
+li{position:relative;padding-left:19px;color:var(--ink-2)}
+li::before{content:"";position:absolute;left:3px;top:.68em;width:7px;height:1px;background:var(--wine-soft)}
+ol{counter-reset:o}
+ol li{counter-increment:o}
+ol li::before{content:counter(o);font-family:var(--mono);font-size:11px;color:var(--wine);
+  background:none;width:auto;height:auto;top:.16em;left:0}
+
+.rule{height:1px;background:var(--line);margin-top:34px}
+
+/* факты */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px}
+.facts div{background:var(--surface);padding:15px 16px 17px}
+.facts b{display:block;font-family:var(--mono);font-size:clamp(20px,2.4vw,27px);font-weight:700;
+  letter-spacing:-.03em;line-height:1.1;color:var(--ink)}
+.facts b.bad{color:var(--crit)}
+.facts span{display:block;margin-top:6px;font-size:12.5px;color:var(--ink-3);line-height:1.35}
+
+/* находки */
+.find{border:1px solid var(--line);border-left:3px solid var(--line-2);background:var(--surface);
+  padding:17px 19px 19px;margin-top:16px}
+.find.crit{border-left-color:var(--crit)}
+.find.warn{border-left-color:var(--warn)}
+.find-h{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
+.find-h h3{margin:0;font-size:17px}
+.sev{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;flex:none}
+.sev.crit{background:var(--crit-bg);color:var(--crit)}
+.sev.warn{background:var(--warn-bg);color:var(--warn)}
+.find p{margin-top:9px}
+.find .ev{margin-top:11px;padding:10px 13px;background:var(--sunk);border:1px solid var(--line);
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-2);line-height:1.55;overflow-x:auto}
+.find .ev b{color:var(--ink)}
+.fix{margin-top:11px;padding-left:15px;border-left:2px solid var(--ok);font-size:15px;color:var(--ink-2)}
+.fix b{color:var(--ok);font-weight:600}
+
+/* таблицы */
+.tw{overflow-x:auto;margin-top:18px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:520px;background:var(--surface)}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);font-size:14.5px;
+  vertical-align:top;color:var(--ink-2)}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--sunk);font-weight:500;white-space:nowrap}
+td b{color:var(--ink);font-weight:600}
+td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.yes{color:var(--ok);font-weight:600}
+.no{color:var(--crit);font-weight:600}
+
+/* сущности */
+.ents{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+@media(min-width:760px){.ents{grid-template-columns:1fr 1fr}}
+.ent{background:var(--surface);padding:16px 18px 18px}
+.ent .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--wine)}
+.ent h4{margin:7px 0 0;font-size:16.5px}
+.ent p{margin-top:7px;font-size:14.5px}
+.ent .f{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-3);line-height:1.7}
+
+/* конвейер */
+.flow{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px}
+.step{background:var(--surface);padding:13px 16px;display:grid;
+  grid-template-columns:30px minmax(0,1fr);gap:13px;align-items:start}
+@media(min-width:720px){.step{grid-template-columns:30px 150px minmax(0,1fr) auto}}
+.step .s{font-family:var(--mono);font-size:11px;color:var(--wine);padding-top:2px}
+.step .nm{font-weight:600;color:var(--ink);font-size:15px}
+.step .dt{font-size:14px;color:var(--ink-2)}
+.step .who{font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.gate{background:var(--rose)}
+.gate .nm{color:var(--wine)}
+
+/* доступы */
+.acc{overflow-x:auto;margin-top:18px;border:1px solid var(--line)}
+.acc table{min-width:660px}
+.acc td{text-align:center;font-family:var(--mono);font-size:13px}
+.acc td:first-child{text-align:left;font-family:var(--sans);font-size:14.5px}
+.acc .f{color:var(--ok)}   .acc .h{color:var(--ink-3)}   .acc .p{color:var(--warn)}
+
+.note{margin-top:20px;padding:15px 18px;background:var(--cool);border:1px solid var(--line);
+  color:var(--cool-ink);font-size:15px}
+.note b{color:var(--cool-ink);font-weight:700}
+.note p{color:inherit;margin-top:8px}
+.note p:first-child{margin-top:0}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 7px;
+  background:var(--sunk);border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+
+footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--line-2);
+  font-size:13.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<nav class="toc" aria-label="Разделы">
+  <ol>
+    <li><a href="#diag"><span class="n">01</span>Диагноз</a></li>
+    <li><a href="#model"><span class="n">02</span>Модель данных</a></li>
+    <li><a href="#money"><span class="n">03</span>Деньги</a></li>
+    <li><a href="#access"><span class="n">04</span>Доступы</a></li>
+    <li><a href="#flow"><span class="n">05</span>Конвейер</a></li>
+    <li><a href="#leads"><span class="n">06</span>Лиды</a></li>
+    <li><a href="#more"><span class="n">07</span>Сверх задачи</a></li>
+    <li><a href="#plan"><span class="n">08</span>План</a></li>
+    <li><a href="#risk"><span class="n">09</span>Риски</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">
+    <span class="tag">Kompoza</span>
+    <span class="tag">Операционное ядро</span>
+    <span class="tag">Проект · 15.09.2026</span>
+  </div>
+  <h1>Операционное ядро вместо восьми листов таблицы</h1>
+  <p class="lede">Разбор того, что уже собрано: таблица <b>Kompoza_Управление_v4</b> (8 листов, 28 объектов),
+  методичка по боевой CRM, переписка с ГПТ и этапы работ по трём типам объектов.
+  Ниже — что в этих данных не сходится, какая модель это чинит и в каком порядке её собирать.</p>
+
+  <div class="facts">
+    <div><b>28</b><span>объектов в таблице<br>22 Москва · 6 Питер</span></div>
+    <div><b class="bad">0</b><span>строк в листах Лиды,<br>Кейсы и Комиссии</span></div>
+    <div><b class="bad">0 / 28</b><span>объектов с заполненным<br>этапом производства</span></div>
+    <div><b>6,12 млн ₽</b><span>сальдо к выплате<br>дизайнерам</span></div>
+    <div><b class="bad">1 / 15</b><span>договоров к плану<br>за месяц</span></div>
+  </div>
+</header>
+
+<section id="diag">
+  <h2><span class="num">01</span>Диагноз: шесть вещей, которые не сходятся</h2>
+  <p>Всё проверено по выгрузке, а не со слов. Порядок — по цене ошибки.</p>
+
+  <div class="find crit">
+    <div class="find-h"><span class="sev crit">критично</span><h3>Главный показатель считает не прибыль</h3></div>
+    <p>В листе «Объекты» колонка <span class="pill">Начислено дизайнеру</span> у большинства строк
+    совпадает с <span class="pill">Базовая ЧП проекта</span> до рубля.</p>
+    <div class="ev">Ленинский &nbsp; ЧП 325 000 → дизайнеру <b>325 000</b><br>
+    Лучи &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ЧП 345 000 → дизайнеру <b>345 000</b><br>
+    Скай Гарден &nbsp; ЧП 395 000 → дизайнеру <b>395 000</b><br>
+    ───────────────────────────────<br>
+    Итого: ЧП 8 335 000 → дизайнерам <b>7 220 000 (87%)</b></div>
+    <p>Если «ЧП» — действительно чистая прибыль, то студия отдаёт исполнителям 87% от неё и работает
+    в ноль. Если это стоимость дизайн-проекта, которая целиком уходит дизайнеру, — тогда
+    run-rate 1,42 млн ₽/мес это <strong>оборот, а не прибыль</strong>, и главный KPI на дашборде
+    измеряет не то, что написано на этикетке.</p>
+    <div class="fix"><b>Что делает система:</b> три раздельные величины вместо одной —
+    выручка по объекту, прямая себестоимость (дизайнер, мастера, прораб, клининг) и маржа.
+    Ни одна не выводится из другой вычитанием на лету: каждая собирается из своих событий.</div>
+  </div>
+
+  <div class="find crit">
+    <div class="find-h"><span class="sev crit">критично</span><h3>Доходная часть не ведётся вообще</h3></div>
+    <p>Листы «Лиды», «Кейсы» и «Комиссии» содержат ноль строк. При этом вся стратегия роста —
+    публикация кейсов, с которых приходят лиды, а вся прибыль сверх дизайн-проекта — это
+    проценты от работ и мебели.</p>
+    <div class="ev">Лиды &nbsp;&nbsp;&nbsp;&nbsp; 0 строк &nbsp;→ воронка не измеряется<br>
+    Кейсы &nbsp;&nbsp;&nbsp; 0 строк &nbsp;→ канал привлечения не измеряется<br>
+    Комиссии &nbsp;0 строк &nbsp;→ фактическая прибыль не измеряется</div>
+    <p>Прогноз на дашборде это подтверждает: <strong>1,45 млн в августе → 0,18 млн в декабре.</strong>
+    Портфель доживает, новый не собирается.</p>
+    <div class="fix"><b>Что делает система:</b> лид заводится за три касания в боте и живёт
+    в воронке с обязательным следующим шагом. Кейс получает метку, и лид с него привязывается
+    к кейсу автоматически. Комиссия — событие прихода денег, а не поле.</div>
+  </div>
+
+  <div class="find crit">
+    <div class="find-h"><span class="sev crit">критично</span><h3>Производство не отслеживается</h3></div>
+    <p>Колонка «Этап» пуста у всех 28 объектов. «Фактический финал» — тоже у всех.
+    Присланные вами этапы для стейджинга, вайтбокса и бетона — это десятки контрольных точек,
+    и вести их в таблице физически негде.</p>
+    <div class="ev">Этап &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 / 28 заполнено<br>
+    Фактический финал &nbsp; 0 / 28 заполнено<br>
+    Плановый старт &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 / 28 заполнено</div>
+    <p>Следствие: сроки считаются по плановым датам, которые никто не сверял с фактом.
+    Прогноз ЧП построен на этих же датах.</p>
+    <div class="fix"><b>Что делает система:</b> этап — не текстовое поле, а состояние с закрытым
+    набором переходов. Мастер закрывает работу в боте с фото, дата фиксируется сама.</div>
+  </div>
+
+  <div class="find warn">
+    <div class="find-h"><span class="sev warn">внимание</span><h3>Обязательства перед дизайнерами не имеют срока</h3></div>
+    <p>Сальдо к выплате — 6,12 млн ₽ при месячном run-rate 1,42 млн. Эта сумма выглядит
+    как немедленный долг, хотя часть объектов далеко от финала. Поля «План следующей выплаты»
+    не заполнено ни у одного объекта.</p>
+    <div class="fix"><b>Что делает система:</b> у каждого начисления есть условие выплаты
+    (этап или дата). На дашборде — «к выплате в ближайшие 30 дней», а не всё сальдо разом.</div>
+  </div>
+
+  <div class="find warn">
+    <div class="find-h"><span class="sev warn">внимание</span><h3>Цель по объёму не обеспечена командой</h3></div>
+    <p>Цель — 50 активных объектов к 31.12. Сейчас шесть московских дизайнеров с комфортным
+    максимумом 5 и пиковым 7.</p>
+    <div class="ev">6 дизайнеров × 7 (пик) = <b>42 объекта</b> — потолок, и это работа на износ<br>
+    Для 50 при комфортных 5–6 нужно <b>8–9 дизайнеров</b></div>
+    <div class="fix"><b>Что делает система:</b> считает прогноз загрузки на 30 дней вперёд
+    и подсказывает набор заранее — по порогу, а не когда команда уже перегрелась.</div>
+  </div>
+
+  <div class="find warn">
+    <div class="find-h"><span class="sev warn">внимание</span><h3>Методичка написана под другой бизнес</h3></div>
+    <p>Это важно проговорить до старта. Раздел 9.3 методички предлагает сделать ядром системы
+    <strong>аренду комплекта реквизита</strong> — интервальную сущность с возвратом, продлением
+    и списанием за повреждение.</p>
+    <p class="tight">У Kompoza аренды нет. Мебель и материалы <strong>покупаются клиенту и остаются
+    в квартире</strong>, а студия зарабатывает процент от поставщика. Это принципиально другая
+    механика денег.</p>
+    <div class="fix"><b>Что заменяет аренду:</b> третья центральная сущность — не аренда,
+    а <strong>закупка и комиссия</strong>: поставка с датой, привязкой к объекту и последующим
+    вознаграждением, которое приходит пачкой и с задержкой.</div>
+  </div>
+</section>
+
+<section id="model">
+  <h2><span class="num">02</span>Модель данных: шесть сущностей ядра</h2>
+  <p>Главный вопрос проектирования — что здесь вместо «мероприятия» из исходной системы.
+  Ответ: три сущности живут в разном времени, и сводить их в одну таблицу нельзя.</p>
+
+  <div class="ents">
+    <div class="ent"><div class="k">Месяцы</div><h4>Объект</h4>
+      <p>Квартира. К ней привязано всё остальное. Может вернуться через год — «сдали, теперь продаём».</p>
+      <div class="f">адрес · тип · состояние при старте · цель<br>площадь · собственник · ключи · чат · тип работ</div></div>
+
+    <div class="ent"><div class="k">Дни</div><h4>Работа</h4>
+      <p>Единица планирования и календаря. То, что исполнитель закрывает фото-отчётом.</p>
+      <div class="f">этап · исполнитель · плановая и фактическая даты<br>чек-лист · фото · зависимость от предыдущей</div></div>
+
+    <div class="ent"><div class="k">Недели</div><h4>Поставка</h4>
+      <p>Заказ у поставщика: мебель, материалы, техника. Доставок по одной позиции бывает несколько.</p>
+      <div class="f">поставщик · сумма · объект · дата заказа<br>ожидаемые и фактические доставки · статус</div></div>
+
+    <div class="ent"><div class="k">Событие</div><h4>Комиссия</h4>
+      <p>Приход вознаграждения. Отдельно от поставки: деньги приходят пачкой за несколько объектов.</p>
+      <div class="f">дата прихода · тип (работы / мебель) · сумма<br>поставщик · разнесение по объектам · документ</div></div>
+
+    <div class="ent"><div class="k">Воронка</div><h4>Лид</h4>
+      <p>Обращение. Главная особенность — ключи часто ещё не получены, и это не отказ, а отложенный спрос.</p>
+      <div class="f">источник · кейс · контакт · тип квартиры<br>дата ключей · стадия · следующий шаг · ответственный</div></div>
+
+    <div class="ent"><div class="k">Маркетинг</div><h4>Кейс</h4>
+      <p>Публикация. Единственный измеримый канал привлечения. Связан с лидами меткой.</p>
+      <div class="f">площадка · дата · объект-источник<br>просмотры · лиды · договоры · выручка с кейса</div></div>
+  </div>
+
+  <div class="note">
+    <p><b>Проверка модели на правильность.</b> Если в какой-то момент захочется завести одно поле
+    «длительность» — которое для работы означает дни, для поставки недели, а для объекта месяцы —
+    модель уже неверна. Полей должно быть три, и это признак, что сущности разные.</p>
+  </div>
+
+  <h3>Правила, которые закладываются с первой строки</h3>
+  <p>Взяты из методички — каждое там оплачено конкретным инцидентом.</p>
+  <ul>
+    <li><strong>Деньги — события, а не поля.</strong> «Сколько получено по объекту» вычисляется
+    из строк прихода, никогда не хранится числом, которое можно перетереть.</li>
+    <li><strong>Ничего не удаляем, а гасим.</strong> Отменённый объект получает статус и причину;
+    снятый с работы дизайнер — признак неактивности. На строках висит история расчётов.</li>
+    <li><strong>Прочерк вместо нуля.</strong> «Комиссий не было» и «мы их не записывали» —
+    разные утверждения. Ноль на экране врёт про бизнес.</li>
+    <li><strong>Закрытый набор статусов и единый переключатель.</strong> Ни одно место
+    не пишет статус напрямую: переход проверяется, пишется в журнал, тянет за собой уведомление.</li>
+    <li><strong>Журнал действий на всё.</strong> Кто, что и когда поменял — чтобы через месяц
+    разобрать спор о деньгах, а не гадать.</li>
+  </ul>
+</section>
+
+<section id="money">
+  <h2><span class="num">03</span>Деньги: как считать то, что приходит пачкой</h2>
+  <p>Ваш затык сформулирован точно: «процент от мебели приходит сразу за несколько объектов
+  и может раз в два месяца — сложно контролировать». Это не проблема учёта, это проблема
+  разделения двух разных чисел.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Величина</th><th>Откуда берётся</th><th>Когда известна</th><th>Куда идёт</th></tr></thead>
+      <tbody>
+        <tr><td><b>Выручка по объекту</b></td><td>договор с клиентом</td><td>при подписании</td><td>план, прогноз</td></tr>
+        <tr><td><b>Себестоимость</b></td><td>начисления дизайнеру, мастерам, прорабу, клинингу</td><td>по мере работ</td><td>маржа, выплаты</td></tr>
+        <tr><td><b>Ожидаемая комиссия</b></td><td>сумма поставки × ставка поставщика</td><td>при заказе</td><td>прогноз, <strong>не факт</strong></td></tr>
+        <tr><td><b>Фактическая комиссия</b></td><td>событие прихода денег</td><td>через недели</td><td>факт прибыли</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Разнесение пачки по объектам</h3>
+  <p>Поставщик присылает 180 000 ₽ за четыре объекта одним платежом. Система не требует
+  угадывать разбивку вручную:</p>
+  <ol>
+    <li>Заводится <strong>один приход</strong> с суммой, датой и поставщиком.</li>
+    <li>Выбираются объекты, к которым он относится — из списка тех, где были поставки этого поставщика
+    и комиссия ещё не закрыта.</li>
+    <li>Сумма <strong>разносится пропорционально</strong> суммам поставок. Долю можно поправить руками,
+    и тогда строка запирается: автоматический пересчёт её больше не трогает и прямо об этом пишет.</li>
+    <li>Если объект неизвестен — приход остаётся <span class="pill">нераспределённым</span>
+    и висит в отдельном списке. Он уже в прибыли компании, но ещё не в экономике объекта.</li>
+  </ol>
+
+  <div class="note">
+    <p><b>Почему нельзя просто делить поровну.</b> Объект с кухней на 900 000 ₽ и объект
+    с одним диваном дают разную комиссию. Деление поровну исказит экономику типов квартир —
+    а именно по ней вы будете решать, какие объекты брать.</p>
+  </div>
+
+  <h3>Что это даёт сверх учёта</h3>
+  <p>Когда ожидаемая и фактическая комиссии разделены, сами собой появляются два отчёта,
+  которых сейчас нет ни в каком виде:</p>
+  <ul>
+    <li><strong>Долг поставщика.</strong> Заказали на 4,2 млн, ставка 10%, пришло 260 000 —
+    значит 160 000 ещё не пришли, и видно, по каким объектам и с какого месяца.</li>
+    <li><strong>Реальная доходность типа объекта.</strong> Полная маржа, делённая на месяцы
+    занятого слота дизайнера. Это и есть ответ на вопрос «какие объекты брать» —
+    сейчас он решается ощущениями.</li>
+  </ul>
+</section>
+
+<section id="access">
+  <h2><span class="num">04</span>Доступы: финансы видны не всем</h2>
+  <p>Вы отдельно отметили это требование. Правило из методички, которое его закрывает:
+  <strong>область открывает раздел, а запрос сужает содержимое</strong>. Не «спрятать кнопку»,
+  а показать каждому свой срез одних и тех же данных.</p>
+
+  <div class="acc">
+    <table>
+      <thead><tr><th>Что видно</th><th>Эржена</th><th>Женя</th><th>Дизайнер</th><th>Прораб</th><th>Мастер</th><th>Клиент</th></tr></thead>
+      <tbody>
+        <tr><td>Объект, сроки, этапы</td><td class="f">всё</td><td class="f">всё</td><td class="p">свои</td><td class="p">свои</td><td class="p">свои работы</td><td class="p">свой</td></tr>
+        <tr><td>Смета для клиента</td><td class="f">всё</td><td class="f">всё</td><td class="p">свои</td><td class="p">свои</td><td class="h">—</td><td class="p">свою</td></tr>
+        <tr><td>Закупки и поставки</td><td class="f">всё</td><td class="f">всё</td><td class="p">свои</td><td class="p">свои</td><td class="h">—</td><td class="h">—</td></tr>
+        <tr><td><b>Комиссии от поставщиков</b></td><td class="f">всё</td><td class="f">всё</td><td class="h">—</td><td class="h">—</td><td class="h">—</td><td class="h">—</td></tr>
+        <tr><td><b>Маржа по объекту</b></td><td class="f">всё</td><td class="f">всё</td><td class="h">—</td><td class="h">—</td><td class="h">—</td><td class="h">—</td></tr>
+        <tr><td><b>Своё вознаграждение</b></td><td class="f">всё</td><td class="h">—</td><td class="p">своё</td><td class="p">своё</td><td class="p">своё</td><td class="h">—</td></tr>
+        <tr><td><b>Чужое вознаграждение</b></td><td class="f">всё</td><td class="h">—</td><td class="h">—</td><td class="h">—</td><td class="h">—</td><td class="h">—</td></tr>
+        <tr><td>Лиды и воронка</td><td class="f">всё</td><td class="f">всё</td><td class="h">—</td><td class="h">—</td><td class="h">—</td><td class="h">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Три правила, без которых это развалится</h3>
+  <ul>
+    <li><strong>Право проверяется на сервере, кнопка прячется по тому же правилу.</strong>
+    Кнопка, которая отвечает отказом, читается как поломка.</li>
+    <li><strong>Отказ называет причину и имя.</strong> «Этот объект ведёт Юля — правки за ней»
+    вместо «нет доступа». Человек сразу знает, к кому идти.</li>
+    <li><strong>Роль в системе ≠ функция на работе.</strong> Дизайнер может вести объект,
+    а может быть в отпуске; прораб иногда сам закрывает работы. Признак «берёт объекты»
+    отдельно от роли доступа — иначе каждое кадровое изменение требует правки кода.</li>
+  </ul>
+
+  <div class="note">
+    <p><b>Отдельно про клиента.</b> Клиентский доступ — сильный продающий ход в этой нише
+    и почти никем не сделан: собственник видит свой объект, этапы, фото с площадки и статус
+    доставок, но не видит ни закупочных цен, ни комиссий, ни маржи. Это снимает половину
+    звонков «а что там у вас происходит».</p>
+  </div>
+</section>
+
+<section id="flow">
+  <h2><span class="num">05</span>Конвейер: три типа объектов, один каркас</h2>
+  <p>Из присланных этапов видно главное: стейджинг, вайтбокс и бетон отличаются не структурой,
+  а длительностью и наполнением третьего этапа. Значит это <strong>один шаблон с тремя наборами
+  работ</strong>, а не три отдельных процесса.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Этап</th><th>Стейджинг</th><th>Вайтбокс</th><th>Бетон</th><th>Чем отличается</th></tr></thead>
+      <tbody>
+        <tr><td><b>Приёмка</b></td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>одинаково для всех</td></tr>
+        <tr><td><b>Дизайн-проект</b></td><td class="num">14 дн</td><td class="num">20 дн</td><td class="num">20 дн</td><td>планировка 3 или 7 дней</td></tr>
+        <tr><td><b>Реализация</b></td><td class="num">45 дн</td><td class="num">срок ставится</td><td class="num">срок ставится</td><td>черновые работы и чистовая отделка</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Как это работает в системе</h3>
+  <div class="flow">
+    <div class="step"><span class="s">01</span><span class="nm">Приёмка</span>
+      <span class="dt">Адрес, ключи, бриф, фото и видео, замер, чат. Референсы в быстром доступе.</span>
+      <span class="who">Эржена</span></div>
+    <div class="step gate"><span class="s">↓</span><span class="nm">Ворота</span>
+      <span class="dt">Без замера и брифа проект не стартует. Система не пускает дальше и говорит, чего не хватает.</span>
+      <span class="who">проверка</span></div>
+    <div class="step"><span class="s">02</span><span class="nm">Планировка</span>
+      <span class="dt">Планировочное решение. Кнопка «Принято» фиксирует дату — с неё считается следующий срок.</span>
+      <span class="who">дизайнер</span></div>
+    <div class="step"><span class="s">03</span><span class="nm">Смета и презентация</span>
+      <span class="dt">Уходит Эржене на проверку автоматически. Правки — отдельный цикл со своим сроком.</span>
+      <span class="who">дизайнер → Эржена</span></div>
+    <div class="step gate"><span class="s">↓</span><span class="nm">Два согласования</span>
+      <span class="dt">Сначала Эржена, потом заказчик. Обе отметки с датой и именем — это точка отсчёта производства.</span>
+      <span class="who">Эржена + клиент</span></div>
+    <div class="step"><span class="s">04</span><span class="nm">Состав работ</span>
+      <span class="dt">Дизайнер отмечает галочками, что уходит в работу. Отмеченное <strong>само</strong> становится задачами
+      в правильной последовательности — это ваш пункт про «верную логику ТЗ».</span>
+      <span class="who">дизайнер</span></div>
+    <div class="step"><span class="s">05</span><span class="nm">Закуп</span>
+      <span class="dt">Шаблон корзины: обязательное (гофрокартон, веник, совок, тряпки) и переменное.
+      У каждой позиции своя дата доставки, их может быть несколько.</span>
+      <span class="who">прораб + дизайнер</span></div>
+    <div class="step"><span class="s">06</span><span class="nm">Работы</span>
+      <span class="dt">Мастер закрывает работу → открывается камера → фото обязательно.
+      Увидел чужой брак — отправил фото в тот же поток.</span>
+      <span class="who">мастера</span></div>
+    <div class="step"><span class="s">07</span><span class="nm">Финал</span>
+      <span class="dt">Личинки, клининг, декорирование, фотосессия, передача ключей, акт.</span>
+      <span class="who">Эржена</span></div>
+    <div class="step"><span class="s">08</span><span class="nm">Доработки</span>
+      <span class="dt">Отдельная линия после сдачи — объект не закрывается, пока они висят.</span>
+      <span class="who">прораб</span></div>
+  </div>
+
+  <div class="note">
+    <p><b>Почему именно «ворота», а не просто список.</b> Сейчас сроки едут, и никто не знает,
+    где именно. Ворота фиксируют дату каждого перехода сами. Через два месяца у вас появится
+    фактическая длительность каждого этапа по каждому типу объекта — и плановые 14 и 20 дней
+    можно будет заменить на измеренные.</p>
+  </div>
+</section>
+
+<section id="leads">
+  <h2><span class="num">06</span>Лиды: почему их не заносят и что с этим делать</h2>
+  <p>Вы просили «упростить, с напоминанием, чуть ли не в игровой форме». Прежде чем добавлять
+  игру, стоит убрать причину. Лист «Лиды» — это 23 колонки. Человек, у которого в переписке
+  висит новое обращение, не пойдёт заполнять 23 поля.</p>
+
+  <h3>Сначала — снизить цену внесения</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Способ</th><th>Сколько занимает</th><th>Что заполняется потом</th></tr></thead>
+      <tbody>
+        <tr><td><b>Переслать сообщение боту</b></td><td class="num">1 действие</td><td>система вытаскивает имя и контакт, спрашивает только источник</td></tr>
+        <tr><td><b>Кнопка «Новый лид»</b></td><td class="num">3 касания</td><td>имя, контакт, источник — остальное необязательно</td></tr>
+        <tr><td><b>Заявка с сайта или квиза</b></td><td class="num">0</td><td>заводится сама, с меткой кейса</td></tr>
+        <tr><td><b>Пропущенный звонок</b></td><td class="num">0</td><td>лид создаётся с номером, ждёт разбора</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Обязательных полей ровно три. Всё остальное — <span class="pill">дозаполнить</span>,
+  и система сама напомнит, когда это понадобится.</p>
+
+  <h3>Потом — напоминание, которое не бесит</h3>
+  <ul>
+    <li><strong>Один пуш в конце дня, не в течение.</strong> «Сегодня занесено 2 лида.
+    Было что-то ещё?» — с кнопками «Всё верно» и «Добавить». Одно касание закрывает вопрос.</li>
+    <li><strong>Серия дней.</strong> Не очки и не рейтинг, а простая непрерывность:
+    «11 дней подряд без пропусков». Ломать серию не хочется — это работает сильнее баллов.</li>
+    <li><strong>Пятничная сводка каналов.</strong> «Кейс про Зиларт дал 6 лидов и 1 договор» —
+    это не контроль, а обратная связь: видно, что занесённое не пропадает зря.</li>
+  </ul>
+
+  <div class="note">
+    <p><b>Чего делать не стоит.</b> Публичный рейтинг «кто больше занёс» в команде из шести
+    человек демотивирует пятерых. Соревнование работает на больших отделах продаж;
+    здесь нужна регулярность, а не конкуренция.</p>
+  </div>
+
+  <h3>Отдельная механика: лид, который ждёт ключи</h3>
+  <p>Это специфика Kompoza, и она ломает обычную воронку. Человек хочет, но ключи будут
+  через три месяца — в классической CRM такой лид «зависает» и умирает.</p>
+  <ul>
+    <li>Лид получает <strong>дату ключей</strong>, и она становится главной осью:
+    до 30 дней — горячий, 31–90 — регулярное касание, дальше — длинный прогрев.</li>
+    <li>Система сама поднимает лид в нужный момент, а не ждёт, что о нём вспомнят.</li>
+    <li>Появляется то, чего сейчас нет вовсе: <strong>портфель будущих стартов</strong> —
+    сколько объектов уже ждёт своей очереди и на какую сумму. Это прямо чинит обвал
+    прогноза с 1,45 млн до 0,18 млн.</li>
+  </ul>
+</section>
+
+<section id="more">
+  <h2><span class="num">07</span>Что система закрывает сверх описанного</h2>
+  <p>Это не «фичи на будущее», а то, что появляется само, когда данные уже устроены правильно.</p>
+
+  <div class="ents">
+    <div class="ent"><div class="k">Из этапов</div><h4>Измеренные сроки вместо плановых</h4>
+      <p>Через два месяца видно фактическую длительность каждого этапа по типу объекта.
+      Плановые 14 и 20 дней заменяются на реальные, и прогноз перестаёт врать.</p></div>
+
+    <div class="ent"><div class="k">Из работ</div><h4>Качество по мастерам</h4>
+      <p>Фото-отчёты и отметки брака накапливаются на человеке. Видно, кто переделывает
+      за собой, а кто за другими — и это основание для ставки, а не ощущение.</p></div>
+
+    <div class="ent"><div class="k">Из закупок</div><h4>Ставки поставщиков</h4>
+      <p>Когда заказы и приходы связаны, видно фактический процент по каждому поставщику
+      и кто платит вовремя. Это рычаг в переговорах о ставке.</p></div>
+
+    <div class="ent"><div class="k">Из комиссий</div><h4>Какие объекты брать</h4>
+      <p>Полная маржа на месяц занятого слота дизайнера. Сейчас решение принимается
+      по площади и типу квартиры — то есть почти вслепую.</p></div>
+
+    <div class="ent"><div class="k">Из кейсов</div><h4>Цена лида по каналу</h4>
+      <p>Кейс → просмотры → лиды → договоры → выручка. Видно, какие кейсы публиковать
+      следующими: по типу квартиры и состоянию, а не подряд.</p></div>
+
+    <div class="ent"><div class="k">Из календаря</div><h4>Когда нанимать</h4>
+      <p>Прогноз загрузки на 30 дней вперёд с порогом: превысили 34–35 активных —
+      подключаем следующего дизайнера. Не когда команда уже задыхается.</p></div>
+
+    <div class="ent"><div class="k">Для клиента</div><h4>Кабинет собственника</h4>
+      <p>Свой объект, этапы, фото с площадки, статус доставок. Без цен и маржи.
+      Снимает поток вопросов «что там у вас» и работает как продающая деталь.</p></div>
+
+    <div class="ent"><div class="k">Для владельца</div><h4>Утренняя сводка</h4>
+      <p>Что сдвинулось за сутки, где сорван срок, какие выплаты подходят,
+      сколько лидов занесено. Одно сообщение вместо обхода шести чатов.</p></div>
+  </div>
+</section>
+
+<section id="plan">
+  <h2><span class="num">08</span>План: четыре волны</h2>
+  <p>Порядок не произвольный. Сначала то, что нельзя переделать потом, — схема данных и доступы.
+  Функции наращиваются сверху.</p>
+
+  <div class="flow">
+    <div class="step"><span class="s">I</span><span class="nm">Основание</span>
+      <span class="dt">Домен и почта, база с готовыми миграциями, журнал действий, два входа
+      (пароль и Telegram), роли и области, резервные копии <strong>с учебным восстановлением</strong>.
+      Бизнес-логики ещё нет.</span><span class="who">1–2 недели</span></div>
+    <div class="step"><span class="s">II</span><span class="nm">Объекты и конвейер</span>
+      <span class="dt">Перенос 28 объектов, этапы с воротами, работы, бот для мастеров с фото-отчётом,
+      календарь загрузки дизайнеров.</span><span class="who">2–3 недели</span></div>
+    <div class="step"><span class="s">III</span><span class="nm">Деньги</span>
+      <span class="dt">Выручка, себестоимость, начисления и выплаты с условием, закупки,
+      комиссии с разнесением пачки. Дашборд, который считает маржу, а не оборот.</span>
+      <span class="who">2–3 недели</span></div>
+    <div class="step"><span class="s">IV</span><span class="nm">Воронка и рост</span>
+      <span class="dt">Лиды в три касания, ожидание ключей, кейсы с метками, заявки с сайта,
+      напоминания и серии, кабинет клиента.</span><span class="who">2 недели</span></div>
+  </div>
+
+  <div class="note">
+    <p><b>Что можно сделать до первой строки кода.</b> Три вещи, которые дадут результат
+    уже на этой неделе и не пропадут при переезде в систему:</p>
+    <p>— Разобраться с колонкой «Начислено дизайнеру»: это стоимость дизайн-проекта или доля от прибыли.
+    От ответа зависит, что показывает главный KPI.</p>
+    <p>— Завести приходы комиссий за последние три месяца задним числом — хотя бы суммами по поставщикам.
+    Без них неизвестна реальная прибыль.</p>
+    <p>— Начать заносить лиды хоть куда-нибудь. Даже в тот же лист: <strong>восстановить их потом
+    будет неоткуда.</strong></p>
+  </div>
+</section>
+
+<section id="risk">
+  <h2><span class="num">09</span>Риски, которые стоит принять осознанно</h2>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Риск</th><th>Почему реален</th><th>Что делаем</th></tr></thead>
+      <tbody>
+        <tr><td><b>Систему не будут заполнять</b></td>
+          <td>Таблица уже показала: три листа из восьми пусты. Инструмент не виноват — виновата цена внесения.</td>
+          <td>Ввод там, где человек уже находится: бот в Telegram, пересылка сообщения, фото вместо формы</td></tr>
+        <tr><td><b>Данные для переноса неточны</b></td>
+          <td>Фактический финал не заполнен ни у одного объекта, плановый старт — у пяти из 28</td>
+          <td>Граница «до системы / в системе» одной константой; старое считается прикидкой и подписывается так</td></tr>
+        <tr><td><b>Персональные данные</b></td>
+          <td>Контакты собственников, адреса квартир, суммы договоров — это 152-ФЗ</td>
+          <td>Уведомление регулятора, согласие с фиксацией следа, хранение в РФ — до первой интеграции, а не после</td></tr>
+        <tr><td><b>Рост команды опережает систему</b></td>
+          <td>С 6 до 9 дизайнеров плюс прорабы и мастера — это втрое больше ролей и доступов</td>
+          <td>Роль как набор областей в базе, а не в коде: новая роль настраивается, а не выкатывается</td></tr>
+        <tr><td><b>Два города</b></td>
+          <td>Сейчас Питер в таблице есть, но в дашборде смешан с Москвой</td>
+          <td>Филиал как измерение с первого дня, даже пока фокус на Москве</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <span>Kompoza · проект операционного ядра</span>
+  <span class="mono">15.09.2026</span>
+</footer>
+</main>
+</div>
