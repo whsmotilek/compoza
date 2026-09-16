@@ -147,6 +147,28 @@ li::before{content:"";position:absolute;left:2px;top:.68em;width:7px;height:1px;
   justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
 .goal b{color:var(--cool-ink)}
 
+/* ---------- ГРАФИК ПЛАТЕЖЕЙ ---------- */
+.pay{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px}
+.pay-row{background:var(--surface);padding:14px 16px;display:grid;gap:4px 12px;
+  grid-template-columns:24px minmax(0,1fr) auto;align-items:start}
+@media(min-width:780px){.pay-row{grid-template-columns:24px 180px minmax(0,1fr) auto;gap:14px;align-items:center}}
+.pay-row .n{font-family:var(--mono);font-size:11px;color:var(--wine);font-weight:700;padding-top:2px}
+.pay-row .st{font-weight:700;color:var(--ink);font-size:15px}
+.pay-row .cond{font-size:14px;color:var(--ink-2);grid-column:2/-1}
+@media(min-width:780px){.pay-row .cond{grid-column:auto}}
+.pay-row .amt{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--ink);
+  white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right;grid-column:3/4;grid-row:1}
+@media(min-width:780px){.pay-row .amt{grid-column:auto;grid-row:auto}}
+.pay-row.sum{background:var(--sunk)}
+.pay-row.sum .amt{font-size:16.5px}
+.pay-row.sub{background:var(--band)}
+.pay-row.sub .st,.pay-row.sub .amt{color:var(--wine)}
+.pay-bar{display:flex;gap:2px;margin-top:16px;height:10px}
+.pay-bar i{display:block;background:var(--wine);opacity:.85}
+.pay-bar i.tail{background:var(--band);flex:1 1 auto;opacity:1}
+.pay-legend{display:flex;justify-content:space-between;gap:12px;margin-top:8px;
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em}
+
 /* ---------- БЛОКИ ---------- */
 .cards{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
 @media(min-width:720px){.cards.c3{grid-template-columns:repeat(3,1fr)}}
@@ -906,8 +928,67 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
       </tbody>
     </table>
   </div>
-  <p>Сопровождение после запуска — <strong>25 000 ₽/мес</strong>. Первые два месяца система
-  меняется каждую неделю: команда начинает ей пользоваться и находит то, чего не видно на бумаге.</p>
+
+  <h3 class="mt">Как и когда платить</h3>
+  <p>Оплата идёт <strong>по факту сдачи каждого этапа</strong>, не авансом за весь проект.
+  Платёж привязан не к календарю, а к результату: этап сдан, вы его посмотрели — тогда платите
+  и решаете, идти ли дальше.</p>
+
+  <div class="pay">
+    <div class="pay-row"><span class="n">1</span><span class="st">После аудита</span>
+      <span class="cond">На руках схема данных, матрица доступов, разбор экономики объектов
+      и план перехода. Это работает как самостоятельный документ, даже если дальше не пойдём</span>
+      <span class="amt">40 000 ₽</span></div>
+    <div class="pay-row"><span class="n">2</span><span class="st">После запуска ядра</span>
+      <span class="cond">Объекты и производство работают, 28 объектов перенесены,
+      бот у мастеров, команда завела реальные данные</span>
+      <span class="amt">110 000 ₽</span></div>
+    <div class="pay-row"><span class="n">3</span><span class="st">После запуска денег</span>
+      <span class="cond">Считается маржа, а не оборот. Работают закупки, комиссии
+      с разнесением пачки и график выплат</span>
+      <span class="amt">95 000 ₽</span></div>
+    <div class="pay-row"><span class="n">4</span><span class="st">После запуска воронки</span>
+      <span class="cond">Лиды заносятся, кейсы измеряются, кабинет клиента открыт</span>
+      <span class="amt">75 000 ₽</span></div>
+    <div class="pay-row sum"><span class="n">Σ</span><span class="st">Всего за систему</span>
+      <span class="cond">Разовые платежи, растянутые на весь срок работ</span>
+      <span class="amt">320 000 ₽</span></div>
+    <div class="pay-row sub"><span class="n">→</span><span class="st">Дальше — ежемесячно</span>
+      <span class="cond">Абонентская плата за сопровождение. Начинается после сдачи
+      последнего этапа, не раньше</span>
+      <span class="amt">25 000 ₽/мес</span></div>
+  </div>
+
+  <div class="pay-bar">
+    <i style="flex:0 0 12.5%"></i><i style="flex:0 0 34.4%"></i>
+    <i style="flex:0 0 29.7%"></i><i style="flex:0 0 23.4%"></i><i class="tail"></i>
+  </div>
+  <div class="pay-legend"><span>разовые платежи за этапы</span><span>абонентская плата</span></div>
+
+  <p>Крупный этап можно разделить пополам — половина в начале, половина по сдаче,
+  если так удобнее планировать расходы.</p>
+
+  <h3 class="mt">Что такое абонентская плата</h3>
+  <p>Она начинается <strong>после того, как все четыре этапа сданы</strong>, и покрывает жизнь
+  системы дальше. Первые месяцы она нужна обязательно: пока команда привыкает, правки находятся
+  каждую неделю — не потому что сделано плохо, а потому что реальные процессы всегда чуть
+  отличаются от описанных на бумаге.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Входит в 25 000 ₽/мес</th><th>Считается отдельно</th></tr></thead>
+      <tbody>
+        <tr><td>Правки и доработки по ходу работы</td><td>Новый крупный модуль, которого не было в плане</td></tr>
+        <tr><td>Исправление ошибок и сбоев</td><td>Интеграция, не входившая в этапы</td></tr>
+        <tr><td>Новые поля, статусы, отчёты по запросу</td><td>Второй филиал как отдельный контур</td></tr>
+        <tr><td>Обновление доступов при смене команды</td><td>Мобильное приложение вместо бота</td></tr>
+        <tr><td>Резервные копии и присмотр за сервером</td><td>—</td></tr>
+        <tr><td>Вопросы команды и обучение новых людей</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Абонентскую плату можно поставить на паузу или прекратить — система остаётся у вас
+  на вашем сервере и продолжает работать. Это не подписка, без которой всё выключится.</p>
 
   <div class="price-hero">
     <div class="ph-t">Сколько это стоит на рынке</div>
@@ -1003,7 +1084,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
 
   <h3 class="mt">Частые вопросы</h3>
   <div class="faq">
-    <details open><summary>У нас уже есть таблица. Зачем ещё система?</summary>
+    <details open><summary>Как устроена оплата — сразу всю сумму?</summary>
+      <div class="a">Нет. Четыре отдельных платежа по факту сдачи каждого этапа: 40, 110, 95 и 75 тысяч.
+      Предоплаты за весь проект нет, после любого этапа можно остановиться. Абонентская плата
+      начинается только после сдачи последнего этапа — во время работ её нет.</div></details>
+    <details><summary>У нас уже есть таблица. Зачем ещё система?</summary>
       <div class="a">Таблица описывает производство и делает это неплохо. Но три листа из восьми
       пусты — и это ровно те, что отвечают за деньги и рост. Дело не в дисциплине: лист «Лиды» —
       это 23 колонки, туда никто не пойдёт с телефона. Система меняет цену внесения,
