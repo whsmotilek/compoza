@@ -24,7 +24,7 @@
   --ok:#1D6746; --ok-bg:#E5F2EA;
   --sans:'Golos Text',system-ui,-apple-system,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
-  --gut:clamp(16px,4.2vw,64px);
+  --gut:clamp(20px,5vw,64px);
   --r:2px;
 }
 @media (prefers-color-scheme:dark){
@@ -155,6 +155,36 @@ li::before{content:"";position:absolute;left:2px;top:.68em;width:7px;height:1px;
   justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
 .goal b{color:var(--cool-ink)}
 
+/* ---------- ТАБЛИЦЫ НА УЗКОМ ЭКРАНЕ: строка = карточка ---------- */
+@media(max-width:700px){
+  .tw:has(table.cards){overflow:visible;border:0;background:none}
+  table.cards{min-width:0;width:100%;display:block;background:none;border-collapse:separate}
+  table.cards thead{display:none}
+  table.cards tbody,table.cards tr,table.cards td{display:block;width:auto}
+  table.cards tr{border:1px solid var(--line);background:var(--surface);
+    margin-top:9px;padding:5px 0}
+  table.cards tr:first-child{margin-top:0}
+  table.cards td{border:0;padding:8px 15px;font-size:15px}
+  table.cards td + td{border-top:1px solid var(--line)}
+  /* короткое значение — в одну строку с подписью */
+  /* flex, а не grid: не влезло — значение само уходит под подпись, а не сжимается */
+  table.cards td.short{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline;
+    padding-top:6px;padding-bottom:6px}
+  table.cards td.short::before{margin-bottom:0}
+  table.cards td.short .tv{text-align:left}
+  /* подпись колонки — отдельной строкой, без grid: иначе голый текст станет ячейкой сетки */
+  table.cards td[data-l]::before{content:attr(data-l);display:block;margin-bottom:3px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:500}
+  table.cards td.num,table.cards td.c,table.cards td.r{text-align:left}
+  /* у оставшихся на скролле — явная подсказка */
+  .tw:not(:has(table.cards)){position:relative}
+  .tw:not(:has(table.cards))::after{content:"→ таблица прокручивается вбок";
+    position:sticky;left:0;display:block;padding:7px 14px;font-family:var(--mono);
+    font-size:10px;letter-spacing:.06em;color:var(--ink-3);
+    border-top:1px solid var(--line);background:var(--sunk)}
+}
+
 /* ---------- РИТМ: фактура и выносные полосы ---------- */
 main{position:relative}
 /* очень слабая изометрическая сетка — снимает ощущение пустого фона */
@@ -244,8 +274,12 @@ main::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;op
 .sev.warn{background:var(--warn-bg);color:var(--warn)}
 .find p{margin-top:10px;font-size:15px}
 .ev{margin-top:12px;padding:11px 13px;background:var(--sunk);border:1px solid var(--line);
-  font-family:var(--mono);font-size:12.5px;color:var(--ink-2);line-height:1.6;overflow-x:auto;
-  white-space:nowrap}
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.evr{display:grid;gap:1px 12px;padding:3px 0}
+.evr + .evr{border-top:1px solid var(--line)}
+@media(min-width:560px){.evr{grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:12px}}
+.evr .k{color:var(--ink-3)}
+.evr .v{color:var(--ink-2)}
 .ev b{color:var(--ink)}
 .fix{margin-top:12px;padding-left:14px;border-left:2px solid var(--ok);font-size:14.5px;color:var(--ink-2)}
 .fix b{color:var(--ok);font-weight:600}
@@ -279,8 +313,8 @@ tr.total td b,tr.total td{color:var(--ink)}
   padding:3px 8px;background:var(--band);color:var(--ink-2);flex:none}
 .mod-b{padding:15px 16px 17px}
 .fx{display:grid;gap:6px}
-.fx div{display:grid;grid-template-columns:14px minmax(0,1fr);gap:9px;font-size:14.5px;color:var(--ink-2)}
-.fx div::before{content:"→";color:var(--wine-l);font-family:var(--mono);font-size:12px;line-height:1.55}
+.fx div{position:relative;padding-left:22px;font-size:14.5px;color:var(--ink-2)}
+.fx div::before{content:"→";position:absolute;left:0;top:0;color:var(--wine-2);font-family:var(--mono);font-size:12px;line-height:1.62}
 .fx b{color:var(--ink);font-weight:600}
 .where{margin-top:13px;padding-top:11px;border-top:1px solid var(--line);
   font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.03em;line-height:1.7}
@@ -303,8 +337,13 @@ tr.total td b,tr.total td{color:var(--ink)}
 /* конвейер */
 .flow{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px}
 .step{background:var(--surface);padding:13px 16px;display:grid;grid-template-columns:26px minmax(0,1fr);
-  gap:12px;align-items:start}
-@media(min-width:760px){.step{grid-template-columns:26px 140px minmax(0,1fr) auto}}
+  gap:6px 12px;align-items:start}
+/* на узком экране всё, кроме номера, идёт во вторую колонку — иначе падает в 26px */
+.step > :not(.s){grid-column:2}
+.step .who{justify-self:start}
+@media(min-width:760px){.step{grid-template-columns:26px 140px minmax(0,1fr) auto;gap:12px}
+  .step > :not(.s){grid-column:auto}
+  .step .who{justify-self:end}}
 .step .s{font-family:var(--mono);font-size:11px;color:var(--wine);padding-top:2px}
 .step .nm{font-weight:700;color:var(--ink);font-size:15px}
 .step .dt{font-size:14px;color:var(--ink-2)}
@@ -495,9 +534,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   <div class="find crit">
     <div class="find-h"><span class="sev crit">проверить первым</span><h3>Что означает «Начислено дизайнеру»</h3></div>
     <p>В листе «Объекты» эта колонка у большинства строк совпадает с «Базовой ЧП проекта» до рубля.</p>
-    <div class="ev">Ленинский &nbsp; ЧП 325 000 → дизайнеру <b>325 000</b><br>
-Лучи &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ЧП 345 000 → дизайнеру <b>345 000</b><br>
-Скай Гарден &nbsp; ЧП 395 000 → дизайнеру <b>395 000</b></div>
+    <div class="ev">
+        <div class="evr"><span class="k">Ленинский</span><span class="v">ЧП 325 000 → дизайнеру <b>325 000</b></span></div>
+        <div class="evr"><span class="k">Лучи</span><span class="v">ЧП 345 000 → дизайнеру <b>345 000</b></span></div>
+        <div class="evr"><span class="k">Скай Гарден</span><span class="v">ЧП 395 000 → дизайнеру <b>395 000</b></span></div>
+      </div>
     <p>Читается двояко: либо «ЧП проекта» — это стоимость дизайн-проекта, которая целиком уходит
     исполнителю, либо колонки заполнялись по-разному в разное время. От ответа зависит,
     что показывает главный показатель — прибыль или оборот.</p>
@@ -518,9 +559,11 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
     <div class="find-h"><span class="sev warn">математика</span><h3>Цель упирается в размер команды</h3></div>
     <p>Здесь считать нечего — числа заданы в самой таблице. Шесть московских дизайнеров,
     комфортная загрузка 5, пиковая 7.</p>
-    <div class="ev">6 × 7 (пик, на износ) &nbsp;= <b>42 объекта</b><br>
-цель к концу года &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <b>50 объектов</b><br>
-при комфортных 5–6 нужно <b>9–10 дизайнеров</b></div>
+    <div class="ev">
+        <div class="evr"><span class="k">6 × 7 (пик, на износ)</span><span class="v">= <b>42 объекта</b></span></div>
+        <div class="evr"><span class="k">цель к концу года</span><span class="v">= <b>50 объектов</b></span></div>
+        <div class="evr"><span class="k">при комфортных 5–6</span><span class="v">нужно <b>9–10 дизайнеров</b></span></div>
+      </div>
     <div class="fix"><b>Что делаем:</b> прогноз активных объектов на 30 дней вперёд и порог,
     по которому подключается следующий дизайнер — до перегрева, а не после.</div>
   </div>
@@ -585,32 +628,32 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   а запрос сужает содержимое</strong> — не «спрятать кнопку», а показать каждому свой срез.</p>
   <div class="tw">
     <table>
-      <thead><tr><th>Что видно</th><th>Эржена</th><th>Женя</th><th>Дизайнер</th><th>Прораб</th><th>Мастер</th><th>Клиент</th></tr></thead>
-      <tbody>
-        <tr><td>Объект, сроки, этапы</td><td class="c y">всё</td><td class="c y">всё</td><td class="c pp">свои</td><td class="c pp">свои</td><td class="c pp">свои</td><td class="c pp">свой</td></tr>
-        <tr><td>Закупки и поставки</td><td class="c y">всё</td><td class="c y">всё</td><td class="c pp">свои</td><td class="c y">всё</td><td class="c n">—</td><td class="c pp">статус</td></tr>
-        <tr><td><b>Комиссии от поставщиков</b></td><td class="c y">всё</td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
-        <tr><td><b>Маржа по объекту</b></td><td class="c y">всё</td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
-        <tr><td><b>Своё вознаграждение</b></td><td class="c y">всё</td><td class="c n">—</td><td class="c pp">своё</td><td class="c pp">своё</td><td class="c pp">своё</td><td class="c n">—</td></tr>
-        <tr><td><b>Чужое вознаграждение</b></td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
-        <tr><td>Лиды и воронка</td><td class="c y">всё</td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
-      </tbody>
-    </table>
+<thead><tr><th>Что видно</th><th>Эржена</th><th>Женя</th><th>Дизайнер</th><th>Прораб</th><th>Мастер</th><th>Клиент</th></tr></thead>
+<tbody>
+<tr><td>Объект, сроки, этапы</td><td class="c y">всё</td><td class="c y">всё</td><td class="c pp">свои</td><td class="c pp">свои</td><td class="c pp">свои</td><td class="c pp">свой</td></tr>
+<tr><td>Закупки и поставки</td><td class="c y">всё</td><td class="c y">всё</td><td class="c pp">свои</td><td class="c y">всё</td><td class="c n">—</td><td class="c pp">статус</td></tr>
+<tr><td><b>Комиссии от поставщиков</b></td><td class="c y">всё</td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
+<tr><td><b>Маржа по объекту</b></td><td class="c y">всё</td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
+<tr><td><b>Своё вознаграждение</b></td><td class="c y">всё</td><td class="c n">—</td><td class="c pp">своё</td><td class="c pp">своё</td><td class="c pp">своё</td><td class="c n">—</td></tr>
+<tr><td><b>Чужое вознаграждение</b></td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
+<tr><td>Лиды и воронка</td><td class="c y">всё</td><td class="c y">всё</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td><td class="c n">—</td></tr>
+</tbody>
+</table>
   </div>
 
   <h3 class="mt">Как считать комиссию, которая приходит пачкой</h3>
   <p>Ваш затык сформулирован точно: «процент от мебели приходит сразу за несколько объектов
   и может раз в два месяца». Это решается разделением двух разных чисел.</p>
   <div class="tw">
-    <table>
-      <thead><tr><th>Величина</th><th>Откуда берётся</th><th>Когда известна</th><th>Куда идёт</th></tr></thead>
-      <tbody>
-        <tr><td><b>Выручка</b></td><td>договор с клиентом</td><td>при подписании</td><td>план, прогноз</td></tr>
-        <tr><td><b>Себестоимость</b></td><td>начисления дизайнеру, мастерам, прорабу</td><td>по мере работ</td><td>маржа, выплаты</td></tr>
-        <tr><td><b>Ожидаемая комиссия</b></td><td>сумма поставки × ставка поставщика</td><td>при заказе</td><td>прогноз, <strong>не факт</strong></td></tr>
-        <tr><td><b>Фактическая комиссия</b></td><td>событие прихода денег</td><td>через недели</td><td>факт прибыли</td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Величина</th><th>Откуда берётся</th><th>Когда известна</th><th>Куда идёт</th></tr></thead>
+<tbody>
+<tr><td class="short" data-l="Величина"><span class="tv"><b>Выручка</b></span></td><td class="short" data-l="Откуда берётся"><span class="tv">договор с клиентом</span></td><td class="short" data-l="Когда известна"><span class="tv">при подписании</span></td><td class="short" data-l="Куда идёт"><span class="tv">план, прогноз</span></td></tr>
+<tr><td class="short" data-l="Величина"><span class="tv"><b>Себестоимость</b></span></td><td data-l="Откуда берётся">начисления дизайнеру, мастерам, прорабу</td><td class="short" data-l="Когда известна"><span class="tv">по мере работ</span></td><td class="short" data-l="Куда идёт"><span class="tv">маржа, выплаты</span></td></tr>
+<tr><td class="short" data-l="Величина"><span class="tv"><b>Ожидаемая комиссия</b></span></td><td data-l="Откуда берётся">сумма поставки × ставка поставщика</td><td class="short" data-l="Когда известна"><span class="tv">при заказе</span></td><td class="short" data-l="Куда идёт"><span class="tv">прогноз, <strong>не факт</strong></span></td></tr>
+<tr><td class="" data-l="Величина"><span class="tv"><b>Фактическая комиссия</b></span></td><td class="" data-l="Откуда берётся"><span class="tv">событие прихода денег</span></td><td class="short" data-l="Когда известна"><span class="tv">через недели</span></td><td class="short" data-l="Куда идёт"><span class="tv">факт прибыли</span></td></tr>
+</tbody>
+</table>
   </div>
   <p>Приход на 180 000 ₽ за четыре объекта заводится <strong>одной строкой</strong> и разносится
   пропорционально суммам поставок. Долю можно поправить руками — тогда строка запирается
@@ -763,14 +806,14 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   и наполнением третьего этапа. Значит это один шаблон с тремя наборами работ.</p>
 
   <div class="tw">
-    <table>
-      <thead><tr><th>Этап</th><th>Стейджинг</th><th>Вайтбокс</th><th>Бетон</th><th>Чем отличается</th></tr></thead>
-      <tbody>
-        <tr><td><b>Приёмка</b></td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td>одинаково для всех</td></tr>
-        <tr><td><b>Дизайн-проект</b></td><td class="c">14 дн</td><td class="c">20 дн</td><td class="c">20 дн</td><td>планировка 3 или 7 дней</td></tr>
-        <tr><td><b>Реализация</b></td><td class="c">45 дн</td><td class="c">срок ставится</td><td class="c">срок ставится</td><td>черновые работы и чистовая отделка</td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Этап</th><th>Стейджинг</th><th>Вайтбокс</th><th>Бетон</th><th>Чем отличается</th></tr></thead>
+<tbody>
+<tr><td class="short" data-l="Этап"><span class="tv"><b>Приёмка</b></span></td><td class="c short" data-l="Стейджинг"><span class="tv">—</span></td><td class="c short" data-l="Вайтбокс"><span class="tv">—</span></td><td class="c short" data-l="Бетон"><span class="tv">—</span></td><td class="short" data-l="Чем отличается"><span class="tv">одинаково для всех</span></td></tr>
+<tr><td class="short" data-l="Этап"><span class="tv"><b>Дизайн-проект</b></span></td><td class="c short" data-l="Стейджинг"><span class="tv">14 дн</span></td><td class="c short" data-l="Вайтбокс"><span class="tv">20 дн</span></td><td class="c short" data-l="Бетон"><span class="tv">20 дн</span></td><td class="" data-l="Чем отличается"><span class="tv">планировка 3 или 7 дней</span></td></tr>
+<tr><td class="short" data-l="Этап"><span class="tv"><b>Реализация</b></span></td><td class="c short" data-l="Стейджинг"><span class="tv">45 дн</span></td><td class="c short" data-l="Вайтбокс"><span class="tv">срок ставится</span></td><td class="c short" data-l="Бетон"><span class="tv">срок ставится</span></td><td data-l="Чем отличается">черновые работы и чистовая отделка</td></tr>
+</tbody>
+</table>
   </div>
 
   <h3>Как это работает в системе</h3>
@@ -859,22 +902,22 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
 
   <h3 class="mt">Что сдаётся заказчику</h3>
   <div class="tw">
-    <table>
-      <thead><tr><th>Артефакт</th><th>Когда</th></tr></thead>
-      <tbody>
-        <tr><td><b>Схема данных с комментариями</b> — почему каждое поле именно такое</td><td class="c">I</td></tr>
-        <tr><td><b>Матрица ролей и доступов</b>, согласованная до разработки</td><td class="c">I</td></tr>
-        <tr><td><b>Резервные копии</b> с проверенным восстановлением</td><td class="c">I</td></tr>
-        <tr><td><b>Перенос 28 объектов</b> с границей «архив / система»</td><td class="c">II</td></tr>
-        <tr><td><b>Шаблоны этапов</b> под стейджинг, вайтбокс и бетон</td><td class="c">II</td></tr>
-        <tr><td><b>Бот для полевой команды</b> с фото-отчётом</td><td class="c">II</td></tr>
-        <tr><td><b>Дашборд владельца</b>, считающий маржу, а не оборот</td><td class="c">III</td></tr>
-        <tr><td><b>Реестр выплат</b> и график на 30 дней</td><td class="c">III</td></tr>
-        <tr><td><b>Воронка лидов</b> с осью ожидания ключей</td><td class="c">IV</td></tr>
-        <tr><td><b>Кабинет клиента</b> по ссылке</td><td class="c">IV</td></tr>
-        <tr><td><b>Инструкция на полстраницы</b> для каждой роли</td><td class="c">каждый</td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Артефакт</th><th>Когда</th></tr></thead>
+<tbody>
+<tr><td data-l="Артефакт"><b>Схема данных с комментариями</b> — почему каждое поле именно такое</td><td class="c short" data-l="Когда"><span class="tv">I</span></td></tr>
+<tr><td data-l="Артефакт"><b>Матрица ролей и доступов</b>, согласованная до разработки</td><td class="c short" data-l="Когда"><span class="tv">I</span></td></tr>
+<tr><td data-l="Артефакт"><b>Резервные копии</b> с проверенным восстановлением</td><td class="c short" data-l="Когда"><span class="tv">I</span></td></tr>
+<tr><td data-l="Артефакт"><b>Перенос 28 объектов</b> с границей «архив / система»</td><td class="c short" data-l="Когда"><span class="tv">II</span></td></tr>
+<tr><td data-l="Артефакт"><b>Шаблоны этапов</b> под стейджинг, вайтбокс и бетон</td><td class="c short" data-l="Когда"><span class="tv">II</span></td></tr>
+<tr><td data-l="Артефакт"><b>Бот для полевой команды</b> с фото-отчётом</td><td class="c short" data-l="Когда"><span class="tv">II</span></td></tr>
+<tr><td data-l="Артефакт"><b>Дашборд владельца</b>, считающий маржу, а не оборот</td><td class="c short" data-l="Когда"><span class="tv">III</span></td></tr>
+<tr><td data-l="Артефакт"><b>Реестр выплат</b> и график на 30 дней</td><td class="c short" data-l="Когда"><span class="tv">III</span></td></tr>
+<tr><td data-l="Артефакт"><b>Воронка лидов</b> с осью ожидания ключей</td><td class="c short" data-l="Когда"><span class="tv">IV</span></td></tr>
+<tr><td class="" data-l="Артефакт"><span class="tv"><b>Кабинет клиента</b> по ссылке</span></td><td class="c short" data-l="Когда"><span class="tv">IV</span></td></tr>
+<tr><td data-l="Артефакт"><b>Инструкция на полстраницы</b> для каждой роли</td><td class="c short" data-l="Когда"><span class="tv">каждый</span></td></tr>
+</tbody>
+</table>
   </div>
 </section>
 
@@ -886,43 +929,43 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
 
   <h3>Обязательные</h3>
   <div class="tw">
-    <table>
-      <thead><tr><th>Что</th><th>Зачем именно здесь</th><th>Этап</th><th>Порядок цен</th></tr></thead>
-      <tbody>
-        <tr><td><b>Telegram Bot API</b></td><td>Основная поверхность для полевой команды: фото-отчёты, задачи, уведомления, ввод лидов</td><td class="c">I</td><td class="c">бесплатно</td></tr>
-        <tr><td><b>S3-хранилище</b><br><span style="font-size:12px">Yandex Object Storage</span></td><td>Фото с объектов — десятки гигабайт. Обычный диск не годится: нужен API и прямая загрузка с телефона</td><td class="c">II</td><td class="c">~2 ₽/ГБ·мес</td></tr>
-        <tr><td><b>WhatsApp Business API</b><br><span style="font-size:12px">Wazzup / Chat2Desk</span></td><td>Основной канал переписки с собственниками. Без него лиды продолжат жить в личных телефонах</td><td class="c">IV</td><td class="c">от 7 000 ₽/мес</td></tr>
-        <tr><td><b>Форма на сайте и квиз</b></td><td>Заявка попадает в воронку сама, с меткой кейса и первого визита</td><td class="c">IV</td><td class="c">входит в работы</td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Что</th><th>Зачем именно здесь</th><th>Этап</th><th>Порядок цен</th></tr></thead>
+<tbody>
+<tr><td class="short" data-l="Что"><span class="tv"><b>Telegram Bot API</b></span></td><td data-l="Зачем именно здесь">Основная поверхность для полевой команды: фото-отчёты, задачи, уведомления, ввод лидов</td><td class="c short" data-l="Этап"><span class="tv">I</span></td><td class="c short" data-l="Порядок цен"><span class="tv">бесплатно</span></td></tr>
+<tr><td data-l="Что"><b>S3-хранилище</b><br/><span style="font-size:12px">Yandex Object Storage</span></td><td data-l="Зачем именно здесь">Фото с объектов — десятки гигабайт. Обычный диск не годится: нужен API и прямая загрузка с телефона</td><td class="c short" data-l="Этап"><span class="tv">II</span></td><td class="c short" data-l="Порядок цен"><span class="tv">~2 ₽/ГБ·мес</span></td></tr>
+<tr><td data-l="Что"><b>WhatsApp Business API</b><br/><span style="font-size:12px">Wazzup / Chat2Desk</span></td><td data-l="Зачем именно здесь">Основной канал переписки с собственниками. Без него лиды продолжат жить в личных телефонах</td><td class="c short" data-l="Этап"><span class="tv">IV</span></td><td class="c short" data-l="Порядок цен"><span class="tv">от 7 000 ₽/мес</span></td></tr>
+<tr><td class="" data-l="Что"><span class="tv"><b>Форма на сайте и квиз</b></span></td><td data-l="Зачем именно здесь">Заявка попадает в воронку сама, с меткой кейса и первого визита</td><td class="c short" data-l="Этап"><span class="tv">IV</span></td><td class="c short" data-l="Порядок цен"><span class="tv">входит в работы</span></td></tr>
+</tbody>
+</table>
   </div>
 
   <h3>Сильно окупаются, но не в первый месяц</h3>
   <div class="tw">
-    <table>
-      <thead><tr><th>Что</th><th>Что даёт</th><th>Приоритет</th><th>Порядок цен</th></tr></thead>
-      <tbody>
-        <tr><td><b>Телефония с записью</b><br><span style="font-size:12px">Mango, UIS</span></td><td>Пропущенный звонок становится лидом автоматически. Запись в карточке снимает споры «что обещали»</td><td class="c"><span class="pri soon">после IV</span></td><td class="c">от 2 000 ₽/мес</td></tr>
-        <tr><td><b>Коллтрекинг</b><br><span style="font-size:12px">Callibri</span></td><td>Подменный номер на кейс — видно, какая публикация дала звонок. Прямо усиливает модуль кейсов</td><td class="c"><span class="pri soon">после IV</span></td><td class="c">от 4 000 ₽/мес</td></tr>
-        <tr><td><b>Банковская выписка</b><br><span style="font-size:12px">Т-Бизнес API</span></td><td>Приход комиссии подхватывается из выписки и предлагается к разнесению. Снимает ручной ввод с самого больного места</td><td class="c"><span class="pri soon">после III</span></td><td class="c">бесплатно к счёту</td></tr>
-        <tr><td><b>Подписание документов</b><br><span style="font-size:12px">Контур.Сайн, Sign.Me</span></td><td>Договор и акт подписываются по SMS. Дата подписания попадает в систему и запускает этап</td><td class="c"><span class="pri soon">после III</span></td><td class="c">от 100 ₽/документ</td></tr>
-        <tr><td><b>Авито</b></td><td>Сообщения и контакты с объявлений сразу в воронку. Нужен бизнес-аккаунт</td><td class="c"><span class="pri soon">после IV</span></td><td class="c">по тарифу Авито</td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Что</th><th>Что даёт</th><th>Приоритет</th><th>Порядок цен</th></tr></thead>
+<tbody>
+<tr><td data-l="Что"><b>Телефония с записью</b><br/><span style="font-size:12px">Mango, UIS</span></td><td data-l="Что даёт">Пропущенный звонок становится лидом автоматически. Запись в карточке снимает споры «что обещали»</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri soon">после IV</span></span></td><td class="c short" data-l="Порядок цен"><span class="tv">от 2 000 ₽/мес</span></td></tr>
+<tr><td class="" data-l="Что"><span class="tv"><b>Коллтрекинг</b><br/><span style="font-size:12px">Callibri</span></span></td><td data-l="Что даёт">Подменный номер на кейс — видно, какая публикация дала звонок. Прямо усиливает модуль кейсов</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri soon">после IV</span></span></td><td class="c short" data-l="Порядок цен"><span class="tv">от 4 000 ₽/мес</span></td></tr>
+<tr><td data-l="Что"><b>Банковская выписка</b><br/><span style="font-size:12px">Т-Бизнес API</span></td><td data-l="Что даёт">Приход комиссии подхватывается из выписки и предлагается к разнесению. Снимает ручной ввод с самого больного места</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri soon">после III</span></span></td><td class="c short" data-l="Порядок цен"><span class="tv">бесплатно к счёту</span></td></tr>
+<tr><td data-l="Что"><b>Подписание документов</b><br/><span style="font-size:12px">Контур.Сайн, Sign.Me</span></td><td data-l="Что даёт">Договор и акт подписываются по SMS. Дата подписания попадает в систему и запускает этап</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri soon">после III</span></span></td><td class="c short" data-l="Порядок цен"><span class="tv">от 100 ₽/документ</span></td></tr>
+<tr><td class="short" data-l="Что"><span class="tv"><b>Авито</b></span></td><td data-l="Что даёт">Сообщения и контакты с объявлений сразу в воронку. Нужен бизнес-аккаунт</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri soon">после IV</span></span></td><td class="c short" data-l="Порядок цен"><span class="tv">по тарифу Авито</span></td></tr>
+</tbody>
+</table>
   </div>
 
   <h3>Позже или под вопросом</h3>
   <div class="tw">
-    <table>
-      <thead><tr><th>Что</th><th>Оценка</th><th>Приоритет</th></tr></thead>
-      <tbody>
-        <tr><td><b>Яндекс.Метрика</b>, офлайн-конверсии</td><td>Догружать договоры в метрику имеет смысл, когда появится платный трафик. Сейчас канал органический</td><td class="c"><span class="pri later">позже</span></td></tr>
-        <tr><td><b>1С и бухгалтерия</b></td><td>Нужна, когда появится штат и НДС. До этого выгрузка реестра закрывает вопрос</td><td class="c"><span class="pri later">позже</span></td></tr>
-        <tr><td><b>Ozon и Яндекс Маркет</b></td><td>Партнёрских API для закупок нет. Реалистично — ручной ввод суммы заказа и ссылки на корзину</td><td class="c"><span class="pri later">не делать</span></td></tr>
-        <tr><td><b>Эквайринг</b></td><td>Оплаты идут по счёту и переводом. Ссылка на карту нужна только при розничной услуге</td><td class="c"><span class="pri later">по запросу</span></td></tr>
-        <tr><td><b>Распознавание чеков</b></td><td>Фото чека → сумма и позиции в расход. Экономит время прораба, но требует отладки</td><td class="c"><span class="pri later">этап V</span></td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Что</th><th>Оценка</th><th>Приоритет</th></tr></thead>
+<tbody>
+<tr><td data-l="Что"><b>Яндекс.Метрика</b>, офлайн-конверсии</td><td data-l="Оценка">Догружать договоры в метрику имеет смысл, когда появится платный трафик. Сейчас канал органический</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri later">позже</span></span></td></tr>
+<tr><td class="short" data-l="Что"><span class="tv"><b>1С и бухгалтерия</b></span></td><td data-l="Оценка">Нужна, когда появится штат и НДС. До этого выгрузка реестра закрывает вопрос</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri later">позже</span></span></td></tr>
+<tr><td class="" data-l="Что"><span class="tv"><b>Ozon и Яндекс Маркет</b></span></td><td data-l="Оценка">Партнёрских API для закупок нет. Реалистично — ручной ввод суммы заказа и ссылки на корзину</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri later">не делать</span></span></td></tr>
+<tr><td class="short" data-l="Что"><span class="tv"><b>Эквайринг</b></span></td><td data-l="Оценка">Оплаты идут по счёту и переводом. Ссылка на карту нужна только при розничной услуге</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri later">по запросу</span></span></td></tr>
+<tr><td class="" data-l="Что"><span class="tv"><b>Распознавание чеков</b></span></td><td data-l="Оценка">Фото чека → сумма и позиции в расход. Экономит время прораба, но требует отладки</td><td class="c short" data-l="Приоритет"><span class="tv"><span class="pri later">этап V</span></span></td></tr>
+</tbody>
+</table>
   </div>
 
   <div class="note"><p><b>Правило из боевого опыта:</b> подключать по одной, каждую со своим модулем,
@@ -931,16 +974,16 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
 
   <h3 class="mt">Технический контур</h3>
   <div class="tw">
-    <table>
-      <thead><tr><th>Слой</th><th>Решение</th><th>Почему так</th></tr></thead>
-      <tbody>
-        <tr><td><b>База</b></td><td>PostgreSQL</td><td>Деньги и пересечения интервалов. SQLite не использовать даже локально</td></tr>
-        <tr><td><b>Сервер</b></td><td>Python, один процесс API</td><td>Запросы к деньгам видно целиком, отчёт читается как SQL</td></tr>
-        <tr><td><b>Бот</b></td><td>Отдельный процесс, та же база</td><td>Падение бота не роняет кабинет</td></tr>
-        <tr><td><b>Файлы</b></td><td>S3, прямая загрузка с телефона</td><td>Фото не проходят через сервер</td></tr>
-        <tr><td><b>Хостинг</b></td><td>Российская площадка</td><td>Персональные данные должны храниться в РФ</td></tr>
-      </tbody>
-    </table>
+    <table class="cards">
+<thead><tr><th>Слой</th><th>Решение</th><th>Почему так</th></tr></thead>
+<tbody>
+<tr><td class="short" data-l="Слой"><span class="tv"><b>База</b></span></td><td class="short" data-l="Решение"><span class="tv">PostgreSQL</span></td><td data-l="Почему так">Деньги и пересечения интервалов. SQLite не использовать даже локально</td></tr>
+<tr><td class="short" data-l="Слой"><span class="tv"><b>Сервер</b></span></td><td class="" data-l="Решение"><span class="tv">Python, один процесс API</span></td><td data-l="Почему так">Запросы к деньгам видно целиком, отчёт читается как SQL</td></tr>
+<tr><td class="short" data-l="Слой"><span class="tv"><b>Бот</b></span></td><td data-l="Решение">Отдельный процесс, та же база</td><td data-l="Почему так">Падение бота не роняет кабинет</td></tr>
+<tr><td class="short" data-l="Слой"><span class="tv"><b>Файлы</b></span></td><td data-l="Решение">S3, прямая загрузка с телефона</td><td data-l="Почему так">Фото не проходят через сервер</td></tr>
+<tr><td class="short" data-l="Слой"><span class="tv"><b>Хостинг</b></span></td><td class="" data-l="Решение"><span class="tv">Российская площадка</span></td><td data-l="Почему так">Персональные данные должны храниться в РФ</td></tr>
+</tbody>
+</table>
   </div>
   <p>Система хранит контакты собственников, адреса квартир и суммы договоров — это персональные
   данные. До первой интеграции: уведомление регулятора, согласие с фиксацией следа,
@@ -1024,24 +1067,24 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   чем успевал себя описывать — но этой работы не было бы при переносе с существующей системы.</p>
 
   <div class="tw">
-    <table>
-      <thead><tr><th>Вариант</th><th>Что это</th><th>Порядок цен</th></tr></thead>
-      <tbody>
-        <tr><td><b>Настроить готовую CRM</b><br><span style="font-size:12px">Битрикс24, amoCRM</span></td>
-          <td>Интегратор настраивает воронку и сделки. Для отдела продаж этого достаточно —
+    <table class="cards">
+<thead><tr><th>Вариант</th><th>Что это</th><th>Порядок цен</th></tr></thead>
+<tbody>
+<tr><td data-l="Вариант"><b>Настроить готовую CRM</b><br/><span style="font-size:12px">Битрикс24, amoCRM</span></td>
+<td data-l="Что это">Интегратор настраивает воронку и сделки. Для отдела продаж этого достаточно —
           но здесь ядро другое: объект живёт месяцами и проходит один из трёх конвейеров,
           а прибыль приходит комиссией пачкой за несколько объектов. Галочками это не настраивается</td>
-          <td class="r">60–180 тыс ₽<br><span style="font-size:12px">+ лицензии</span></td></tr>
-        <tr><td><b>Заказать в студии</b></td>
-          <td>Тот же объём, но в цене менеджер проекта, тестировщик, дизайнер и наценка агентства.
+<td class="r" data-l="Порядок цен"><span class="tv">60–180 тыс ₽<br/><span style="font-size:12px">+ лицензии</span></span></td></tr>
+<tr><td class="short" data-l="Вариант"><span class="tv"><b>Заказать в студии</b></span></td>
+<td data-l="Что это">Тот же объём, но в цене менеджер проекта, тестировщик, дизайнер и наценка агентства.
           Отдельно Telegram-бот с ролями и фото-отчётами — 200–600 тыс</td>
-          <td class="r">600 тыс – 1,2 млн ₽</td></tr>
-        <tr class="total"><td><b>Этот проект</b></td>
-          <td>Четыре этапа, три интерфейса, конвейер под три типа объектов.
+<td class="r" data-l="Порядок цен"><span class="tv">600 тыс – 1,2 млн ₽</span></td></tr>
+<tr class="total"><td class="short" data-l="Вариант"><span class="tv"><b>Этот проект</b></span></td>
+<td data-l="Что это">Четыре этапа, три интерфейса, конвейер под три типа объектов.
           Цена по стоимости времени, без наценки агентства</td>
-          <td class="r"><b>320 000 ₽</b></td></tr>
-      </tbody>
-    </table>
+<td class="r short" data-l="Порядок цен"><span class="tv"><b>320 000 ₽</b></span></td></tr>
+</tbody>
+</table>
   </div>
   <p>Объём здесь больше, чем в прошлом проекте: там было три шага и одна поверхность,
   здесь четыре этапа, три интерфейса и производство с десятками контрольных точек.
@@ -1055,30 +1098,30 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--wine);outline-offse
   <p>Здесь нет обещаний роста выручки — продают люди, а не софт. Окупаемость складывается
   из того, что перестаёт теряться, и из решений, которые становятся возможными.</p>
   <div class="tw">
-    <table>
-      <thead><tr><th>Что меняется</th><th>Как это считается деньгами</th></tr></thead>
-      <tbody>
-        <tr><td><b>Обращения не теряются</b></td>
-          <td>Кейс даёт 20 тыс+ просмотров, лиды приходят в личные переписки и живут там.
+    <table class="cards">
+<thead><tr><th>Что меняется</th><th>Как это считается деньгами</th></tr></thead>
+<tbody>
+<tr><td class="" data-l="Что меняется"><span class="tv"><b>Обращения не теряются</b></span></td>
+<td data-l="Как это считается деньгами">Кейс даёт 20 тыс+ просмотров, лиды приходят в личные переписки и живут там.
           Медиана чистой прибыли проекта — <b>275 000 ₽</b>: один сохранённый договор
           закрывает почти весь первый шаг</td></tr>
-        <tr><td><b>Комиссии под контролем</b></td>
-          <td>Видно, сколько поставщик уже перечислил и сколько должен по заказанным объёмам.
+<tr><td class="" data-l="Что меняется"><span class="tv"><b>Комиссии под контролем</b></span></td>
+<td data-l="Как это считается деньгами">Видно, сколько поставщик уже перечислил и сколько должен по заказанным объёмам.
           Вы сами назвали это затыком — сейчас это не сводится вручную</td></tr>
-        <tr><td><b>Выплаты по графику</b></td>
-          <td>Обязательства перед дизайнерами получают срок. Понятно, сколько уходит
+<tr><td class="short" data-l="Что меняется"><span class="tv"><b>Выплаты по графику</b></span></td>
+<td data-l="Как это считается деньгами">Обязательства перед дизайнерами получают срок. Понятно, сколько уходит
           в ближайший месяц, а не общая сумма без даты</td></tr>
-        <tr><td><b>Найм вовремя</b></td>
-          <td>Порог по прогнозу загрузки. Ранний найм — лишняя зарплата, поздний — сорванные
+<tr><td class="short" data-l="Что меняется"><span class="tv"><b>Найм вовремя</b></span></td>
+<td data-l="Как это считается деньгами">Порог по прогнозу загрузки. Ранний найм — лишняя зарплата, поздний — сорванные
           сроки сразу на всех объектах</td></tr>
-        <tr><td><b>Решение, какие объекты брать</b></td>
-          <td>Маржа на месяц занятого слота дизайнера. При цели 50 объектов выбор между типами
+<tr><td data-l="Что меняется"><b>Решение, какие объекты брать</b></td>
+<td data-l="Как это считается деньгами">Маржа на месяц занятого слота дизайнера. При цели 50 объектов выбор между типами
           квартир перестаёт быть вопросом ощущений</td></tr>
-        <tr><td><b>Время Эржены</b></td>
-          <td>Согласования, статусы и «что там по объекту» уходят из чатов в систему
+<tr><td class="short" data-l="Что меняется"><span class="tv"><b>Время Эржены</b></span></td>
+<td data-l="Как это считается деньгами">Согласования, статусы и «что там по объекту» уходят из чатов в систему
           и в кабинет клиента</td></tr>
-      </tbody>
-    </table>
+</tbody>
+</table>
   </div>
 
   <h3 class="mt">Чем заказчик рискует</h3>
