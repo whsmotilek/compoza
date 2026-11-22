@@ -118,7 +118,7 @@ class CoreTests(unittest.TestCase):
         self.login()
         r=self.client.post('/api/projects',headers=self.headers(),json={'name':'Test New','city':'Москва','type':'whitebox','designer_id':3,'foreman_id':5,'member_ids':[6],'access_note':'Gate code demo'})
         self.assertEqual(r.status_code,201);pid=r.json()['id']
-        self.assertEqual(self.client.patch('/api/projects/'+str(pid),headers=self.headers(),json={'status':'paused','member_ids':[]}).status_code,200)
+        self.assertEqual(self.client.patch('/api/projects/'+str(pid),headers=self.headers(),json={'status':'paused','pause_reason':'Waiting for client','member_ids':[]}).status_code,200)
         self.login('master6');self.assertEqual(self.client.get('/api/projects/'+str(pid)).status_code,404)
         self.assertEqual(self.client.post('/api/projects',headers=self.headers(),json={'name':'X','city':'M','type':'staging'}).status_code,403)
     def test_schema_one_upgrade(self):
@@ -126,7 +126,7 @@ class CoreTests(unittest.TestCase):
         with connect(path) as c:c.executescript(Path(__file__).with_name('schema.sql').read_text())
         create_app(path,[ORIGIN])
         with connect(path) as c:
-            self.assertEqual(c.execute('SELECT max(version) FROM schema_version').fetchone()[0],2)
+            self.assertEqual(c.execute('SELECT max(version) FROM schema_version').fetchone()[0],3)
             self.assertIn('note',[r[1] for r in c.execute('PRAGMA table_info(tasks)')])
     def test_cors_exact_origin(self):
         r=self.client.options('/api/auth/login',headers={'Origin':'https://evil.test','Access-Control-Request-Method':'POST'})

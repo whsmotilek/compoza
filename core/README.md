@@ -16,7 +16,7 @@ Configure `COMPOZA_DB` as an absolute path on a private persistent volume, `COMP
 uvicorn core.main:create_app --factory --host 127.0.0.1 --port 8000 --workers 1
 ```
 
-SQLite is a deliberate small-pilot choice: one API worker, short transactions, busy timeout, durable local volume, no network filesystem. Before more concurrent writing or scaling to several workers, plan a PostgreSQL migration. Schema migrations are numbered: initial schema 1, task context and demo markers 2. Initialization rejects an unknown schema version.
+SQLite is a deliberate small-pilot choice: one API worker, short transactions, busy timeout, durable local volume, no network filesystem. Before more concurrent writing or scaling to several workers, plan a PostgreSQL migration. Schema migrations are numbered: initial schema 1, task context and demo markers 2, workspace context and scoped materials 3. Initialization rejects an unknown schema version.
 
 Terminate TLS at a reverse proxy. Do not expose the backend port publicly. Trust forwarded headers only from the exact proxy address and have that proxy replace incoming forwarding headers. The application reads the resolved ASGI client address, never raw `X-Forwarded-For`. Set worker/concurrency and request body limits at the server/proxy. Without trusted proxy setup, the IP limiter sees the proxy as one shared address.
 
@@ -61,4 +61,10 @@ SQLite online backup creates a consistent private copy. `restore-check` restores
 
 ## Test evidence
 
-Seventeen tests cover sessions/logout/expiry/disabled users, CSRF/origin/CORS, persistent account and IP limits, generic login errors, own-project/task isolation, owner/admin/foreman/master boundaries, master approval restrictions, optimistic task updates and atomic audit, account management/last owner, password reset revocation and limiting, project membership changes, schema-1-to-2 migration, and independently restored data. CLI bootstrap and restore smoke checks also passed. Local scrypt hash plus verification took about 0.17 s; target-server CPU limits require a separate runtime check.
+The original seventeen core tests cover sessions/logout/expiry/disabled users, CSRF/origin/CORS, persistent account and IP limits, generic login errors, own-project/task isolation, owner/admin/foreman/master boundaries, master approval restrictions, optimistic task updates and atomic audit, account management/last owner, password reset revocation and limiting, project membership changes, schema-1-to-2 migration, and independently restored data. CLI bootstrap and restore smoke checks also passed. Local scrypt hash plus verification took about 0.17 s; target-server CPU limits require a separate runtime check.
+
+Workspace v3 adds parallel manual tracks, scoped document links, task instructions and discussion, dependencies with audited authorized override, project metadata and scoped history. These are not automatic production templates, private file hosting, photo evidence, multi-executor tasks or financial accounting. Master reads only instructions explicitly shared with their assigned task. External file ACL must be checked independently.
+
+Restore validation requires all 13 current tables and compares their complete row contents with the source snapshot. Version-2 backups should first be restored using the matching version-2 image, or upgraded on an isolated copy; never overwrite a live database to try a migration.
+
+Eight workspace tests additionally cover parallel tracks, waiting reasons, document visibility and history privacy, cycle rejection and dependency overrides, task comments/instructions, full-table restore verification, paused workload and old project history. Total: 25 unique tests.

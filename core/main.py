@@ -14,6 +14,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from .workspace import ensure_tracks, documents, install_routes
 
 ROLES = ('owner', 'admin', 'designer', 'foreman', 'master')
 COOKIE = '__Host-compoza_session'
@@ -51,12 +52,20 @@ def migrate(path):
     with connect(path) as c:
         c.executescript(Path(__file__).with_name('schema.sql').read_text())
         version=c.execute('SELECT max(version) FROM schema_version').fetchone()[0]
-        if version not in (1,2):raise RuntimeError('Unsupported schema version')
+        if version not in (1,2,3):raise RuntimeError('Unsupported schema version')
         if version==1:
             for table,col,definition in [('projects','access_note',"TEXT NOT NULL DEFAULT ''"),('projects','is_demo','INTEGER NOT NULL DEFAULT 0'),('tasks','category',"TEXT NOT NULL DEFAULT 'task'"),('tasks','note',"TEXT NOT NULL DEFAULT ''")]:
                 if col not in [r[1] for r in c.execute('PRAGMA table_info('+table+')')]:
                     c.execute('ALTER TABLE '+table+' ADD COLUMN '+col+' '+definition)
             c.execute('INSERT INTO schema_version VALUES(2)')
+        if version<3:
+            for col,definition in [('address',"TEXT NOT NULL DEFAULT ''"),('client_name',"TEXT NOT NULL DEFAULT ''"),('target_date','TEXT'),('pause_reason',"TEXT NOT NULL DEFAULT ''")]:
+                if col not in [r[1] for r in c.execute('PRAGMA table_info(projects)')]:
+                    c.execute('ALTER TABLE projects ADD COLUMN '+col+' '+definition)
+            c.executescript(Path(__file__).with_name('schema-v3.sql').read_text())
+            c.execute('INSERT OR IGNORE INTO schema_version VALUES(3)')
+        c.executescript(Path(__file__).with_name('schema-v3.sql').read_text())
+        for row in c.execute('SELECT id FROM projects').fetchall():ensure_tracks(c,row['id'])
     path.chmod(0o600)
 
 def audit(c, actor, action, entity, eid=None, details=None):
@@ -77,6 +86,7 @@ class TaskCreate(BaseModel):
     category: Literal['task','delivery','access','approval'] = 'task'
     note: str = Field(default='',max_length=4000)
 class TaskPatch(BaseModel):
+    override_reason: Optional[str] = Field(default=None,min_length=8,max_length=2000)
     version: int = Field(ge=1)
     title: Optional[str] = Field(default=None,min_length=1,max_length=300)
     status: Optional[Literal['todo','in_progress','review','done']] = None
@@ -107,6 +117,10 @@ class ProjectCreate(BaseModel):
     member_ids: list[int] = Field(default_factory=list,max_length=100)
     access_note: str = Field(default='',max_length=2000)
 class ProjectPatch(BaseModel):
+    address: Optional[str] = Field(default=None,max_length=500)
+    client_name: Optional[str] = Field(default=None,max_length=200)
+    target_date: Optional[date] = None
+    pause_reason: Optional[str] = Field(default=None,max_length=2000)
     name: Optional[str] = Field(default=None,min_length=1,max_length=200)
     city: Optional[str] = Field(default=None,min_length=1,max_length=100)
     status: Optional[Literal['active','paused','closed']] = None
@@ -164,10 +178,12 @@ def create_app(db_path=None, origins=None, secure=True):
         if c.execute('SELECT 1 FROM members WHERE project_id=? AND user_id=?',(pid,u['id'])).fetchone(): return p
         raise HTTPException(404,'Project not found')
     def visible_projects(c,u):
-        return [dict(p) for p in c.execute('SELECT * FROM projects ORDER BY id') if u['role'] in ('owner','admin') or p['designer_id']==u['id'] or p['foreman_id']==u['id'] or c.execute('SELECT 1 FROM members WHERE project_id=? AND user_id=?',(p['id'],u['id'])).fetchone()]
+        rows=[dict(p) for p in c.execute('SELECT p.*,u.name designer_name FROM projects p LEFT JOIN users u ON u.id=p.designer_id ORDER BY p.id') if u['role'] in ('owner','admin') or p['designer_id']==u['id'] or p['foreman_id']==u['id'] or c.execute('SELECT 1 FROM members WHERE project_id=? AND user_id=?',(p['id'],u['id'])).fetchone()]
+        if u['role']=='master':return [{k:p[k] for k in ('id','name','city','type','status','address','access_note','is_demo')} for p in rows]
+        return rows
     def visible_tasks(c,u,pid=None):
         ids = [p['id'] for p in visible_projects(c,u)]
-        rows = c.execute('SELECT t.*,p.name project_name FROM tasks t JOIN projects p ON p.id=t.project_id ORDER BY t.id').fetchall()
+        rows = c.execute('SELECT t.*,p.name project_name,u.name assignee_name FROM tasks t JOIN projects p ON p.id=t.project_id LEFT JOIN users u ON u.id=t.assignee_id ORDER BY t.id').fetchall()
         return [dict(t) for t in rows if t['project_id'] in ids and (pid is None or t['project_id']==pid) and (u['role']!='master' or t['assignee_id']==u['id'])]
     def check_assignee(c,pid,uid):
         if uid is None:return
@@ -183,7 +199,7 @@ def create_app(db_path=None, origins=None, secure=True):
         response.headers['Referrer-Policy']='no-referrer'
         return response
     @app.get('/api/health')
-    def health():return {'status':'ok','schema_version':2}
+    def health():return {'status':'ok','schema_version':3}
     @app.get('/api/auth/csrf')
     def csrf_get(request:Request,response:Response):
         with db() as c:
@@ -254,7 +270,22 @@ def create_app(db_path=None, origins=None, secure=True):
         with db() as c:
             u=session(request,c);p=allowed_project(c,u,pid)
             members=c.execute('SELECT DISTINCT u.id,u.name,u.role FROM users u LEFT JOIN members m ON m.user_id=u.id WHERE u.id IN (?,?) OR m.project_id=?',(p['designer_id'],p['foreman_id'],pid)).fetchall()
-            return {'project':dict(p),'tasks':visible_tasks(c,u,pid),'members':[dict(x) for x in members] if u['role']!='master' else [],'documents':[]}
+            project_data=dict(p)
+            if u['role']=='master':
+                project_data={k:project_data[k] for k in ('id','name','city','type','status','address','access_note','is_demo')}
+            own_tasks=visible_tasks(c,u,pid);ids={t['id'] for t in own_tasks}
+            activity=[]
+            if u['role']!='master':
+                for row in c.execute("SELECT a.*,u.name actor_name FROM audit a LEFT JOIN users u ON u.id=a.actor_id WHERE (a.entity='project' AND a.entity_id=?) OR (a.entity='task' AND a.entity_id IN (SELECT id FROM tasks WHERE project_id=?)) ORDER BY a.id DESC LIMIT 200",(pid,pid)):
+                    if (row['entity']=='project' and row['entity_id']==pid) or (row['entity']=='task' and row['entity_id'] in ids):
+                        item=dict(row);item['details']=json.loads(item['details'])
+                        if item['action']=='document_added':
+                            visibility=item['details'].get('visibility')
+                            if visibility=='owners' and u['role']!='owner':continue
+                            if visibility=='design' and u['role']=='foreman':continue
+                        activity.append(item)
+                        if len(activity)>=30:break
+            return {'project':project_data,'tasks':own_tasks,'members':[dict(x) for x in members] if u['role']!='master' else [],'documents':documents(c,u,pid),'tracks':[dict(x) for x in c.execute('SELECT * FROM project_tracks WHERE project_id=? ORDER BY position',(pid,))] if u['role']!='master' else [],'blocked_task_ids':[t['id'] for t in own_tasks if c.execute("SELECT 1 FROM task_dependencies d JOIN tasks t ON t.id=d.depends_on_id WHERE d.task_id=? AND t.status<>'done' LIMIT 1",(t['id'],)).fetchone()],'dependencies':[dict(x) for x in c.execute('SELECT d.* FROM task_dependencies d JOIN tasks t ON t.id=d.task_id WHERE t.project_id=?',(pid,)) if x['task_id'] in ids and x['depends_on_id'] in ids],'activity':activity}
     @app.get('/api/tasks')
     def tasks(request:Request):
         with db() as c:return {'items':visible_tasks(c,session(request,c))}
@@ -276,6 +307,8 @@ def create_app(db_path=None, origins=None, secure=True):
             if not t:raise HTTPException(404,'Task not found')
             allowed_project(c,u,t['project_id'])
             fields=body.model_dump(exclude_unset=True);fields.pop('version')
+            override_reason=fields.pop('override_reason',None)
+            if override_reason and u['role'] not in ('owner','admin','designer'):raise HTTPException(403,'Cannot override dependency')
             if not fields:raise HTTPException(422,'No changes')
             if u['role']=='master':
                 if t['assignee_id']!=u['id']:raise HTTPException(404,'Task not found')
@@ -284,12 +317,15 @@ def create_app(db_path=None, origins=None, secure=True):
             if 'title' in fields and (fields['title'] is None or not fields['title'].strip()):raise HTTPException(422,'Title required')
             if any(k in fields and fields[k] is None for k in ('category','note')):raise HTTPException(422,'Category and note cannot be null')
             if 'status' in fields and fields['status'] is None:raise HTTPException(422,'Status required')
+            if fields.get('status') in ('in_progress','review','done'):
+                pending=c.execute("SELECT 1 FROM task_dependencies d JOIN tasks t ON t.id=d.depends_on_id WHERE d.task_id=? AND t.status<>'done' LIMIT 1",(tid,)).fetchone()
+                if pending and not override_reason:raise HTTPException(409,'Prerequisite tasks must be accepted first')
             if 'assignee_id' in fields:check_assignee(c,t['project_id'],fields['assignee_id'])
             fields={k:(v.isoformat() if isinstance(v,date) else v.strip() if isinstance(v,str) else v) for k,v in fields.items()}
             sql=', '.join(k+'=?' for k in fields)
             changed=c.execute(f'UPDATE tasks SET {sql},version=version+1 WHERE id=? AND version=?',(*fields.values(),tid,body.version)).rowcount
             if not changed:raise HTTPException(409,'Task changed; refresh and retry')
-            audit(c,u['id'],'update','task',tid,fields)
+            audit(c,u['id'],'update','task',tid,{**fields,**({'override_reason':override_reason} if override_reason else {})})
             return dict(c.execute('SELECT * FROM tasks WHERE id=?',(tid,)).fetchone())
     def owner(request,c):
         u=session(request,c)
@@ -358,6 +394,7 @@ def create_app(db_path=None, origins=None, secure=True):
             pid=c.execute('INSERT INTO projects(name,city,type,designer_id,foreman_id,access_note) VALUES(?,?,?,?,?,?)',(body.name.strip(),body.city.strip(),body.type,body.designer_id,body.foreman_id,body.access_note)).lastrowid
             for uid in set(body.member_ids):c.execute('INSERT INTO members VALUES(?,?)',(pid,uid))
             audit(c,u['id'],'create','project',pid)
+            ensure_tracks(c,pid)
             return dict(c.execute('SELECT * FROM projects WHERE id=?',(pid,)).fetchone())
     @app.patch('/api/projects/{pid}')
     def project_update(pid:int,body:ProjectPatch,request:Request):
@@ -370,6 +407,9 @@ def create_app(db_path=None, origins=None, secure=True):
                 if key in fields and (fields[key] is None or (key in ('name','city') and not fields[key].strip())):raise HTTPException(422,'Invalid '+key)
             project_members(c,fields.get('designer_id',p['designer_id']),fields.get('foreman_id',p['foreman_id']),fields.get('member_ids',[]))
             members=fields.pop('member_ids',None)
+            if fields.get('status')=='paused' and not fields.get('pause_reason',p['pause_reason']).strip():raise HTTPException(422,'Pause reason required')
+            if any(fields.get(k,'') is None for k in ('address','client_name','pause_reason')):raise HTTPException(422,'Text fields cannot be null')
+            fields={k:(v.isoformat() if isinstance(v,date) else v) for k,v in fields.items()}
             if fields:
                 sql=', '.join(k+'=?' for k in fields)
                 c.execute(f'UPDATE projects SET {sql} WHERE id=?',(*fields.values(),pid))
@@ -381,8 +421,8 @@ def create_app(db_path=None, origins=None, secure=True):
     @app.get('/api/overview')
     def overview(request:Request):
         with db() as c:
-            u=session(request,c);tasks=visible_tasks(c,u);today=date.today().isoformat()
-            return {'projects':len(visible_projects(c,u)),'open_tasks':sum(t['status']!='done' for t in tasks),'overdue_tasks':sum(bool(t['due_date']) and t['due_date']<today and t['status']!='done' for t in tasks),'pending_review':sum(t['status']=='review' for t in tasks),'role':u['role']}
+            u=session(request,c);projects=visible_projects(c,u);active_ids={p['id'] for p in projects if p['status']=='active'};tasks=visible_tasks(c,u);active_tasks=[t for t in tasks if t['project_id'] in active_ids];today=date.today().isoformat()
+            return {'projects':len(visible_projects(c,u)),'open_tasks':sum(t['status']!='done' for t in tasks),'active_projects':len(active_ids),'paused_projects':sum(p['status']=='paused' for p in projects),'overdue_tasks':sum(bool(t['due_date']) and t['due_date']<today and t['status']!='done' for t in active_tasks),'pending_review':sum(t['status']=='review' for t in tasks),'role':u['role']}
     @app.get('/api/users')
     def users(request:Request):
         with db() as c:
@@ -395,6 +435,7 @@ def create_app(db_path=None, origins=None, secure=True):
             u=session(request,c)
             if u['role']!='owner':raise HTTPException(403,'Owner access required')
             return {'items':[dict(x) for x in c.execute('SELECT a.*,u.name actor_name FROM audit a LEFT JOIN users u ON u.id=a.actor_id ORDER BY a.id DESC LIMIT 200')]}
+    install_routes(app,db,session,csrf,allowed_project,visible_tasks,audit)
     static_dir = os.environ.get('COMPOZA_STATIC_DIR')
     if static_dir:
         app.mount('/app', StaticFiles(directory=static_dir, html=True), name='app')

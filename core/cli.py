@@ -1,5 +1,6 @@
 """Offline administrative commands; never expose this module as HTTP."""
 import argparse
+import hashlib
 import json
 import os
 import secrets
@@ -8,6 +9,7 @@ from pathlib import Path
 from .main import ROLES, audit, connect, migrate, password_hash
 
 def backup(source, destination):
+    if not Path(source).is_file():raise FileNotFoundError('Backup source does not exist')
     target=Path(destination)
     target.parent.mkdir(parents=True, exist_ok=True)
     fd=os.open(target,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600);os.close(fd)
@@ -25,11 +27,20 @@ def restore_check(source, destination):
     with connect(target) as c:
         if c.execute('PRAGMA foreign_key_check').fetchall():raise RuntimeError('Invalid foreign keys')
         version=c.execute('SELECT max(version) FROM schema_version').fetchone()[0]
-        if version!=2:raise RuntimeError('Unexpected schema version')
-        # Restore validation is performed on the independent restored file, never the source.
-        return {'schema_version':version,'users':c.execute('SELECT count(*) FROM users').fetchone()[0],
-                'projects':c.execute('SELECT count(*) FROM projects').fetchone()[0],
-                'audit':c.execute('SELECT count(*) FROM audit').fetchone()[0],'integrity':'ok'}
+        if version!=3:raise RuntimeError('Unexpected schema version')
+        required={'schema_version','users','sessions','attempts','projects','members','tasks','audit','project_tracks','project_documents','task_comments','task_dependencies','task_materials'}
+        present={x[0] for x in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if not required.issubset(present):raise RuntimeError('Required tables missing from backup')
+        counts={}
+        with connect(source) as src:
+            for table in sorted(required):
+                original=[tuple(r) for r in src.execute('SELECT * FROM '+table+' ORDER BY rowid')]
+                restored=[tuple(r) for r in c.execute('SELECT * FROM '+table+' ORDER BY rowid')]
+                encode=lambda rows:hashlib.sha256(json.dumps(rows,ensure_ascii=False,separators=(',',':')).encode()).digest()
+                if encode(original)!=encode(restored):raise RuntimeError('Restored data differs: '+table)
+                counts[table]=len(restored)
+        return {'schema_version':version,'users':counts['users'],'projects':counts['projects'],
+                'audit':counts['audit'],'tables_verified':len(required),'row_counts':counts,'integrity':'ok'}
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--db',required=True)
