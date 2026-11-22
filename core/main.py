@@ -282,7 +282,7 @@ def create_app(db_path=None, origins=None, secure=True):
                         if item['action']=='document_added':
                             visibility=item['details'].get('visibility')
                             if visibility=='owners' and u['role']!='owner':continue
-                            if visibility=='design' and u['role']=='foreman':continue
+                            if visibility=='design' and u['role'] in ('foreman','admin'):continue
                         activity.append(item)
                         if len(activity)>=30:break
             return {'project':project_data,'tasks':own_tasks,'members':[dict(x) for x in members] if u['role']!='master' else [],'documents':documents(c,u,pid),'tracks':[dict(x) for x in c.execute('SELECT * FROM project_tracks WHERE project_id=? ORDER BY position',(pid,))] if u['role']!='master' else [],'blocked_task_ids':[t['id'] for t in own_tasks if c.execute("SELECT 1 FROM task_dependencies d JOIN tasks t ON t.id=d.depends_on_id WHERE d.task_id=? AND t.status<>'done' LIMIT 1",(t['id'],)).fetchone()],'dependencies':[dict(x) for x in c.execute('SELECT d.* FROM task_dependencies d JOIN tasks t ON t.id=d.task_id WHERE t.project_id=?',(pid,)) if x['task_id'] in ids and x['depends_on_id'] in ids],'activity':activity}

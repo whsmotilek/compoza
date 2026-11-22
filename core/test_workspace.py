@@ -31,6 +31,7 @@ class WorkspaceTests(unittest.TestCase):
         self.login('foreman5')
         detail=self.client.get('/api/projects/1').json();self.assertEqual([x['title'] for x in detail['documents']],['team']);self.assertEqual([x['details']['title'] for x in detail['activity'] if x['action']=='document_added'],['team'])
         self.assertEqual([x['title'] for x in self.client.get('/api/documents').json()['items']],['team'])
+        self.login('admin2');self.assertEqual(len(self.client.get('/api/projects/1').json()['documents']),1)
         self.login('designer3');self.assertEqual(len(self.client.get('/api/projects/1').json()['documents']),2)
         self.login('master6');self.assertEqual(self.client.get('/api/projects/1').json()['documents'],[])
 

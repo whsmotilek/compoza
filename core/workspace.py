@@ -15,7 +15,7 @@ def ensure_tracks(c,pid):
         c.execute('INSERT OR IGNORE INTO project_tracks(project_id,code,title,position) VALUES(?,?,?,?)',(pid,code,title,i))
 
 def documents(c,u,pid):
-    levels=['owners','design','team'] if u['role']=='owner' else ['design','team'] if u['role'] in ('designer','admin') else ['team'] if u['role']=='foreman' else []
+    levels=['owners','design','team'] if u['role']=='owner' else ['design','team'] if u['role']=='designer' else ['team'] if u['role'] in ('foreman','admin') else []
     return [dict(x) for x in c.execute('SELECT * FROM project_documents WHERE project_id=? ORDER BY id DESC',(pid,)) if x['visibility'] in levels]
 
 class TrackPatch(BaseModel):
@@ -76,7 +76,7 @@ def install_routes(app,db,session,csrf,allowed_project,visible_tasks,audit):
             if not body.title.strip() or not urlparse(body.url).netloc or urlparse(body.url).scheme!='https':raise HTTPException(422,'HTTPS link required')
             if body.kind in ('estimate','contract') and body.visibility=='team':raise HTTPException(422,'Sensitive document cannot be shared with team')
             if body.visibility=='owners' and u['role']!='owner':raise HTTPException(403,'Owner visibility requires owner')
-            if u['role']=='foreman' and (body.visibility!='team' or body.kind in ('estimate','contract')):raise HTTPException(403,'Foreman can add operational materials only')
+            if u['role'] in ('foreman','admin') and (body.visibility!='team' or body.kind in ('estimate','contract')):raise HTTPException(403,'Foreman can add operational materials only')
             did=c.execute('INSERT INTO project_documents(project_id,title,url,kind,visibility,actor_id) VALUES(?,?,?,?,?,?)',(pid,body.title.strip(),body.url,body.kind,body.visibility,u['id'])).lastrowid
             audit(c,u['id'],'document_added','project',pid,{'title':body.title,'visibility':body.visibility})
             return {'id':did}
