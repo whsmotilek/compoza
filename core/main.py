@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from .workspace import ensure_tracks, documents, install_routes
+from .workflow import enrich, install_workflow
 
 ROLES = ('owner', 'admin', 'designer', 'foreman', 'master')
 COOKIE = '__Host-compoza_session'
@@ -52,7 +53,7 @@ def migrate(path):
     with connect(path) as c:
         c.executescript(Path(__file__).with_name('schema.sql').read_text())
         version=c.execute('SELECT max(version) FROM schema_version').fetchone()[0]
-        if version not in (1,2,3):raise RuntimeError('Unsupported schema version')
+        if version not in (1,2,3,4):raise RuntimeError('Unsupported schema version')
         if version==1:
             for table,col,definition in [('projects','access_note',"TEXT NOT NULL DEFAULT ''"),('projects','is_demo','INTEGER NOT NULL DEFAULT 0'),('tasks','category',"TEXT NOT NULL DEFAULT 'task'"),('tasks','note',"TEXT NOT NULL DEFAULT ''")]:
                 if col not in [r[1] for r in c.execute('PRAGMA table_info('+table+')')]:
@@ -65,6 +66,13 @@ def migrate(path):
             c.executescript(Path(__file__).with_name('schema-v3.sql').read_text())
             c.execute('INSERT OR IGNORE INTO schema_version VALUES(3)')
         c.executescript(Path(__file__).with_name('schema-v3.sql').read_text())
+        if 'reviewer_id' not in [r[1] for r in c.execute('PRAGMA table_info(tasks)')]:
+            c.execute('ALTER TABLE tasks ADD COLUMN reviewer_id INTEGER REFERENCES users(id)')
+        c.executescript(Path(__file__).with_name('schema-v4.sql').read_text())
+        if 'context' not in [r[1] for r in c.execute('PRAGMA table_info(task_submissions)')]:c.execute("ALTER TABLE task_submissions ADD COLUMN context TEXT NOT NULL DEFAULT '{}'")
+        if version<4:
+            c.execute('INSERT OR IGNORE INTO task_executors SELECT id,assignee_id FROM tasks WHERE assignee_id IS NOT NULL')
+            c.execute('INSERT OR IGNORE INTO schema_version VALUES(4)')
         for row in c.execute('SELECT id FROM projects').fetchall():ensure_tracks(c,row['id'])
     path.chmod(0o600)
 
@@ -184,7 +192,7 @@ def create_app(db_path=None, origins=None, secure=True):
     def visible_tasks(c,u,pid=None):
         ids = [p['id'] for p in visible_projects(c,u)]
         rows = c.execute('SELECT t.*,p.name project_name,u.name assignee_name FROM tasks t JOIN projects p ON p.id=t.project_id LEFT JOIN users u ON u.id=t.assignee_id ORDER BY t.id').fetchall()
-        return [dict(t) for t in rows if t['project_id'] in ids and (pid is None or t['project_id']==pid) and (u['role']!='master' or t['assignee_id']==u['id'])]
+        return [enrich(c,dict(t)) for t in rows if t['project_id'] in ids and (pid is None or t['project_id']==pid) and (u['role']!='master' or t['assignee_id']==u['id'] or c.execute('SELECT 1 FROM task_executors WHERE task_id=? AND user_id=?',(t['id'],u['id'])).fetchone())]
     def check_assignee(c,pid,uid):
         if uid is None:return
         user = c.execute('SELECT * FROM users WHERE id=? AND active=1',(uid,)).fetchone()
@@ -199,7 +207,7 @@ def create_app(db_path=None, origins=None, secure=True):
         response.headers['Referrer-Policy']='no-referrer'
         return response
     @app.get('/api/health')
-    def health():return {'status':'ok','schema_version':3}
+    def health():return {'status':'ok','schema_version':4}
     @app.get('/api/auth/csrf')
     def csrf_get(request:Request,response:Response):
         with db() as c:
@@ -269,7 +277,7 @@ def create_app(db_path=None, origins=None, secure=True):
     def project(pid:int,request:Request):
         with db() as c:
             u=session(request,c);p=allowed_project(c,u,pid)
-            members=c.execute('SELECT DISTINCT u.id,u.name,u.role FROM users u LEFT JOIN members m ON m.user_id=u.id WHERE u.id IN (?,?) OR m.project_id=?',(p['designer_id'],p['foreman_id'],pid)).fetchall()
+            members=c.execute('SELECT DISTINCT u.id,u.name,u.role,u.active FROM users u LEFT JOIN members m ON m.user_id=u.id WHERE u.id IN (?,?) OR m.project_id=?',(p['designer_id'],p['foreman_id'],pid)).fetchall()
             project_data=dict(p)
             if u['role']=='master':
                 project_data={k:project_data[k] for k in ('id','name','city','type','status','address','access_note','is_demo')}
@@ -297,6 +305,7 @@ def create_app(db_path=None, origins=None, secure=True):
             if not body.title.strip():raise HTTPException(422,'Title required')
             check_assignee(c,body.project_id,body.assignee_id)
             tid=c.execute('INSERT INTO tasks(project_id,title,assignee_id,due_date,category,note) VALUES(?,?,?,?,?,?)',(body.project_id,body.title.strip(),body.assignee_id,body.due_date.isoformat() if body.due_date else None,body.category,body.note)).lastrowid
+            if body.assignee_id:c.execute('INSERT INTO task_executors VALUES(?,?)',(tid,body.assignee_id))
             audit(c,u['id'],'create','task',tid)
             return dict(c.execute('SELECT * FROM tasks WHERE id=?',(tid,)).fetchone())
     @app.patch('/api/tasks/{tid}')
@@ -306,25 +315,33 @@ def create_app(db_path=None, origins=None, secure=True):
             t=c.execute('SELECT * FROM tasks WHERE id=?',(tid,)).fetchone()
             if not t:raise HTTPException(404,'Task not found')
             allowed_project(c,u,t['project_id'])
+            if u['role']=='master' and t['assignee_id']!=u['id'] and not c.execute('SELECT 1 FROM task_executors WHERE task_id=? AND user_id=?',(tid,u['id'])).fetchone():raise HTTPException(404,'Task not found')
+            if t['version']!=body.version:raise HTTPException(409,'Task changed; refresh and retry')
             fields=body.model_dump(exclude_unset=True);fields.pop('version')
             override_reason=fields.pop('override_reason',None)
             if override_reason and u['role'] not in ('owner','admin','designer'):raise HTTPException(403,'Cannot override dependency')
             if not fields:raise HTTPException(422,'No changes')
             if u['role']=='master':
-                if t['assignee_id']!=u['id']:raise HTTPException(404,'Task not found')
+                if t['assignee_id']!=u['id'] and not c.execute('SELECT 1 FROM task_executors WHERE task_id=? AND user_id=?',(tid,u['id'])).fetchone():raise HTTPException(404,'Task not found')
                 if t['status'] in ('review','done'):raise HTTPException(403,'Submitted work must be returned by reviewer')
                 if set(fields)!={'status'} or body.status not in ('in_progress','review'):raise HTTPException(403,'Master can submit own work for review')
+            if fields.get('status') in ('review','done'):raise HTTPException(403,'Use photo report and acceptance workflow')
+            if t['status'] in ('review','done'):
+                raise HTTPException(409,'Submitted work is locked; use acceptance workflow')
             if 'title' in fields and (fields['title'] is None or not fields['title'].strip()):raise HTTPException(422,'Title required')
             if any(k in fields and fields[k] is None for k in ('category','note')):raise HTTPException(422,'Category and note cannot be null')
             if 'status' in fields and fields['status'] is None:raise HTTPException(422,'Status required')
             if fields.get('status') in ('in_progress','review','done'):
                 pending=c.execute("SELECT 1 FROM task_dependencies d JOIN tasks t ON t.id=d.depends_on_id WHERE d.task_id=? AND t.status<>'done' LIMIT 1",(tid,)).fetchone()
                 if pending and not override_reason:raise HTTPException(409,'Prerequisite tasks must be accepted first')
-            if 'assignee_id' in fields:check_assignee(c,t['project_id'],fields['assignee_id'])
+            if 'assignee_id' in fields:
+                check_assignee(c,t['project_id'],fields['assignee_id'])
+                if fields['assignee_id'] and fields['assignee_id']==t['reviewer_id']:raise HTTPException(422,'Reviewer cannot be an executor')
             fields={k:(v.isoformat() if isinstance(v,date) else v.strip() if isinstance(v,str) else v) for k,v in fields.items()}
             sql=', '.join(k+'=?' for k in fields)
             changed=c.execute(f'UPDATE tasks SET {sql},version=version+1 WHERE id=? AND version=?',(*fields.values(),tid,body.version)).rowcount
             if not changed:raise HTTPException(409,'Task changed; refresh and retry')
+            if fields.get('assignee_id'):c.execute('INSERT OR IGNORE INTO task_executors VALUES(?,?)',(tid,fields['assignee_id']))
             audit(c,u['id'],'update','task',tid,{**fields,**({'override_reason':override_reason} if override_reason else {})})
             return dict(c.execute('SELECT * FROM tasks WHERE id=?',(tid,)).fetchone())
     def owner(request,c):
@@ -436,6 +453,7 @@ def create_app(db_path=None, origins=None, secure=True):
             if u['role']!='owner':raise HTTPException(403,'Owner access required')
             return {'items':[dict(x) for x in c.execute('SELECT a.*,u.name actor_name FROM audit a LEFT JOIN users u ON u.id=a.actor_id ORDER BY a.id DESC LIMIT 200')]}
     install_routes(app,db,session,csrf,allowed_project,visible_tasks,audit)
+    install_workflow(app,db,session,csrf,allowed_project,visible_tasks,audit,os.environ.get('COMPOZA_UPLOADS',str(Path(path).parent/'uploads')))
     static_dir = os.environ.get('COMPOZA_STATIC_DIR')
     if static_dir:
         app.mount('/app', StaticFiles(directory=static_dir, html=True), name='app')

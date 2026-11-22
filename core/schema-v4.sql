@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS task_executors(task_id INTEGER NOT NULL REFERENCES tasks(id),user_id INTEGER NOT NULL REFERENCES users(id),PRIMARY KEY(task_id,user_id));
+CREATE TABLE IF NOT EXISTS task_submissions(id INTEGER PRIMARY KEY,task_id INTEGER NOT NULL REFERENCES tasks(id),attempt INTEGER NOT NULL,actor_id INTEGER NOT NULL REFERENCES users(id),summary TEXT NOT NULL,context TEXT NOT NULL DEFAULT '{}',at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%SZ','now')),request_id TEXT NOT NULL UNIQUE,UNIQUE(task_id,attempt));
+CREATE TABLE IF NOT EXISTS task_reviews(id INTEGER PRIMARY KEY,submission_id INTEGER NOT NULL UNIQUE REFERENCES task_submissions(id),actor_id INTEGER NOT NULL REFERENCES users(id),decision TEXT NOT NULL CHECK(decision IN ('accepted','rework')),remarks TEXT NOT NULL,reason_kind TEXT NOT NULL CHECK(reason_kind IN ('workmanship','client_change','other')),at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%SZ','now')),request_id TEXT NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS task_photos(id TEXT PRIMARY KEY,task_id INTEGER NOT NULL REFERENCES tasks(id),actor_id INTEGER NOT NULL REFERENCES users(id),submission_id INTEGER REFERENCES task_submissions(id),sha256 TEXT NOT NULL,size INTEGER NOT NULL,at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%SZ','now')));
+CREATE INDEX IF NOT EXISTS task_photos_task ON task_photos(task_id);
+CREATE INDEX IF NOT EXISTS task_executors_user ON task_executors(user_id);
+CREATE TRIGGER IF NOT EXISTS submissions_no_update BEFORE UPDATE ON task_submissions BEGIN SELECT RAISE(ABORT,'immutable submission'); END;
+CREATE TRIGGER IF NOT EXISTS submissions_no_delete BEFORE DELETE ON task_submissions BEGIN SELECT RAISE(ABORT,'immutable submission'); END;
+CREATE TRIGGER IF NOT EXISTS reviews_no_update BEFORE UPDATE ON task_reviews BEGIN SELECT RAISE(ABORT,'immutable review'); END;
+CREATE TRIGGER IF NOT EXISTS reviews_no_delete BEFORE DELETE ON task_reviews BEGIN SELECT RAISE(ABORT,'immutable review'); END;
+CREATE TRIGGER IF NOT EXISTS submitted_photo_no_update BEFORE UPDATE ON task_photos WHEN OLD.submission_id IS NOT NULL BEGIN SELECT RAISE(ABORT,'immutable submitted photo'); END;
+CREATE TRIGGER IF NOT EXISTS submitted_photo_no_delete BEFORE DELETE ON task_photos WHEN OLD.submission_id IS NOT NULL BEGIN SELECT RAISE(ABORT,'immutable submitted photo'); END;

@@ -54,7 +54,7 @@ def install_routes(app,db,session,csrf,allowed_project,visible_tasks,audit):
         t=c.execute('SELECT * FROM tasks WHERE id=?',(tid,)).fetchone()
         if not t:raise HTTPException(404,'Task not found')
         allowed_project(c,u,t['project_id'])
-        if u['role']=='master' and t['assignee_id']!=u['id']:raise HTTPException(404,'Task not found')
+        if u['role']=='master' and t['assignee_id']!=u['id'] and not c.execute('SELECT 1 FROM task_executors WHERE task_id=? AND user_id=?',(tid,u['id'])).fetchone():raise HTTPException(404,'Task not found')
         return t
     @app.patch('/api/tracks/{tid}')
     def track_update(tid:int,body:TrackPatch,request:Request):

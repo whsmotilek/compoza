@@ -27,8 +27,8 @@ def restore_check(source, destination):
     with connect(target) as c:
         if c.execute('PRAGMA foreign_key_check').fetchall():raise RuntimeError('Invalid foreign keys')
         version=c.execute('SELECT max(version) FROM schema_version').fetchone()[0]
-        if version!=3:raise RuntimeError('Unexpected schema version')
-        required={'schema_version','users','sessions','attempts','projects','members','tasks','audit','project_tracks','project_documents','task_comments','task_dependencies','task_materials'}
+        if version!=4:raise RuntimeError('Unexpected schema version')
+        required={'schema_version','users','sessions','attempts','projects','members','tasks','audit','project_tracks','project_documents','task_comments','task_dependencies','task_materials','task_executors','task_submissions','task_reviews','task_photos'}
         present={x[0] for x in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         if not required.issubset(present):raise RuntimeError('Required tables missing from backup')
         counts={}

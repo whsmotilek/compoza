@@ -1,5 +1,5 @@
-const CACHE='kompoza-shell-v3';
-const STATIC=['./','./index.html','./styles.css','./app.js','./workspace-ui.js','./workspace.css','./liquid.js','./config.js','./icon.svg','./manifest.webmanifest'];
+const CACHE='kompoza-shell-v4';
+const STATIC=['./','./index.html','./styles.css','./app.js','./workspace-ui.js','./workflow-ui.js','./workspace.css','./liquid.js','./config.js','./icon.svg','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(STATIC)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('kompoza-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 // Данные API и сессии никогда не сохраняются в кэше.

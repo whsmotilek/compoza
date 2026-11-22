@@ -54,14 +54,14 @@ class CoreTests(unittest.TestCase):
         self.login('designer3')
         self.assertEqual([p['id'] for p in self.client.get('/api/projects').json()['items']],[1])
         for url,status in [('/api/projects/2',404),('/api/audit',403),('/api/users',403)]:self.assertEqual(self.client.get(url).status_code,status)
-        self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':1,'status':'done'}).status_code,200)
+        self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':1,'status':'done'}).status_code,403)
     def test_master_only_own_tasks_and_submission(self):
         self.login('master6')
         self.assertEqual([t['id'] for t in self.client.get('/api/tasks').json()['items']],[1])
         self.assertEqual(self.client.get('/api/projects/1').json()['members'],[])
         self.assertEqual(self.client.patch('/api/tasks/2',headers=self.headers(),json={'version':1,'status':'review'}).status_code,404)
         self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':1,'status':'done'}).status_code,403)
-        self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':1,'status':'review'}).status_code,200)
+        self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':1,'status':'review'}).status_code,403)
         self.assertEqual(self.client.post('/api/tasks',headers=self.headers(),json={'project_id':1,'title':'x'}).status_code,403)
     def test_admin_and_foreman_boundaries(self):
         self.login('admin2');self.assertEqual(self.client.get('/api/users').status_code,403)
@@ -126,7 +126,7 @@ class CoreTests(unittest.TestCase):
         with connect(path) as c:c.executescript(Path(__file__).with_name('schema.sql').read_text())
         create_app(path,[ORIGIN])
         with connect(path) as c:
-            self.assertEqual(c.execute('SELECT max(version) FROM schema_version').fetchone()[0],3)
+            self.assertEqual(c.execute('SELECT max(version) FROM schema_version').fetchone()[0],4)
             self.assertIn('note',[r[1] for r in c.execute('PRAGMA table_info(tasks)')])
     def test_cors_exact_origin(self):
         r=self.client.options('/api/auth/login',headers={'Origin':'https://evil.test','Access-Control-Request-Method':'POST'})

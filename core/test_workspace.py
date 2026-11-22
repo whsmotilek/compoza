@@ -41,7 +41,8 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(self.client.post('/api/tasks/2/dependencies',headers=self.headers(),json={'version':1,'ids':[1]}).status_code,422)
         self.assertEqual(self.client.post('/api/tasks/1/dependencies',headers=self.headers(),json={'version':1,'ids':[]}).status_code,409)
         self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':2,'status':'in_progress'}).status_code,409)
-        self.assertEqual(self.client.patch('/api/tasks/2',headers=self.headers(),json={'version':1,'status':'done'}).status_code,200)
+        self.assertEqual(self.client.patch('/api/tasks/2',headers=self.headers(),json={'version':1,'status':'done'}).status_code,403)
+        with connect(self.path) as c:c.execute("UPDATE tasks SET status='done' WHERE id=2")
         self.assertEqual(self.client.patch('/api/tasks/1',headers=self.headers(),json={'version':2,'status':'in_progress'}).status_code,200)
 
     def test_comments_and_context_do_not_leak(self):
@@ -60,7 +61,7 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(self.client.patch('/api/projects/1',headers=self.headers(),json={'status':'paused','pause_reason':'Ожидание ключей'}).status_code,200)
         self.login('designer3');detail=self.client.get('/api/projects/1').json()
         self.assertTrue(detail['activity']);self.assertTrue(all(x['entity'] in ('project','task') for x in detail['activity']))
-        with connect(self.path) as c:self.assertEqual(c.execute('SELECT max(version) FROM schema_version').fetchone()[0],3)
+        with connect(self.path) as c:self.assertEqual(c.execute('SELECT max(version) FROM schema_version').fetchone()[0],4)
 
     def test_reasoned_override_and_assigned_task_materials(self):
         self.login()
