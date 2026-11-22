@@ -1,0 +1,14 @@
+# Isolated Compoza pilot. Existing sites must remain unchanged.
+compoza.95-163-227-180.sslip.io {
+    encode gzip
+    header Strict-Transport-Security "max-age=86400"
+    header X-Frame-Options DENY
+    header X-Content-Type-Options nosniff
+    header Referrer-Policy no-referrer
+    request_body {
+        max_size 2MB
+    }
+    @root path /
+    redir @root /app/ 302
+    reverse_proxy compoza-core:8000
+}

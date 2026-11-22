@@ -1,0 +1,9 @@
+.git
+.private
+**/__pycache__
+**/.venv
+core/data
+*.sqlite*
+*.db
+*.log
+_migration

@@ -1,3 +1,11 @@
 .DS_Store
 *.log
 .claude/
+.private/
+core/data/
+core/.venv/
+core/__pycache__/
+core/.env
+*.sqlite*
+*.db
+*.pyc

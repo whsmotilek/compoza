@@ -1,0 +1,37 @@
+services:
+  core:
+    image: compoza-core:${COMPOZA_RELEASE:-pilot}
+    container_name: compoza-core
+    restart: unless-stopped
+    init: true
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 128
+    environment:
+      COMPOZA_DB: /data/core.sqlite3
+      COMPOZA_STATIC_DIR: /srv/compoza/app
+      COMPOZA_ORIGINS: https://compoza.95-163-227-180.sslip.io
+    volumes:
+      - ./data:/data
+      - ./backups:/backups
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    ports:
+      - "127.0.0.1:18190:8000"
+    networks: [proxy]
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+networks:
+  proxy:
+    external: true
+    name: projects-shared-proxy

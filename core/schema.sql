@@ -1,0 +1,12 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS schema_version(version INTEGER PRIMARY KEY);
+INSERT OR IGNORE INTO schema_version VALUES(1);
+CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, name TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('owner','admin','designer','foreman','master')), password_hash TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id INTEGER REFERENCES users(id),csrf TEXT NOT NULL,expires INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS attempts(kind TEXT NOT NULL,key TEXT NOT NULL,failures INTEGER NOT NULL DEFAULT 0,window_start INTEGER NOT NULL,locked_until INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(kind,key));
+CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY,name TEXT NOT NULL,city TEXT NOT NULL,type TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'active',designer_id INTEGER REFERENCES users(id),foreman_id INTEGER REFERENCES users(id));
+CREATE TABLE IF NOT EXISTS members(project_id INTEGER REFERENCES projects(id),user_id INTEGER REFERENCES users(id),PRIMARY KEY(project_id,user_id));
+CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY,project_id INTEGER NOT NULL REFERENCES projects(id),title TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'todo' CHECK(status IN ('todo','in_progress','review','done')),assignee_id INTEGER REFERENCES users(id),due_date TEXT,version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),actor_id INTEGER REFERENCES users(id),action TEXT NOT NULL,entity TEXT NOT NULL,entity_id INTEGER,details TEXT NOT NULL DEFAULT '{}');
+CREATE TRIGGER IF NOT EXISTS audit_no_update BEFORE UPDATE ON audit BEGIN SELECT RAISE(ABORT,'immutable audit'); END;
+CREATE TRIGGER IF NOT EXISTS audit_no_delete BEFORE DELETE ON audit BEGIN SELECT RAISE(ABORT,'immutable audit'); END;
